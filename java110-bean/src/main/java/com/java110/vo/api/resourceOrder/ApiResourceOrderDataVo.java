@@ -9,22 +9,29 @@ public class ApiResourceOrderDataVo implements Serializable {
 
     private String taskId;
 
-    //资源订单ID
-    private String resOrderId;
+    private String userId;
+    private String userName;
+
+
+    //订单ID
+    private String applyOrderId;
 
     //商户ID
     private String storeId;
 
     // 资源类型 入库还是出库
     private String resOrderType;
+    private String resOrderTypeName;
 
     // 资源状态
     private String state;
+    private String stateName;
 
     //
     private String auditCode;
 
     private String auditMessage;
+    private String createTime;
 
     public String getProcessInstanceId() {
         return processInstanceId;
@@ -42,12 +49,20 @@ public class ApiResourceOrderDataVo implements Serializable {
         this.taskId = taskId;
     }
 
-    public String getResOrderId() {
-        return resOrderId;
+    public String getApplyOrderId() {
+        return applyOrderId;
     }
 
-    public void setResOrderId(String resOrderId) {
-        this.resOrderId = resOrderId;
+    public void setApplyOrderId(String applyOrderId) {
+        this.applyOrderId = applyOrderId;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 
     public String getStoreId() {
@@ -88,5 +103,37 @@ public class ApiResourceOrderDataVo implements Serializable {
 
     public void setAuditMessage(String auditMessage) {
         this.auditMessage = auditMessage;
+    }
+
+    public String getResOrderTypeName() {
+        return resOrderTypeName;
+    }
+
+    public void setResOrderTypeName(String resOrderTypeName) {
+        this.resOrderTypeName = resOrderTypeName;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

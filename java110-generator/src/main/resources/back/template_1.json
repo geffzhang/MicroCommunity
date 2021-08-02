@@ -1,0 +1,42 @@
+{
+  "autoMove": true,
+  "id": "attrId",
+  "name": "tempCarFeeConfigAttr",
+  "desc": "临时车收费标准属性",
+  "shareParam": "config_id",
+  "shareColumn": "configId",
+  "shareName": "fee",
+  "newBusinessTypeCd": "BUSINESS_TYPE_SAVE_TEMP_CAR_FEE_CONFIG_ATTR_INFO",
+  "updateBusinessTypeCd": "BUSINESS_TYPE_UPDATE_TEMP_CAR_FEE_CONFIG_ATTR_INFO",
+  "deleteBusinessTypeCd": "BUSINESS_TYPE_DELETE_TEMP_CAR_FEE_CONFIG_ATTR_INFO",
+  "newBusinessTypeCdValue": "651100030002",
+  "updateBusinessTypeCdValue": "651100040002",
+  "deleteBusinessTypeCdValue": "651100050002",
+  "businessTableName": "business_temp_car_fee_config_attr",
+  "tableName": "temp_car_fee_config_attr",
+  "param": {
+    "attrId": "attr_id",
+    "bId": "b_id",
+    "configId": "config_id",
+    "specCd": "spec_cd",
+    "value": "value",
+    "statusCd": "status_cd",
+    "createTime": "create_time",
+    "operate": "operate"
+  },
+  "required": [
+    {
+
+      "code": "configId",
+      "msg": "标准ID不能为空"
+    },
+    {
+      "code": "specCd",
+      "msg": "属性不能为空"
+    },
+    {
+      "code": "value",
+      "msg": "属性值不能为空"
+    }
+  ]
+}

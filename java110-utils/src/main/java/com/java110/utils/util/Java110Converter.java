@@ -34,13 +34,14 @@ public class Java110Converter implements Converter {
         if (value instanceof String && target == Date.class) {
             String date = (String) value;
             Date newDate = null;
+            SimpleDateFormat strdf = null;
             if (date.contains(":")) {
-                //sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                strdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             } else {
-                sdf = new SimpleDateFormat("yyyy-MM-dd");
+                strdf = new SimpleDateFormat("yyyy-MM-dd");
             }
             try {
-                newDate = sdf.parse(date);
+                newDate = strdf.parse(date);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -55,6 +56,17 @@ public class Java110Converter implements Converter {
         // 3.0 Date 转 String
         if (value instanceof Date && target == String.class) {
             Date date = (Date) value;
+            String newDate = null;
+            try {
+                newDate = sdf.format(date);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return newDate;
+        }
+        // 3.0 Timestamp 转 String
+        if (value instanceof Timestamp && target == String.class) {
+            Date date = new Date(((Timestamp) value).getTime());
             String newDate = null;
             try {
                 newDate = sdf.format(date);
@@ -82,6 +94,10 @@ public class Java110Converter implements Converter {
 
         if (target == double.class || target == Double.class) {
             return Double.parseDouble(String.valueOf(value));
+        }
+
+        if (target == String[].class) {
+            return String.valueOf(value).split(",");
         }
 
         return value;

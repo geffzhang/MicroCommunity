@@ -1,7 +1,11 @@
 package com.java110.vo.api.store;
 
+import com.java110.dto.store.StoreAttrDto;
+import com.java110.dto.store.StoreDto;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class ApiStoreDataVo implements Serializable {
     private String storeId;
@@ -13,9 +17,13 @@ public class ApiStoreDataVo implements Serializable {
     private String nearByLandmarks;
     private String mapX;
     private String mapY;
+    private String artificialPerson;
+    private String establishment;
+    private String businessScope;
     private String storeName;
     private String storeTypeName;
     private String createTime;
+    private List<StoreAttrDto> storeAttrDtoList;
 
     public String getStoreId() {
         return storeId;
@@ -111,5 +119,37 @@ public class ApiStoreDataVo implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getArtificialPerson() {
+        return artificialPerson;
+    }
+
+    public void setArtificialPerson(String artificialPerson) {
+        this.artificialPerson = artificialPerson;
+    }
+
+    public String getEstablishment() {
+        return establishment;
+    }
+
+    public void setEstablishment(String establishment) {
+        this.establishment = establishment;
+    }
+
+    public String getBusinessScope() {
+        return businessScope;
+    }
+
+    public void setBusinessScope(String businessScope) {
+        this.businessScope = businessScope;
+    }
+
+    public List<StoreAttrDto> getStoreAttrDtoList() {
+        return storeAttrDtoList;
+    }
+
+    public void setStoreAttrDtoList(List<StoreAttrDto> storeAttrDtoList) {
+        this.storeAttrDtoList = storeAttrDtoList;
     }
 }

@@ -1,9 +1,11 @@
 package com.java110.dto.repair;
 
 import com.java110.dto.PageDto;
+import com.java110.vo.api.junkRequirement.PhotoVo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -15,6 +17,32 @@ import java.util.Date;
  **/
 public class RepairDto extends PageDto implements Serializable {
 
+    //待处理
+    public static final String STATE_WAIT = "1000";
+    //接单
+    public static final String STATE_TAKING = "1100";
+    //退单
+    public static final String STATE_BACK = "1200";
+    //转单
+    public static final String STATE_TRANSFER = "1300";
+
+    //申请支付
+    public static final String STATE_PAY = "1400";
+    //支付失败
+    public static final String STATE_PAY_ERROR = "1500";
+    //待评价
+    public static final String STATE_APPRAISE = "1700";
+    //待回访
+    public static final String STATE_RETURN_VISIT = "1800";
+    //办理完成
+    public static final String STATE_COMPLATE = "1900";
+    //未处理主动结单
+    public static final String STATE_UNPROCESSED = "2000";
+
+    public static final String REPAIR_WAY_GRABBING = "100"; //抢单模式
+    public static final String REPAIR_WAY_TRAINING = "300"; //抢单模式
+
+
     private String repairName;
     private String appointmentTime;
     private String repairType;
@@ -22,11 +50,14 @@ public class RepairDto extends PageDto implements Serializable {
     private String repairId;
     private String tel;
     private String state;
+    private String[] statess;
+    private List<String> states;
     private String stateName;
     private String communityId;
     private String roomId;
     private String[] roomIds;
     private String repairTypeName;
+    private String repairWay;
 
     private String staffId;
 
@@ -34,9 +65,19 @@ public class RepairDto extends PageDto implements Serializable {
     private String repairDispatchContext;
     private String repairDispatchStateName;
 
+    private String preStaffId;
+    private String preStaffName;
+
     private Date createTime;
 
     private String statusCd = "0";
+
+    private String repairObjType;
+    private String repairObjId;
+    private String repairObjName;
+    private List<PhotoVo> photos;
+
+    private String returnVisitFlag;
 
 
     public String getRepairName() {
@@ -183,5 +224,85 @@ public class RepairDto extends PageDto implements Serializable {
 
     public void setRoomIds(String[] roomIds) {
         this.roomIds = roomIds;
+    }
+
+    public String getRepairWay() {
+        return repairWay;
+    }
+
+    public void setRepairWay(String repairWay) {
+        this.repairWay = repairWay;
+    }
+
+    public String getPreStaffId() {
+        return preStaffId;
+    }
+
+    public void setPreStaffId(String preStaffId) {
+        this.preStaffId = preStaffId;
+    }
+
+    public String getPreStaffName() {
+        return preStaffName;
+    }
+
+    public void setPreStaffName(String preStaffName) {
+        this.preStaffName = preStaffName;
+    }
+
+    public String getRepairObjType() {
+        return repairObjType;
+    }
+
+    public void setRepairObjType(String repairObjType) {
+        this.repairObjType = repairObjType;
+    }
+
+    public String getRepairObjId() {
+        return repairObjId;
+    }
+
+    public void setRepairObjId(String repairObjId) {
+        this.repairObjId = repairObjId;
+    }
+
+    public String getRepairObjName() {
+        return repairObjName;
+    }
+
+    public void setRepairObjName(String repairObjName) {
+        this.repairObjName = repairObjName;
+    }
+
+    public List<PhotoVo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<PhotoVo> photos) {
+        this.photos = photos;
+    }
+
+    public List<String> getStates() {
+        return states;
+    }
+
+    public void setStates(List<String> states) {
+        this.states = states;
+    }
+
+    public String[] getStatess() {
+        return statess;
+    }
+
+    public void setStatess(String[] statess) {
+        this.statess = statess;
+    }
+
+    public String getReturnVisitFlag() {
+        return returnVisitFlag;
+    }
+
+    public void setReturnVisitFlag(String returnVisitFlag) {
+        this.returnVisitFlag = returnVisitFlag;
     }
 }

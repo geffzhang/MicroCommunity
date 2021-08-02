@@ -1,9 +1,12 @@
 package com.java110.dto.fee;
 
 import com.java110.dto.PageDto;
+import com.java110.dto.RoomDto;
+import com.java110.dto.owner.OwnerCarDto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -15,8 +18,20 @@ import java.util.Date;
  **/
 public class FeeDto extends PageDto implements Serializable {
 
+    public static final String STATE_FINISH = "2009001"; // 收费结束
+    public static final String STATE_DOING = "2008001"; // 收费中
+
+    public static final String PAYER_OBJ_TYPE_ROOM = "3333"; //房屋 6666 是车位
+    public static final String PAYER_OBJ_TYPE_PARKING_SPACE = "6666";//是车位
+    public static final String PAYER_OBJ_TYPE_CAR = "6666";//是车位
+    public static final String PAYER_OBJ_TYPE_RENTING = "9999";//房源ID
+
+    public static final String FEE_FLAG_ONCE = "2006012";
+    public static final String REDIS_PAY_OWE_FEE = "PAY_OWE_FEE_";
+
     private String amount;
     private String incomeObjId;
+    private String incomeObjName;
     private String feeTypeCd;
     private Date startTime;
     private Date endTime;
@@ -24,9 +39,16 @@ public class FeeDto extends PageDto implements Serializable {
     private String feeId;
     private String userId;
     private String payerObjId;
+    private String payerObjName;
     private String[] payerObjIds;
     private String[] feeTypeCds;
     private String configId;
+
+    //映射关系开关值
+    private String val;
+
+    //实收金额映射开关值
+    private String receivedAmountSwitch;
 
     private String squarePrice;
     private String additionalAmount;
@@ -44,11 +66,57 @@ public class FeeDto extends PageDto implements Serializable {
     private String payerObjType;
     private String computingFormula;
     private String isDefault;
+    private double oweFee; // 欠费金额
+    private String billType;
+    private String billTypeName;
+    private String builtUpArea;
+
+    private String paymentCd;
+
+    private String paymentCycle;
+
+    private String bId;
+    private String importFeeName;
+
+    private String amountOwed;
+
+    private String roomName;
+
+    private String ownerName;
+
+    private String ownerTel;
+
+    private String ownerId;
 
 
     private Date createTime;
 
+
     private String statusCd = "0";
+
+    /**
+     * 费用项开始时间
+     */
+    private Date configStartTime;
+    /**
+     * 费用项结束时间
+     */
+    private Date configEndTime;
+
+    private Date deadlineTime;
+
+    private Date importFeeEndTime;
+
+
+    private String curDegrees;
+    private String preDegrees;
+
+    private Date preReadingTime;
+    private Date curReadingTime;
+
+    private List<FeeAttrDto> feeAttrDtos;
+
+
 
 
     public String getAmount() {
@@ -276,4 +344,214 @@ public class FeeDto extends PageDto implements Serializable {
     public void setIsDefault(String isDefault) {
         this.isDefault = isDefault;
     }
+
+    public Date getConfigStartTime() {
+        return configStartTime;
+    }
+
+    public void setConfigStartTime(Date configStartTime) {
+        this.configStartTime = configStartTime;
+    }
+
+    public Date getConfigEndTime() {
+        return configEndTime;
+    }
+
+    public void setConfigEndTime(Date configEndTime) {
+        this.configEndTime = configEndTime;
+    }
+
+    public String getPaymentCd() {
+        return paymentCd;
+    }
+
+    public void setPaymentCd(String paymentCd) {
+        this.paymentCd = paymentCd;
+    }
+
+    public String getPaymentCycle() {
+        return paymentCycle;
+    }
+
+    public void setPaymentCycle(String paymentCycle) {
+        this.paymentCycle = paymentCycle;
+    }
+
+    public double getOweFee() {
+        return oweFee;
+    }
+
+    public void setOweFee(double oweFee) {
+        this.oweFee = oweFee;
+    }
+
+    public String getPayerObjName() {
+        return payerObjName;
+    }
+
+    public void setPayerObjName(String payerObjName) {
+        this.payerObjName = payerObjName;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getBillType() {
+        return billType;
+    }
+
+    public void setBillType(String billType) {
+        this.billType = billType;
+    }
+
+    public String getBillTypeName() {
+        return billTypeName;
+    }
+
+    public void setBillTypeName(String billTypeName) {
+        this.billTypeName = billTypeName;
+    }
+
+    public String getImportFeeName() {
+        return importFeeName;
+    }
+
+    public void setImportFeeName(String importFeeName) {
+        this.importFeeName = importFeeName;
+    }
+
+    public String getAmountOwed() {
+        return amountOwed;
+    }
+
+    public void setAmountOwed(String amountOwed) {
+        this.amountOwed = amountOwed;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getOwnerTel() {
+        return ownerTel;
+    }
+
+    public void setOwnerTel(String ownerTel) {
+        this.ownerTel = ownerTel;
+    }
+
+    public Date getDeadlineTime() {
+        return deadlineTime;
+    }
+
+    public void setDeadlineTime(Date deadlineTime) {
+        this.deadlineTime = deadlineTime;
+    }
+
+    public Date getImportFeeEndTime() {
+        return importFeeEndTime;
+    }
+
+    public void setImportFeeEndTime(Date importFeeEndTime) {
+        this.importFeeEndTime = importFeeEndTime;
+    }
+
+    public String getCurDegrees() {
+        return curDegrees;
+    }
+
+    public void setCurDegrees(String curDegrees) {
+        this.curDegrees = curDegrees;
+    }
+
+    public String getPreDegrees() {
+        return preDegrees;
+    }
+
+    public void setPreDegrees(String preDegrees) {
+        this.preDegrees = preDegrees;
+    }
+
+    public Date getPreReadingTime() {
+        return preReadingTime;
+    }
+
+    public void setPreReadingTime(Date preReadingTime) {
+        this.preReadingTime = preReadingTime;
+    }
+
+    public Date getCurReadingTime() {
+        return curReadingTime;
+    }
+
+    public void setCurReadingTime(Date curReadingTime) {
+        this.curReadingTime = curReadingTime;
+    }
+
+    public List<FeeAttrDto> getFeeAttrDtos() {
+        return feeAttrDtos;
+    }
+
+    public void setFeeAttrDtos(List<FeeAttrDto> feeAttrDtos) {
+        this.feeAttrDtos = feeAttrDtos;
+    }
+
+    public String getIncomeObjName() {
+        return incomeObjName;
+    }
+
+    public void setIncomeObjName(String incomeObjName) {
+        this.incomeObjName = incomeObjName;
+    }
+
+    public String getBuiltUpArea() {
+        return builtUpArea;
+    }
+
+    public void setBuiltUpArea(String builtUpArea) {
+        this.builtUpArea = builtUpArea;
+    }
+
+    public String getVal() {
+        return val;
+    }
+
+    public void setVal(String value) {
+        this.val = value;
+    }
+
+    public String getReceivedAmountSwitch() {
+        return receivedAmountSwitch;
+    }
+
+    public void setReceivedAmountSwitch(String receivedAmountSwitch) {
+        this.receivedAmountSwitch = receivedAmountSwitch;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+
 }

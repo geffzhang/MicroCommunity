@@ -7,6 +7,7 @@ public class ApiStaffDataVo implements Serializable {
     private String userId;
 
     private String userName;
+    private String initials;
     private String name;
 
     private String tel;
@@ -28,6 +29,16 @@ public class ApiStaffDataVo implements Serializable {
     private String storeId;
 
     private String orgName;
+
+    private String parentOrgId;
+
+    private String orgId;
+
+    private String parentOrgName;
+
+    private String staffId;
+
+    private String staffName;
 
 
 
@@ -134,4 +145,53 @@ public class ApiStaffDataVo implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getInitials() {
+        return initials;
+    }
+
+    public void setInitials(String initials) {
+        this.initials = initials;
+    }
+
+    public String getParentOrgId() {
+        return parentOrgId;
+    }
+
+    public void setParentOrgId(String parentOrgId) {
+        this.parentOrgId = parentOrgId;
+    }
+
+    public String getParentOrgName() {
+        return parentOrgName;
+    }
+
+    public void setParentOrgName(String parentOrgName) {
+        this.parentOrgName = parentOrgName;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
 }

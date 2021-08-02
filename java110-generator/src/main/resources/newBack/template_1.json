@@ -1,0 +1,28 @@
+{
+  "autoMove": true,
+  "id": "applyType",
+  "name": "applyRoomDiscountType",
+  "desc": "优惠申请类型",
+  "shareParam": "communityId",
+  "shareColumn": "community_id",
+  "shareName": "fee",
+  "tableName": "apply_room_discount_type",
+  "param": {
+    "applyType": "apply_type",
+    "communityId": "community_id",
+    "typeName": "type_name",
+    "typeDesc": "type_desc",
+    "statusCd": "status_cd"
+  },
+  "required": [
+    {
+      "code": "communityId",
+      "msg": "小区信息不能为空"
+    },
+    {
+      "code": "typeName",
+      "msg": "类型名称不能为空"
+    }
+  ]
+}
+

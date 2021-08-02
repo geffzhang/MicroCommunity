@@ -15,6 +15,18 @@
     <name>java110-db</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,7 +38,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -58,7 +70,23 @@
         </dependency>
         <dependency>
             <groupId>com.java110</groupId>
-            <artifactId>java110-config</artifactId>
+            <artifactId>java110-interface</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.java110</groupId>
+            <artifactId>java110-bean</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.java110</groupId>
+            <artifactId>java110-core</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

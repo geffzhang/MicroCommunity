@@ -66,7 +66,7 @@
 
         <dependency>
             <groupId>com.java110</groupId>
-            <artifactId>java110-config</artifactId>
+            <artifactId>java110-interface</artifactId>
         </dependency>
 
         <dependency>
@@ -136,6 +136,11 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
         </dependency>
     </dependencies>
 </project>

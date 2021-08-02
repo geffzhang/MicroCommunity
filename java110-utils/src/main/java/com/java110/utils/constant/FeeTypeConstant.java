@@ -22,6 +22,17 @@ public class FeeTypeConstant {
      */
     public static final String FEE_TYPE_PROPERTY = "888800010001";
 
+    /**
+     * 物业费
+     */
+    public static final String FEE_TYPE_CAR = "888800010008";
+
+    /**
+     * 保修费费
+     */
+    public static final String FEE_TYPE_REPAIR = "888800010012";
+
+
 
 
     /**

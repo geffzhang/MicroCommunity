@@ -14,6 +14,9 @@ import java.util.Date;
  * add by wuxw 2019/4/24
  **/
 public class ComplaintDto extends PageDto implements Serializable {
+
+    public static final String STATE_AGREE = "";
+
     //工作流实例ID
     private String processInstanceId;
 
@@ -30,12 +33,16 @@ public class ComplaintDto extends PageDto implements Serializable {
     private String stateName;
     private String storeId;
     private String roomId;
+    private String[] roomIds;
     private String roomNum;
     private String unitNum;
     private String floorNum;
     private String communityId;
-
     private String currentUserId;
+    private String currentUserName;
+    private String currentUserTel;
+
+    private String startUserId;
 
     //
     private String auditCode;
@@ -223,5 +230,37 @@ public class ComplaintDto extends PageDto implements Serializable {
 
     public void setComplaintIds(String[] complaintIds) {
         this.complaintIds = complaintIds;
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName;
+    }
+
+    public void setCurrentUserName(String currentUserName) {
+        this.currentUserName = currentUserName;
+    }
+
+    public String getCurrentUserTel() {
+        return currentUserTel;
+    }
+
+    public void setCurrentUserTel(String currentUserTel) {
+        this.currentUserTel = currentUserTel;
+    }
+
+    public String getStartUserId() {
+        return startUserId;
+    }
+
+    public void setStartUserId(String startUserId) {
+        this.startUserId = startUserId;
+    }
+
+    public String[] getRoomIds() {
+        return roomIds;
+    }
+
+    public void setRoomIds(String[] roomIds) {
+        this.roomIds = roomIds;
     }
 }

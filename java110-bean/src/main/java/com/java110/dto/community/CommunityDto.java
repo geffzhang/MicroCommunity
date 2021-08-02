@@ -4,6 +4,7 @@ import com.java110.dto.PageDto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -20,6 +21,7 @@ public class CommunityDto extends PageDto implements Serializable {
     private String cityCode;
     private String name;
     private String communityId;
+    private String[] notInCommunityId;
     private String mapY;
     private String mapX;
     private String memberId;
@@ -27,7 +29,16 @@ public class CommunityDto extends PageDto implements Serializable {
     private String stateName;
     private String[] communityIds;
     private String auditStatusCd;
+    private String areaCode;
+    private String areaName;
+    private String cityName;
+    private String provName;
+    private String parentAreaCode;
+    private String parentAreaName;
 
+    private String communityArea;
+
+    private List<CommunityAttrDto> communityAttrDtos;
 
 
     private Date createTime;
@@ -146,5 +157,78 @@ public class CommunityDto extends PageDto implements Serializable {
 
     public void setAuditStatusCd(String auditStatusCd) {
         this.auditStatusCd = auditStatusCd;
+    }
+
+    public String[] getNotInCommunityId() {
+        return notInCommunityId;
+    }
+
+    public void setNotInCommunityId(String[] notInCommunityId) {
+        this.notInCommunityId = notInCommunityId;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
+
+    public String getParentAreaCode() {
+        return parentAreaCode;
+    }
+
+    public void setParentAreaCode(String parentAreaCode) {
+        this.parentAreaCode = parentAreaCode;
+    }
+
+    public String getParentAreaName() {
+        return parentAreaName;
+    }
+
+    public void setParentAreaName(String parentAreaName) {
+        this.parentAreaName = parentAreaName;
+    }
+
+
+    public String getCommunityArea() {
+        return communityArea;
+    }
+
+    public void setCommunityArea(String communityArea) {
+        this.communityArea = communityArea;
+    }
+
+    public List<CommunityAttrDto> getCommunityAttrDtos() {
+        return communityAttrDtos;
+    }
+
+    public void setCommunityAttrDtos(List<CommunityAttrDto> communityAttrDtos) {
+        this.communityAttrDtos = communityAttrDtos;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getProvName() {
+        return provName;
+    }
+
+    public void setProvName(String provName) {
+        this.provName = provName;
     }
 }

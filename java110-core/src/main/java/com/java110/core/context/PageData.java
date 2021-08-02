@@ -2,6 +2,7 @@ package com.java110.core.context;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java110.utils.util.DateUtil;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
@@ -45,6 +46,10 @@ public class PageData implements IPageData, Serializable {
     private String responseTime;
 
     private String url;
+
+    private String apiUrl;
+
+    private HttpMethod method;
 
     private ResponseEntity responseEntity;
 
@@ -216,5 +221,21 @@ public class PageData implements IPageData, Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(HttpMethod method) {
+        this.method = method;
     }
 }

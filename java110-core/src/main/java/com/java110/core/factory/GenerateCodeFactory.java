@@ -1,15 +1,14 @@
 package com.java110.core.factory;
 
 import com.alibaba.fastjson.JSONObject;
+import com.java110.dto.idSeq.IdSeqDto;
+import com.java110.intf.code.ICodeApi;
+import com.java110.intf.order.IIdSeqInnerServiceSMO;
 import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.MappingConstant;
-import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.GenerateCodeException;
-import com.java110.utils.exception.ResponseErrorException;
 import com.java110.utils.factory.ApplicationContextFactory;
-import com.java110.utils.util.Assert;
 import com.java110.utils.util.DateUtil;
-import com.java110.core.smo.code.ICodeApi;
 import org.springframework.web.client.RestTemplate;
 
 import java.rmi.NoSuchObjectException;
@@ -59,7 +58,7 @@ public class GenerateCodeFactory {
     public static final String CODE_PREFIX_subCommentAttrId = "62";
     public static final String CODE_PREFIX_commentPhotoId = "63";
     public static final String CODE_PREFIX_commentScoreId = "64";
-    public static final String CODE_PREFIX_communityId = "70";
+    public static final String CODE_PREFIX_communityId = "";
     public static final String CODE_PREFIX_communityPhotoId = "71";
     public static final String CODE_PREFIX_communityMemberId = "72";
     public static final String CODE_PREFIX_feeId = "90";
@@ -95,6 +94,7 @@ public class GenerateCodeFactory {
     public static final String CODE_PREFIX_repairId = "82";
     public static final String CODE_PREFIX_ruId = "83";
     public static final String CODE_PREFIX_orgId = "84";
+    public static final String CODE_PREFIX_orgCommunityId = "85";
     public static final String CODE_PREFIX_relId = "84";
     public static final String CODE_PREFIX_resId = "85";
     public static final String CODE_PREFIX_auditUserId = "86";
@@ -116,7 +116,68 @@ public class GenerateCodeFactory {
     public static final String CODE_PREFIX_inoutId = "12";
     public static final String CODE_PREFIX_inspectionId = "13";
     public static final String CODE_PREFIX_inspectionRouteId = "50";
+    public static final String CODE_PREFIX_irpRelId = "51";
+    public static final String CODE_PREFIX_inspectionPlanId = "14";
+    public static final String CODE_PREFIX_ipStaffId = "15";
+    public static final String CODE_PREFIX_taskId = "52";
+    public static final String CODE_PREFIX_taskDetailId = "53";
+    public static final String CODE_PREFIX_applyOrderId = "15";
+    public static final String CODE_PREFIX_fastuserId = "68";
+    public static final String CODE_PREFIX_junkRequirementId = "69";
+    public static final String CODE_PREFIX_returnFeeId = "70";
+    public static final String CODE_PREFIX_weChatId = "71";
+    public static final String CODE_PREFIX_oweId = "72";
+    public static final String CODE_PREFIX_billId = "73";
+    public static final String CODE_PREFIX_locationId = "74";
+    public static final String CODE_PREFIX_flowId = "75";
+    public static final String CODE_PREFIX_wssId = "76";
+    public static final String CODE_PREFIX_wechatMenuId = "77";
+    public static final String CODE_PREFIX_settingId = "78";
+    public static final String CODE_PREFIX_typeUserId = "79";
+    public static final String CODE_PREFIX_appraiseId = "80";
+    public static final String CODE_PREFIX_rentingConfigId = "81";
+    public static final String CODE_PREFIX_rentingId = "81";
+    public static final String CODE_PREFIX_addressId = "82";
 
+
+    public static final String CODE_PREFIX_waterId = "78";
+    public static final String CODE_PREFIX_prestoreFeeId = "78";
+    public static final String CODE_PREFIX_formulaId = "79";
+    public static final String CODE_PREFIX_appointmentId = "80";
+    public static final String CODE_PREFIX_contractId = "81";
+    public static final String CODE_PREFIX_contractTypeId = "81";
+    public static final String CODE_PREFIX_specCd = "82";
+    public static final String CODE_PREFIX_loginId = "82";
+    public static final String CODE_PREFIX_templateId = "82";
+    public static final String CODE_PREFIX_printId = "83";
+    public static final String CODE_PREFIX_receiptId = "83";
+    public static final String CODE_PREFIX_auditId = "84";
+    public static final String CODE_PREFIX_typeCd = "85";
+    public static final String CODE_PREFIX_docId = "86";
+    public static final String CODE_PREFIX_categoryId = "87";
+    public static final String CODE_PREFIX_specId = "88";
+    public static final String CODE_PREFIX_productId = "90";
+    public static final String CODE_PREFIX_valueId = "91";
+    public static final String CODE_PREFIX_groupId = "92";
+    public static final String CODE_PREFIX_batchId = "93";
+    public static final String CODE_PREFIX_statisticsId = "94";
+    public static final String CODE_PREFIX_labelId = "94";
+    public static final String CODE_PREFIX_cartId = "95";
+    public static final String CODE_PREFIX_orderId = "96";
+    public static final String CODE_PREFIX_oaId = "97";
+    public static final String CODE_PREFIX_logId = "10";
+    public static final String CODE_PREFIX_eventId = "11";
+    public static final String CODE_PREFIX_returnId = "12";
+    public static final String CODE_PREFIX_discountId = "13";
+    public static final String CODE_PREFIX_ruleId = "14";
+    public static final String CODE_PREFIX_configDiscountId = "14";
+    public static final String CODE_PREFIX_detailDiscountId = "15";
+    public static final String CODE_PREFIX_errId = "10";
+    public static final String CODE_PREFIX_IfdId = "11";
+    public static final String CODE_PREFIX_databusId = "12";
+    public static final String CODE_PREFIX_auId = "13";
+    public static final String CODE_PREFIX_ardId = "14";
+    public static final String CODE_PREFIX_applyType = "15";
 
 
     /**
@@ -156,7 +217,7 @@ public class GenerateCodeFactory {
         prefixMap.put("subCommentAttrId", "62");
         prefixMap.put("commentPhotoId", "63");
         prefixMap.put("commentScoreId", "64");
-        prefixMap.put("communityId", "70");
+        prefixMap.put("communityId", "");
         prefixMap.put("communityPhotoId", "71");
         prefixMap.put("communityMemberId", "72");
         prefixMap.put("agentId", "80");
@@ -187,6 +248,7 @@ public class GenerateCodeFactory {
             return getRandom() + String.format(idLength, count);
         }
     }
+
 
     public static String nextId() {
         return nextId("%04d");
@@ -240,6 +302,16 @@ public class GenerateCodeFactory {
         return getCode(prefix);
     }
 
+    /**
+     * 规格ID
+     *
+     * @return
+     * @throws GenerateCodeException
+     */
+    public static String getSpecCd() throws GenerateCodeException {
+        return nextId("%06d");
+    }
+
     public static String getOId() throws GenerateCodeException {
         if (!MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_NEED_INVOKE_GENERATE_ID))) {
             return prefixMap.get("oId") + DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_H) + nextId("%04d");
@@ -257,29 +329,11 @@ public class GenerateCodeFactory {
      */
     private static String getCode(String prefix) throws GenerateCodeException {
         //调用服务
-        String code = "-1";
-        try {
-            String responseMessage = restTemplate().postForObject(MappingCache.getValue(MappingConstant.KEY_CODE_PATH),
-                    createCodeRequestJson(getTransactionId(), prefix, prefix).toJSONString(), String.class);
+        IIdSeqInnerServiceSMO idSeqInnerServiceSMOImpl = ApplicationContextFactory.getBean(IIdSeqInnerServiceSMO.class.getName(), IIdSeqInnerServiceSMO.class);
+        IdSeqDto idSeqDto = new IdSeqDto(prefix);
+        idSeqDto = idSeqInnerServiceSMOImpl.generateCode(idSeqDto);
 
-            if (ResponseConstant.RESULT_CODE_ERROR.equals(responseMessage)) {
-                throw new ResponseErrorException(ResponseConstant.RESULT_CODE_ERROR, "生成oId编码失败");
-            }
-            Assert.jsonObjectHaveKey(responseMessage, "code", "编码生成系统 返回报文错误" + responseMessage);
-
-            JSONObject resJson = JSONObject.parseObject(responseMessage);
-
-            if (!ResponseConstant.RESULT_CODE_SUCCESS.equals(resJson.getString("code"))) {
-                throw new ResponseErrorException(resJson.getString("code"), "生成oId编码失败 "
-                        + resJson.getString("message"));
-            }
-            code = resJson.getString("id");
-        } catch (Exception e) {
-            throw new GenerateCodeException(ResponseConstant.RESULT_CODE_ERROR, e.getMessage());
-        } finally {
-            return code;
-        }
-
+        return idSeqDto.getId();
     }
 
     public static String getBId() throws GenerateCodeException {
@@ -841,4 +895,6 @@ public class GenerateCodeFactory {
         }
         return result;
     }
+
+
 }

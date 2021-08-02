@@ -2,7 +2,7 @@ package com.java110.dto.file;
 
 import java.io.Serializable;
 
-public class FileDto  implements Serializable {
+public class FileDto implements Serializable {
     private String fileId;
 
     private String fileName;
@@ -11,9 +11,12 @@ public class FileDto  implements Serializable {
 
     private String context;
 
+
     private String statusCd;
 
     private String suffix;
+
+    private String fileSaveName;
 
     public String getFileId() {
         return fileId;
@@ -62,4 +65,13 @@ public class FileDto  implements Serializable {
     public void setSuffix(String suffix) {
         this.suffix = suffix;
     }
+
+    public String getFileSaveName() {
+        return fileSaveName;
+    }
+
+    public void setFileSaveName(String fileSaveName) {
+        this.fileSaveName = fileSaveName;
+    }
+
 }

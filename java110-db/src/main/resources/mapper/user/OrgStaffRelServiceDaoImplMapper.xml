@@ -76,9 +76,10 @@
     <!-- 查询组织员工关系信息 add by wuxw 2018-07-03 -->
     <select id="getOrgStaffRelInfo" parameterType="Map" resultType="Map">
         select t.rel_id,t.rel_id relId,t.status_cd,t.status_cd statusCd,t.store_id,t.store_id storeId,t.b_id,t.b_id
-        bId,t.org_id,t.org_id orgId,t.staff_id,t.staff_id staffId,t.rel_cd,t.rel_cd relCd
-        from u_org_staff_rel t
-        where 1 =1
+        bId,t.org_id,t.org_id orgId,t.staff_id,t.staff_id staffId,t.rel_cd,t.rel_cd relCd,uo.parent_org_id parentOrgId
+        from u_org_staff_rel t,u_org uo
+        where t.org_id = uo.org_id
+        and uo.status_cd = '0'
         <if test="relId !=null and relId != ''">
             and t.rel_id= #{relId}
         </if>
@@ -138,8 +139,9 @@
     <!-- 查询组织员工关系数量 add by wuxw 2018-07-03 -->
     <select id="queryOrgStaffRelsCount" parameterType="Map" resultType="Map">
         select count(1) count
-        from u_org_staff_rel t
-        where 1 =1
+        from u_org_staff_rel t,u_org uo
+        where t.org_id = uo.org_id
+        and uo.status_cd = '0'
         <if test="relId !=null and relId != ''">
             and t.rel_id= #{relId}
         </if>
@@ -163,6 +165,24 @@
         </if>
 
 
+    </select>
+
+    <!-- 根据员工ID查询部门，公司信息 add by zc 2020-02-17 -->
+    <select id="queryOrgInfoByStaffIds" parameterType="Map" resultType="Map">
+        select
+        t.org_id departmentId,t.staff_id staffId,u.org_name departmentName,
+        u.parent_org_id companyId,o.org_name companyName
+        from
+        u_org_staff_rel t
+        inner join u_org u on t.org_id = u.org_id
+        inner join u_org o on u.parent_org_id = o.org_id
+        WHERE 1 = 1
+        <if test="staffIds !=null">
+            and t.staff_id in
+            <foreach collection="staffIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
 </mapper>

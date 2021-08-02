@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="smallWeChatServiceDaoImpl">
+
+    <!-- 保存小程序管理信息 add by wuxw 2018-07-03 -->
+    <insert id="saveBusinessSmallWeChatInfo" parameterType="Map">
+        insert into
+            buiness_small_wechat
+            (operate,appId,name,appSecret,wechat_id,b_id,store_Id,pay_password,remarks,obj_id,obj_type,mch_id,wechat_type)
+        values
+            (#{operate},#{appId},#{name},#{appSecret},#{weChatId},#{bId},#{storeId},#{payPassword},#{remarks},#{objId},#{objType},#{mchId},#{weChatType})
+       </insert>
+
+
+    <!-- 查询小程序管理信息（Business） add by wuxw 2018-07-03 -->
+    <select id="getBusinessSmallWeChatInfo" parameterType="Map" resultType="Map">
+        select
+            t.operate,
+            t.create_time,t.create_time createTime,
+            t.appId,
+            t.name,
+            t.appSecret,
+            t.wechat_id,t.wechat_id weChatId,
+            t.b_id,t.b_id bId,
+            t.store_Id,t.store_Id storeId,
+            t.pay_password,t.pay_password payPassword,
+            t.remarks,
+            t.obj_id,t.obj_id objId,
+            t.obj_type,t.obj_type objType,
+            t.mch_id,t.mch_id mchId,
+            t.wechat_type,t.wechat_type weChatType
+        from
+            buiness_small_wechat t
+        where 1 =1
+        <if test="operate !=null and operate != ''">
+            and t.operate= #{operate}
+        </if>
+        <if test="createTime !=null and createTime != ''">
+            and t.create_time= #{createTime}
+        </if>
+        <if test="appId !=null and appId != ''">
+            and t.appId= #{appId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="weChatType !=null and weChatType != ''">
+            and t.wechat_type= #{weChatType}
+        </if>
+        <if test="appSecret !=null and appSecret != ''">
+            and t.appSecret= #{appSecret}
+        </if>
+        <if test="weChatId !=null and weChatId != ''">
+            and t.wechat_id= #{weChatId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_Id= #{storeId}
+        </if>
+        <if test="payPassword !=null and payPassword != ''">
+            and t.pay_password= #{payPassword}
+        </if>
+        <if test="remarks !=null and remarks != ''">
+            and t.remarks= #{remarks}
+        </if>
+
+    </select>
+
+
+    <!-- 保存小程序管理信息至 instance表中 add by wuxw 2018-07-03 -->
+    <insert id="saveSmallWeChatInfoInstance" parameterType="Map">
+        insert into
+            small_wechat
+                (create_time,appId,name,appSecret,status_cd,wechat_id,b_id,store_Id,pay_password,remarks,obj_id,obj_type,mch_id,wechat_type)
+                select
+                    t.create_time,t.appId,t.name,t.appSecret,'0',
+                    t.wechat_id,t.b_id,t.store_Id,t.pay_password,t.remarks,t.obj_id,t.obj_type,t.mch_id,t.wechat_type
+                from buiness_small_wechat t where 1=1 and t.operate= 'ADD'
+        <if test="createTime !=null and createTime != ''">
+            and t.create_time= #{createTime}
+        </if>
+        <if test="appId !=null and appId != ''">
+            and t.appId= #{appId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="appSecret !=null and appSecret != ''">
+            and t.appSecret= #{appSecret}
+        </if>
+        <if test="weChatId !=null and weChatId != ''">
+            and t.wechat_id= #{weChatId}
+        </if>
+        <if test="weChatType !=null and weChatType != ''">
+            and t.wechat_type= #{weChatType}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_Id= #{storeId}
+        </if>
+        <if test="payPassword !=null and payPassword != ''">
+            and t.pay_password= #{payPassword}
+        </if>
+        <if test="remarks !=null and remarks != ''">
+            and t.remarks= #{remarks}
+        </if>
+
+    </insert>
+
+
+    <!-- 查询小程序管理信息 add by wuxw 2018-07-03 -->
+    <select id="getSmallWeChatInfo" parameterType="Map" resultType="Map">
+        select
+            t.create_time,t.create_time createTime,
+            t.appId,
+            t.name,
+            t.appSecret,
+            t.status_cd,t.status_cd statusCd,
+            t.wechat_id,t.wechat_id weChatId,
+            t.b_id,t.b_id bId,
+            t.store_Id,t.store_Id storeId,
+            t.pay_password,t.pay_password payPassword,
+            t.remarks,
+            t.obj_id,t.obj_id objId,
+            t.obj_type,t.obj_type objType,
+            t.mch_id,t.mch_id mchId,
+            t.wechat_type, t.wechat_type weChatType,
+            d.name objTypeName
+        from small_wechat t left join t_dict d on t.obj_type = d.status_cd and d.table_name = 'small_wechat' and d.table_columns = 'obj_type'
+        where 1 =1
+        <if test="createTime !=null and createTime != ''">
+            and t.create_time= #{createTime}
+        </if>
+        <if test="appId !=null and appId != ''">
+            and t.appId= #{appId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="appSecret !=null and appSecret != ''">
+            and t.appSecret= #{appSecret}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="weChatType !=null and weChatType != ''">
+            and t.wechat_type= #{weChatType}
+        </if>
+        <if test="weChatId !=null and weChatId != ''">
+            and t.wechat_id= #{weChatId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_Id= #{storeId}
+        </if>
+        <if test="payPassword !=null and payPassword != ''">
+            and t.pay_password= #{payPassword}
+        </if>
+        <if test="remarks !=null and remarks != ''">
+            and t.remarks= #{remarks}
+        </if>
+        <if test="objType !=null and objType != ''">
+            and t.obj_type= #{objType}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+
+    <!-- 修改小程序管理信息 add by wuxw 2018-07-03 -->
+    <update id="updateSmallWeChatInfoInstance" parameterType="Map">
+        update small_wechat t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="createTime !=null">
+            , t.create_time= #{createTime}
+        </if>
+        <if test="appId !=null and appId != ''">
+            , t.appId= #{appId}
+        </if>
+        <if test="name !=null and name != ''">
+            , t.name= #{name}
+        </if>
+        <if test="appSecret !=null and appSecret != ''">
+            , t.appSecret= #{appSecret}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            , t.store_Id= #{storeId}
+        </if>
+        <if test="payPassword !=null and payPassword != ''">
+            , t.pay_password= #{payPassword}
+        </if>
+        <if test="remarks !=null and remarks != ''">
+            , t.remarks= #{remarks}
+        </if>
+        <if test="objId !=null and objId != ''">
+            , t.obj_id= #{objId}
+        </if>
+        <if test="objType !=null and objType != ''">
+            , t.obj_type= #{objType}
+        </if>
+        <if test="mchId !=null and mchId != ''">
+            , t.mch_id= #{mchId}
+        </if>
+        where 1=1
+        <if test="weChatId !=null and weChatId != ''">
+            and t.wechat_id= #{weChatId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+
+    </update>
+
+    <!-- 查询小程序管理数量 add by wuxw 2018-07-03 -->
+    <select id="querySmallWeChatsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from small_wechat t
+        where 1 =1
+        <if test="createTime !=null and createTime != ''">
+            and t.create_time= #{createTime}
+        </if>
+        <if test="appId !=null and appId != ''">
+            and t.appId= #{appId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="appSecret !=null and appSecret != ''">
+            and t.appSecret= #{appSecret}
+        </if>
+        <if test="weChatType !=null and weChatType != ''">
+            and t.wechat_type= #{weChatType}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="weChatId !=null and weChatId != ''">
+            and t.wechat_id= #{weChatId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_Id= #{storeId}
+        </if>
+        <if test="payPassword !=null and payPassword != ''">
+            and t.pay_password= #{payPassword}
+        </if>
+        <if test="remarks !=null and remarks != ''">
+            and t.remarks= #{remarks}
+        </if>
+        <if test="objType !=null and objType != ''">
+            and t.obj_type= #{objType}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+
+
+    </select>
+
+</mapper>

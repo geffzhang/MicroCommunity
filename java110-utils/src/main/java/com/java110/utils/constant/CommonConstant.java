@@ -119,6 +119,18 @@ public class CommonConstant {
     /**
      * 映射 缓存常量
      */
+    public final static String CACHE_PRIVILEGE = "PRIVILEGE";
+
+    /**
+     * 映射 databus
+     */
+    public final static String CACHE_DATABUS = "DATABUS";
+
+
+
+    /**
+     * 映射 缓存常量
+     */
     public final static String CACHE_SERVICE_SQL = "SERVICE_SQL";
 
 
@@ -135,18 +147,29 @@ public class CommonConstant {
     public final static String INSTANCE_N = "N";
 
 
+    public static final String APP_ID = "app-id";
+    public static final String TRANSACTION_ID = "transaction-id";
+    public static final String REQUEST_TIME = "req-time";
+    public static final String USER_ID = "user-id";
 
     public final static String HTTP_SERVICE_API = "API";
     public final static String HTTP_SERVICE = "SERVICE";
+    public final static String HTTP_SUB_SERVICE = "SUB_SERVICE"; //微服务
+    public final static String HTTP_ACTION = "ACTION";
+    public final static String HTTP_RESOURCE = "RESOURCE";
     public final static String HTTP_METHOD = "METHOD";
     public final static String HTTP_APP_ID = "app_id";
     public final static String HTTP_TRANSACTION_ID = "transaction_id";
+    public final static String HTTP_SRC_IP = "IP";
+
     public final static String HTTP_REQ_TIME = "req_time";
     public final static String HTTP_RES_TIME = "res_time";
     public final static String HTTP_SIGN = "sign";
     public final static String HTTP_PARAM = "params";
     public final static String HTTP_ORDER_TYPE_CD = "order_type_cd";
     public final static String HTTP_USER_ID = "user_id";
+    public final static String ORDER_PROCESS = "order_process";
+    public final static String O_ID = "o_id";
 
 
     public final static String HTTP_METHOD_POST = "POST";

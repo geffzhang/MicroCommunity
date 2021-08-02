@@ -15,6 +15,17 @@ import java.util.Date;
  **/
 public class NoticeDto extends PageDto implements Serializable {
 
+    public static final String STATE_WAIT = "1000";// 等待房屋
+    public static final String STATE_DOING = "2000";//处理中
+    public static final String STATE_FINISH = "3000";//处理完成
+
+    public static final String OBJ_TYPE_COMMUNITY = "001";//小区
+    public static final String OBJ_TYPE_FLOOR = "002";//楼栋
+    public static final String OBJ_TYPE_UNIT = "003";//单元
+    public static final String OBJ_TYPE_ROOM = "004";//单元
+
+    public static final String NOTICE_TYPE_OWNER_WECHAT = "1003";//发送给业主微信
+
     private String noticeTypeCd;
     private String context;
     private String startTime;
@@ -23,6 +34,11 @@ public class NoticeDto extends PageDto implements Serializable {
     private String title;
     private String userId;
     private String noticeId;
+    private String objType;
+    private String objId;
+    private String objName;
+    private String state;
+    private String stateName;
 
 
     private Date createTime;
@@ -119,5 +135,45 @@ public class NoticeDto extends PageDto implements Serializable {
 
     public void setNoticeTypeCdName(String noticeTypeCdName) {
         this.noticeTypeCdName = noticeTypeCdName;
+    }
+
+    public String getObjType() {
+        return objType;
+    }
+
+    public void setObjType(String objType) {
+        this.objType = objType;
+    }
+
+    public String getObjId() {
+        return objId;
+    }
+
+    public void setObjId(String objId) {
+        this.objId = objId;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public String getObjName() {
+        return objName;
+    }
+
+    public void setObjName(String objName) {
+        this.objName = objName;
     }
 }

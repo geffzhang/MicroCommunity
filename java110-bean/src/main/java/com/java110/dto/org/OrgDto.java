@@ -24,6 +24,8 @@ public class OrgDto extends PageDto implements Serializable {
     private String belongCommunityId;
     private String belongCommunityName;
     private String allowOperation;
+    private String staffId;
+    private String staffName;
 
     private String parentOrgName;
 
@@ -139,5 +141,21 @@ public class OrgDto extends PageDto implements Serializable {
 
     public void setAllowOperation(String allowOperation) {
         this.allowOperation = allowOperation;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
     }
 }

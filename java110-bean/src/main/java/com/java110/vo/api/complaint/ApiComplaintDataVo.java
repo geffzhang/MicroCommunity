@@ -1,7 +1,9 @@
 package com.java110.vo.api.complaint;
 
+import com.java110.vo.api.junkRequirement.PhotoVo;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 public class ApiComplaintDataVo implements Serializable {
 
@@ -26,7 +28,16 @@ public class ApiComplaintDataVo implements Serializable {
     //
     private String auditCode;
 
+    private List<PhotoVo> photos;
+
     private String auditMessage;
+
+    private String createTime;
+
+    private String currentUserId;
+    private String currentUserName;
+    private String currentUserTel;
+    private String startUserId;
 
 
     public String getComplaintId() {
@@ -171,5 +182,53 @@ public class ApiComplaintDataVo implements Serializable {
 
     public void setAuditMessage(String auditMessage) {
         this.auditMessage = auditMessage;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getCurrentUserId() {
+        return currentUserId;
+    }
+
+    public void setCurrentUserId(String currentUserId) {
+        this.currentUserId = currentUserId;
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName;
+    }
+
+    public void setCurrentUserName(String currentUserName) {
+        this.currentUserName = currentUserName;
+    }
+
+    public String getCurrentUserTel() {
+        return currentUserTel;
+    }
+
+    public void setCurrentUserTel(String currentUserTel) {
+        this.currentUserTel = currentUserTel;
+    }
+
+    public List<PhotoVo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<PhotoVo> photos) {
+        this.photos = photos;
+    }
+
+    public String getStartUserId() {
+        return startUserId;
+    }
+
+    public void setStartUserId(String startUserId) {
+        this.startUserId = startUserId;
     }
 }

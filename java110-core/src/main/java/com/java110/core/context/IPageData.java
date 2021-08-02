@@ -1,5 +1,6 @@
 package com.java110.core.context;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -90,6 +91,18 @@ import org.springframework.http.ResponseEntity;
      * @param responseEntity 返回界面时的对象
      */
      void setResponseEntity(ResponseEntity responseEntity);
+
+    /**
+     * 获取调用api 地址
+     * @return
+     */
+    public String getApiUrl();
+    //设置调用api 服务地址
+    public void setApiUrl(String apiUrl);
+
+    public HttpMethod getMethod();
+
+    public void setMethod(HttpMethod method);
 
     /**
      * 构建 pd 对象

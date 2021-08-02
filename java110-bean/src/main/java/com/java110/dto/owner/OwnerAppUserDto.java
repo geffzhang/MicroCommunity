@@ -15,6 +15,13 @@ import java.util.Date;
  **/
 public class OwnerAppUserDto extends PageDto implements Serializable {
 
+    public static final String APP_TYPE_APP = "APP";//app绑定业主
+    public static final String APP_TYPE_WECHAT_MINA = "WECHAT_MINA";//小程序绑定业主
+    public static final String APP_TYPE_WECHAT = "WECHAT";//公众号绑定业主
+    public static final String STATE_AUDITING = "10000";// 审核中
+    public static final String STATE_AUDIT_SUCCESS = "12000";//审核成功
+    public static final String STATE_AUDIT_ERROR = "13000";//审核失败
+
     private String idCard;
     private String openId;
     private String link;
@@ -27,8 +34,19 @@ public class OwnerAppUserDto extends PageDto implements Serializable {
     private String communityId;
     private String appTypeCd;
     private String memberId;
+    private String ownerId;
+    private String userId;
+    private String appType;
+    private String[] userIds;
+    private String oldAppUserId;
+
 
     private String[] states;
+
+    private String areaCode;
+    private String areaName;
+    private String parentAreaCode;
+    private String parentAreaName;
 
 
     private Date createTime;
@@ -155,5 +173,77 @@ public class OwnerAppUserDto extends PageDto implements Serializable {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String[] getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String[] userIds) {
+        this.userIds = userIds;
+    }
+
+    public String getAppType() {
+        return appType;
+    }
+
+    public void setAppType(String appType) {
+        this.appType = appType;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
+
+    public String getParentAreaCode() {
+        return parentAreaCode;
+    }
+
+    public void setParentAreaCode(String parentAreaCode) {
+        this.parentAreaCode = parentAreaCode;
+    }
+
+    public String getParentAreaName() {
+        return parentAreaName;
+    }
+
+    public void setParentAreaName(String parentAreaName) {
+        this.parentAreaName = parentAreaName;
+    }
+
+    public String getOldAppUserId() {
+        return oldAppUserId;
+    }
+
+    public void setOldAppUserId(String oldAppUserId) {
+        this.oldAppUserId = oldAppUserId;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }

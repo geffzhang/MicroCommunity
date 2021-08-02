@@ -8,6 +8,7 @@ public class ApiActivitiesDataVo implements Serializable {
     private String activitiesId;
     private String title;
     private String typeCd;
+    private String typeCdName;
     private String headerImg;
     private String context;
     private String startTime;
@@ -19,6 +20,8 @@ public class ApiActivitiesDataVo implements Serializable {
     private String collectCount;
     private String likeCount;
     private String readCount;
+
+    private String createTime;
 
     public String getActivitiesId() {
         return activitiesId;
@@ -122,5 +125,21 @@ public class ApiActivitiesDataVo implements Serializable {
 
     public void setReadCount(String readCount) {
         this.readCount = readCount;
+    }
+
+    public String getTypeCdName() {
+        return typeCdName;
+    }
+
+    public void setTypeCdName(String typeCdName) {
+        this.typeCdName = typeCdName;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

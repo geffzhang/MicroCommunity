@@ -47,10 +47,23 @@ public class UserDto extends PageDto implements Serializable {
 
     private String staffName;
 
+    private String staffId;
+
     private String openId;
     private String statusCd;
 
+    private String token;
+
+    private String key;//临时登录秘钥，每次登录后重置
+
+
+    private String parentOrgName;
+
     private List<UserAttrDto> userAttrs;
+
+    private String bId;
+
+    private String belongCommunityId;
 
 
 
@@ -204,5 +217,53 @@ public class UserDto extends PageDto implements Serializable {
 
     public void setStatusCd(String statusCd) {
         this.statusCd = statusCd;
+    }
+
+    public String getParentOrgName() {
+        return parentOrgName;
+    }
+
+    public void setParentOrgName(String parentOrgName) {
+        this.parentOrgName = parentOrgName;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getBelongCommunityId() {
+        return belongCommunityId;
+    }
+
+    public void setBelongCommunityId(String belongCommunityId) {
+        this.belongCommunityId = belongCommunityId;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

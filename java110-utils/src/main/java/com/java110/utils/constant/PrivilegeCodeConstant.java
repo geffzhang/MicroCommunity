@@ -132,6 +132,7 @@ public final class PrivilegeCodeConstant {
 
     //审核工单
     public static final String AGENT_HAS_LIST_AUDIT_COMPLAINT = "502019110360380006";
+
     public static final String AGENT_HAS_LIST_AUDIT_HISTORY_COMPLAINT = "502019110534240006";
 
     //设备信息
@@ -139,6 +140,18 @@ public final class PrivilegeCodeConstant {
     public static final String AGENT_HAS_LIST_MACHINE_TRANSLATE = "502019111025350052";
     public static final String AGENT_HAS_LIST_MACHINE_RECORD = "502019112673230007";
     public static final String LIST_APPLICATION_KEY = "502019120169500005";
+
+
+    //巡检点权限编码
+    public static final String AGENT_HAS_LIST_INSPECTION_POINT = "502020021024790007";
+    //巡检计划权限编码
+    public static final String AGENT_HAS_LIST_INSPECTION_PLAN = "502020021268740005";
+
+    //采购申请
+    public static final String AGENT_HAS_LIST_PURCHASE_APPLY = "500201906022";
+    //审核采购申请
+    public static final String AGENT_HAS_LIST_AUDIT_APPLY_ORDER = "502019110360380006";
+
 
 
 

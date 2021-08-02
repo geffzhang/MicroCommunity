@@ -15,12 +15,20 @@ import java.util.Date;
  **/
 public class FileRelDto extends PageDto implements Serializable {
 
+
+    public static final String REL_TYPE_CD_REPAIR = "14000";//报修图片
+    public static final String REL_TYPE_CD_RENTING = "16000";//租赁图片
+    public static final String REL_TYPE_CD_GOODS_COVER = "17000";//商品封面
+    public static final String REL_TYPE_CD_GOODS_CAROUSEL_FIGURE = "18000";//商品轮播
+    public static final String SAVE_WAY_FTP = "ftp";//租赁图片
+
     private String relTypeCd;
     private String[] relTypeCds;
     private String saveWay;
     private String fileRelId;
     private String fileRealName;
     private String objId;
+    private String[] objIds;
     private String fileSaveName;
 
 
@@ -100,5 +108,13 @@ public class FileRelDto extends PageDto implements Serializable {
 
     public void setRelTypeCds(String[] relTypeCds) {
         this.relTypeCds = relTypeCds;
+    }
+
+    public String[] getObjIds() {
+        return objIds;
+    }
+
+    public void setObjIds(String[] objIds) {
+        this.objIds = objIds;
     }
 }

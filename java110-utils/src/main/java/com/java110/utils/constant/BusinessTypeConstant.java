@@ -58,6 +58,21 @@ public class BusinessTypeConstant {
     public static final String BUSINESS_TYPE_RECOVER_USER_INFO = "100100040003";
 
     /**
+     * 保存用户属性信息
+     */
+    public final static String BUSINESS_TYPE_SAVE_USER_ATTR_INFO = "100200030001";
+
+    /**
+     * 修改用户属性信息
+     */
+    public final static String BUSINESS_TYPE_UPDATE_USER_ATTR_INFO = "100200040001";
+
+    /**
+     * 删除用户属性信息
+     */
+    public final static String BUSINESS_TYPE_DELETE_USER_ATTR_INFO = "100200050001";
+
+    /**
      * 增加业主
      */
     public static final String BUSINESS_TYPE_SAVE_OWNER_INFO = "110100030001";
@@ -72,6 +87,23 @@ public class BusinessTypeConstant {
      * 删除业主
      */
     public static final String BUSINESS_TYPE_DELETE_OWNER_INFO = "110100050001";
+
+
+    /**
+     * 增加业主
+     */
+    public static final String BUSINESS_TYPE_SAVE_OWNER_ATTR_INFO = "110200030001";
+
+    /**tia
+     * 修改业主
+     */
+    public static final String BUSINESS_TYPE_UPDATE_OWNER_ATTR_INFO = "110200040001";
+
+
+    /**
+     * 删除业主
+     */
+    public static final String BUSINESS_TYPE_DELETE_OWNER_ATTR_INFO = "110200050001";
 
 
     /**
@@ -134,6 +166,7 @@ public class BusinessTypeConstant {
      */
     public static final String BUSINESS_TYPE_SAVE_STORE_INFO = "200100030001";
 
+
     /**
      * 商户成员加入信息
      */
@@ -144,6 +177,15 @@ public class BusinessTypeConstant {
      * 修改商户信息
      */
     public static final String BUSINESS_TYPE_UPDATE_STORE_INFO = "200100040001";
+
+    //保存商户属性
+    public static final String BUSINESS_TYPE_SAVE_STORE_ATTR = "200100030003";
+
+    //修改商户属性
+    public static final String BUSINESS_TYPE_UPDATE_STORE_ATTR = "200100040003";
+
+    //删除商户属性
+    public static final String BUSINESS_TYPE_DELETE_STORE_ATTR = "200100050003";
 
     /**
      * 商户成员退出信息
@@ -168,6 +210,51 @@ public class BusinessTypeConstant {
      */
     public static final String BUSINESS_TYPE_DELETE_STORE_USER = "200100070001";
 
+
+    /**
+     * 保存采购申请
+     */
+    public static final String BUSINESS_TYPE_SAVE_PURCHASE_APPLY = "210100030001";
+
+    /**
+     * 修改采购申请
+     */
+    public static final String BUSINESS_TYPE_UPDATE_PURCHASE_APPLY = "210100040001";
+
+    /**
+     * 删除采购申请
+     */
+    public static final String BUSINESS_TYPE_DELETE_PURCHASE_APPLY = "210100050001";
+
+    //采购,出库 新增订单明细
+    public static final String BUSINESS_TYPE_SAVE_PURCHASE_APPLY_DETAIL = "210100060001";
+    //采购/出库 修改订单明细
+    public static final String BUSINESS_TYPE_UPDATE_PURCHASE_APPLY_DETAIL = "210100070001";
+    //采购,出库 删除订单明细
+    public static final String BUSINESS_TYPE_DELETE_PURCHASE_APPLY_DETAIL = "210100080001";
+
+
+    //保存小程序信息
+    public static final String BUSINESS_TYPE_SAVE_SMALL_WE_CHAT = "210200060001";
+    //修改小程序信息
+    public static final String BUSINESS_TYPE_UPDATE_SMALL_WE_CHAT = "210200070001";
+    //删除小程序信息
+    public static final String BUSINESS_TYPE_DELETE_SMALL_WE_CHAT = "210200080001";
+
+    //保存小程序信息
+    public static final String BUSINESS_TYPE_SAVE_SMALL_WECHAT_ATTR = "221200030001";
+    //修改小程序信息
+    public static final String BUSINESS_TYPE_UPDATE_SMALL_WECHAT_ATTR = "221200040001";
+    //删除小程序信息
+    public static final String BUSINESS_TYPE_DELETE_SMALL_WECHAT_ATTR = "221200050001";
+
+
+    //保存公众号菜单
+    public static final String BUSINESS_TYPE_SAVE_WECHAT_MENU = "221300030001";
+    //修改公众号菜单
+    public static final String BUSINESS_TYPE_UPDATE_WECHAT_MENU = "221300040001";
+    //删除公众号菜单
+    public static final String BUSINESS_TYPE_DELETE_WECHAT_MENU = "221300050001";
 
     /**
      * 保存商品信息
@@ -221,6 +308,9 @@ public class BusinessTypeConstant {
      * 保存小区信息
      */
     public static final String BUSINESS_TYPE_SAVE_COMMUNITY_INFO = "500100030001";
+
+    //删除小区
+    public static final String BUSINESS_TYPE_DELETE_COMMUNITY = "500100050011";
 
     /**
      * 小区成员加入信息
@@ -389,6 +479,11 @@ public class BusinessTypeConstant {
      * 修改费用信息
      */
     public static final String BUSINESS_TYPE_UPDATE_FEE_INFO = "600100040001";
+
+    /**
+     * 修改费用信息
+     */
+    public static final String BUSINESS_TYPE_ONLY_UPDATE_FEE_INFO = "600100040002";
     /**
      * 删除费用信息
      */
@@ -420,11 +515,41 @@ public class BusinessTypeConstant {
      */
     public static final String BUSINESS_TYPE_DELETE_FEE_CONFIG = "620100050001";
 
+    /**
+     * 保存退费信息
+     */
+    public static final String BUSINESS_TYPE_SAVE_RETURN_PAY_FEE = "621100030001";
+    /**
+     * 修改退费信息
+     */
+    public static final String BUSINESS_TYPE_UPDATE_RETURN_PAY_FEE = "621100040001";
+    /**
+     * 删除退费信息
+     */
+    public static final String BUSINESS_TYPE_DELETE_RETURN_PAY_FEE = "621100050001";
+
 
     /**
      * 删除住户
      */
     public static final String BUSINESS_TYPE_DELETE_PROPERTY_HOUSE = "600100050005";
+
+
+    /**
+     * 保存水电费
+     */
+    public static final String BUSINESS_TYPE_SAVE_METER_WATER = "631100030001";
+    /**
+     * 修改水电费
+     */
+    public static final String BUSINESS_TYPE_UPDATE_METER_WATER = "631100040001";
+    /**
+     * 删除水电费
+     */
+    public static final String BUSINESS_TYPE_DELETE_METER_WATER = "631100050001";
+
+
+
 
 
     /**
@@ -533,6 +658,35 @@ public class BusinessTypeConstant {
      */
     public static final String BUSINESS_TYPE_DELETE_REPAIR ="130100050001";
 
+    /**
+     * 保存报修信息
+     * 11开头  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_REPAIR_SETTING="131100030001";
+    /**
+     *  修改报修信息  11开头  4修改
+     */
+    public static final String BUSINESS_TYPE_UPDATE_REPAIR_SETTING="131100040001";
+    /**
+     *  删除报修信息  11开头  5修改
+     */
+    public static final String BUSINESS_TYPE_DELETE_REPAIR_SETTING ="131100050001";
+
+    /**
+     * 保存报修信息
+     * 11开头  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_REPAIR_TYPE_USER="132100030001";
+    /**
+     *  修改报修信息  11开头  4修改
+     */
+    public static final String BUSINESS_TYPE_UPDATE_REPAIR_TYPE_USER="132100040001";
+    /**
+     *  删除报修信息  11开头  5修改
+     */
+    public static final String BUSINESS_TYPE_DELETE_REPAIR_TYPE_USER ="132100050001";
+
+
 
     /**
      * 保修派单信息
@@ -575,6 +729,18 @@ public class BusinessTypeConstant {
      *  删除员工组织关系
      */
     public static final String BUSINESS_TYPE_DELETE_ORG_STAFF_REL ="140200050001";
+
+    /**
+     *  保存员工组织关系
+     * 14开头  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_ORG_COMMUNITY="140300030001";
+
+    public static final String BUSINESS_TYPE_UPDATE_ORG_COMMUNITY="140300040001";
+    /**
+     *  删除员工组织关系
+     */
+    public static final String BUSINESS_TYPE_DELETE_ORG_COMMUNITY ="140300050001";
 
     /**
      *  保存 资源
@@ -818,18 +984,17 @@ public class BusinessTypeConstant {
 
     /**
      *  保存巡检点
-     * 14开头  3保存
      */
-    public static final String BUSINESS_TYPE_SAVE_INSPECTION="300200030001";
+    public static final String BUSINESS_TYPE_SAVE_INSPECTION="510200030001";
 
     /**
      * 修改巡检点
      */
-    public static final String BUSINESS_TYPE_UPDATE_INSPECTION="300200040001";
+    public static final String BUSINESS_TYPE_UPDATE_INSPECTION="510200040001";
     /**
      *  删除巡检点
      */
-    public static final String BUSINESS_TYPE_DELETE_INSPECTION ="300200050001";
+    public static final String BUSINESS_TYPE_DELETE_INSPECTION ="510200050001";
 
     /**
      *  保存巡检路线
@@ -851,13 +1016,261 @@ public class BusinessTypeConstant {
      *  保存巡检路线设备关联关系
      * 3保存
      */
-    public static final String BUSINESS_TYPE_SAVE_INSPECTION_ROUTE_MACHINE_REL="500200030002";
+    public static final String BUSINESS_TYPE_SAVE_INSPECTION_ROUTE_POINT_REL="500200030002";
 
     /**
      *  删除巡检路线设备关联关系
      *  5 删除
      */
-    public static final String BUSINESS_TYPE_DELETE_INSPECTION_ROUTE_MACHINE_REL ="500200050002";
+    public static final String BUSINESS_TYPE_DELETE_INSPECTION_ROUTE_POINT_REL ="500200050002";
+
+
+    /**
+     *  保存巡检计划
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_INSPECTION_PLAN="520200030001";
+
+    /**
+     * 修改巡检计划
+     * 4 修改
+     */
+    public static final String BUSINESS_TYPE_UPDATE_INSPECTION_PLAN="520200040001";
+
+    /**
+     *  删除巡计划
+     *  5 删除
+     */
+    public static final String BUSINESS_TYPE_DELETE_INSPECTION_PLAN ="520200050001";
+
+    /**
+     *  保存巡检计划
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_PLAN_STAFF="520300030001";
+
+    /**
+     * 修改巡检计划
+     * 4 修改
+     */
+    public static final String BUSINESS_TYPE_UPDATE_PLAN_STAFF="520300040001";
+
+    /**
+     *  删除巡计划
+     *  5 删除
+     */
+    public static final String BUSINESS_TYPE_DELETE_PLAN_STAFF ="520300050001";
+
+
+    /**
+     *  保存用户标题测试
+     * 3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_FASTUSER="666666668888888";
+
+    /**
+     *  保存巡检任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_INSPECTION_TASK="530200030001";
+    public static final String BUSINESS_TYPE_UPDATE_INSPECTION_TASK="530200040001";
+    public static final String BUSINESS_TYPE_DELETE_INSPECTION_TASK="530200050001";
+
+    /**
+     *  保存巡检任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_INSPECTION_TASK_DETAIL="540200030001";
+
+
+    /**
+     *  保存巡检任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_INSPECTION_TASK_DETAIL="540200040001";
+
+    public static final String BUSINESS_TYPE_DELETE_INSPECTION_TASK_DETAIL="540200050001";
+
+    /**
+     *  保存旧货市场
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_JUNK_REQUIREMENT="550200030001";
+
+
+    /**
+     *  修改旧货市场
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_JUNK_REQUIREMENT="550200040001";
+
+    /**
+     * 删除旧货市场
+     */
+    public static final String BUSINESS_TYPE_DELETE_JUNK_REQUIREMENT="550200050001";
+
+    /**
+     *  保存任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_TASK="560200030001";
+
+
+    /**
+     *  修改任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_TASK="560200040001";
+
+    /**
+     * 删除任务
+     */
+    public static final String BUSINESS_TYPE_DELETE_TASK="560200050001";
+
+    /**
+     *  保存任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_TASK_ATTR="560300030001";
+
+
+    /**
+     *  修改任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_TASK_ATTR="560300040001";
+
+    /**
+     * 删除任务
+     */
+    public static final String BUSINESS_TYPE_DELETE_TASK_ATTR="560300050001";
+
+
+
+    /**
+     *  保存任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_LOCATION="570100030001";
+
+
+    /**
+     *  修改任务
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_LOCATION="570100040001";
+
+    /**
+     * 删除任务
+     */
+    public static final String BUSINESS_TYPE_DELETE_LOCATION="570100050001";
+
+    /**
+     *  保存工作流
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_WORKFLOW="580100030001";
+
+
+    /**
+     *  修改工作流
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_WORKFLOW="580100040001";
+
+    /**
+     * 删除工作流
+     */
+    public static final String BUSINESS_TYPE_DELETE_WORKFLOW="580100050001";
+
+    /**
+     *  保存工作流节点
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_WORKFLOW_STEP="580200030001";
+
+
+    /**
+     *  修改工作流节点
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_WORKFLOW_STEP="580200040001";
+
+    /**
+     * 删除工作流节点
+     */
+    public static final String BUSINESS_TYPE_DELETE_WORKFLOW_STEP="580200050001";
+
+    /**
+     *  保存工作流节点 处理员工
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_SAVE_WORKFLOW_STEP_STAFF="580300030001";
+
+
+    /**
+     *  修改工作流节点 处理员工
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_WORKFLOW_STEP_STAFF="580300040001";
+
+    /**
+     * 删除工作流节点 处理员工
+     */
+    public static final String BUSINESS_TYPE_DELETE_WORKFLOW_STEP_STAFF="580300050001";
+    /**
+     *  保存工作流节点 处理员工 ORDER_FEE_SERVICE_URL
+     *  3保存 feeServiceTopic
+     */
+    public static final String BUSINESS_TYPE_SAVE_DETAIL_DISCOUNT_INFO="641100030001";
+
+
+    /**
+     *  修改工作流节点 处理员工
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_DETAIL_DISCOUNT_INFO="641100040001";
+
+    /**
+     * 删除工作流节点 处理员工
+     */
+    public static final String BUSINESS_TYPE_DELETE_DETAIL_DISCOUNT_INFO="641100050001";
+
+    /**
+     *  保存工作流节点 处理员工 ORDER_FEE_SERVICE_URL
+     *  3保存 feeServiceTopic
+     */
+    public static final String BUSINESS_TYPE_SAVE_TEMP_CAR_FEE_CONFIG_INFO="651100030001";
+
+
+    /**
+     *  修改工作流节点 处理员工
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_TEMP_CAR_FEE_CONFIG_INFO="651100040001";
+
+    /**
+     * 删除工作流节点 处理员工
+     */
+    public static final String BUSINESS_TYPE_DELETE_TEMP_CAR_FEE_CONFIG_INFO="651100050001";
+
+    /**
+     *  保存工作流节点 处理员工 ORDER_FEE_SERVICE_URL
+     *  3保存 feeServiceTopic
+     */
+    public static final String BUSINESS_TYPE_SAVE_TEMP_CAR_FEE_CONFIG_ATTR_INFO="651100030002";
+
+
+    /**
+     *  修改工作流节点 处理员工
+     *  3保存
+     */
+    public static final String BUSINESS_TYPE_UPDATE_TEMP_CAR_FEE_CONFIG_ATTR_INFO="651100040002";
+
+    /**
+     * 删除工作流节点 处理员工
+     */
+    public static final String BUSINESS_TYPE_DELETE_TEMP_CAR_FEE_CONFIG_ATTR_INFO="651100050002";
 
 
 }

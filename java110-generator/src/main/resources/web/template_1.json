@@ -1,0 +1,49 @@
+{
+  "templateName": "优惠申请类型",
+  "directories": "property",
+  "templateCode": "applyRoomDiscountType",
+  "templateKey": "applyType",
+  "templateKeyName": "类型",
+  "searchCode": "applyType",
+  "searchName": "类型",
+  "conditions": [
+    {
+      "name": "类型名称",
+      "inputType": "input",
+      "code": "typeName",
+      "whereCondition": "equal"
+    },
+    {
+      "name": "类型",
+      "inputType": "input",
+      "code": "applyType",
+      "whereCondition": "equal"
+    }
+  ],
+  "columns": [
+    {
+      "code": "typeName",
+      "cnCode": "类型名称",
+      "desc": "必填，请填写类型名称",
+      "required": true,
+      "hasDefaultValue": false,
+      "inputType": "input",
+      "limit": "maxLength",
+      "limitParam": "64",
+      "limitErrInfo": "类型名称格式错误",
+      "show": true
+    },
+    {
+      "code": "typeDesc",
+      "cnCode": "类型描述",
+      "desc": "选填，请填写类型描述",
+      "required": false,
+      "hasDefaultValue": false,
+      "inputType": "input",
+      "limit": "maxLength",
+      "limitParam": "512",
+      "limitErrInfo": "类型描述错误",
+      "show": true
+    }
+  ]
+}

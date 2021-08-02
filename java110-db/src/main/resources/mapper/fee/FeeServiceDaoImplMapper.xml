@@ -20,7 +20,8 @@
         select t.amount,t.operate,t.income_obj_id,t.income_obj_id incomeObjId,t.fee_type_cd,t.fee_type_cd
         feeTypeCd,t.start_time,t.start_time startTime,t.end_time,t.end_time endTime,t.community_id,t.community_id
         communityId,t.b_id,t.b_id bId,t.fee_id,t.fee_id feeId,t.user_id,t.user_id userId,t.payer_obj_id,t.payer_obj_id
-        payerObjId,t.fee_flag,t.fee_flag feeFlag,t.state,t.config_id,t.config_id configId,t.payer_obj_type,t.payer_obj_type payerObjType
+        payerObjId,t.fee_flag,t.fee_flag feeFlag,t.state,t.config_id,t.config_id
+        configId,t.payer_obj_type,t.payer_obj_type payerObjType
         from business_pay_fee t
         where 1 =1
         <if test="amount !=null and amount != ''">
@@ -135,24 +136,35 @@
         endTime,t.community_id,t.community_id communityId,t.b_id,t.b_id bId,t.fee_id,t.fee_id feeId,t.user_id,t.user_id
         userId,t.payer_obj_id,t.payer_obj_id payerObjId,pfc.square_price squarePrice,pfc.additional_amount
         additionalAmount,t.fee_flag,t.fee_flag feeFlag,t.state,t.config_id,t.config_id configId,
-        pfc.fee_name feeName,td1.name feeTypeCdName,td2.name stateName,td3.name feeFlagName,pfc.computing_formula computingFormula,
-        t.payer_obj_type,t.payer_obj_type payerObjType,pfc.is_default isDefault
-        from pay_fee t,pay_fee_config pfc,t_dict td1,t_dict td2,t_dict td3
+        pfc.fee_name feeName,td1.name feeTypeCdName,td2.name stateName,td3.name feeFlagName,pfc.computing_formula
+        computingFormula,
+        pfc.bill_type billType,t.payer_obj_type,t.payer_obj_type payerObjType,pfc.is_default isDefault,pfc.start_time
+        configStartTime,pfc.end_time configEndTime,pfc.payment_cd paymentCd,pfc.payment_cycle paymentCycle,td4.name
+        billTypeName,pfa.value importFeeName,ifd.end_time importFeeEndTime,mw.cur_degrees curDegrees,mw.pre_degrees
+        preDegrees,
+        mw.pre_reading_time preReadingTime,mw.cur_reading_time curReadingTime
+        from pay_fee t
+        INNER join pay_fee_config pfc on t.fee_type_cd = pfc.fee_type_cd and t.config_id = pfc.config_id and
+        pfc.status_cd = '0'
+        left join t_dict td1 on pfc.fee_type_cd = td1.status_cd and td1.table_name = 'pay_fee_config' and
+        td1.table_columns = 'fee_type_cd'
+        left join t_dict td2 on t.state = td2.status_cd and td2.table_name = 'pay_fee' and td2.table_columns = 'state'
+        left join t_dict td3 on t.fee_flag = td3.status_cd and td3.table_name = 'pay_fee' and td3.table_columns =
+        'fee_flag'
+        left join t_dict td4 on pfc.bill_type = td4.status_cd and td4.table_name = 'pay_fee_config' and
+        td4.table_columns = 'bill_type'
+        LEFT JOIN pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.spec_cd = '390002' and pfa.status_cd = '0'
+        left join import_fee_detail ifd on t.fee_id = ifd.fee_id and ifd.status_cd = '0' and t.fee_flag = '2006012'
+        LEFT JOIN meter_water mw on t.fee_id = mw.fee_id and mw.status_cd = '0' and mw.community_id = t.community_id
+        <if test="ownerId != null and ownerId != ''">
+            LEFT JOIN pay_fee_attrs pfao on t.fee_id = pfao.fee_id and pfao.spec_cd = '390007' and pfao.status_cd = '0'
+        </if>
         where 1 =1
-        and t.fee_type_cd = pfc.fee_type_cd
-        and t.config_id = pfc.config_id
-        and pfc.status_cd = '0'
-        and pfc.fee_type_cd = td1.status_cd
-        and td1.table_name = 'pay_fee_config'
-        and td1.table_columns = 'fee_type_cd'
-        and t.state = td2.status_cd
-        and td2.table_name = 'pay_fee'
-        and td2.table_columns = 'state'
-        and t.fee_flag = td3.status_cd
-        and td3.table_name = 'pay_fee'
-        and td3.table_columns = 'fee_flag'
         <if test="amount !=null and amount != ''">
             and t.amount= #{amount}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and pfao.value= #{ownerId}
         </if>
         <if test="incomeObjId !=null and incomeObjId != ''">
             and t.income_obj_id= #{incomeObjId}
@@ -180,7 +192,7 @@
         </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
-            and pfc.community_id= #{communityId}
+            and pfc.community_id in (#{communityId},'9999')
         </if>
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
@@ -269,7 +281,10 @@
     <!-- 查询费用数量 add by wuxw 2018-07-03 -->
     <select id="queryFeesCount" parameterType="Map" resultType="Map">
         select count(1) count
-        from pay_fee t,pay_fee_config pfc,t_dict td1,t_dict td2,t_dict td3
+        from pay_fee t,pay_fee_config pfc,t_dict td1,t_dict td2,t_dict td3,t_dict td4
+        <if test="ownerId != null and ownerId != ''">
+            ,pay_fee_attrs pfao
+        </if>
         where 1 =1
         and t.fee_type_cd = pfc.fee_type_cd
         and t.config_id = pfc.config_id
@@ -283,6 +298,15 @@
         and t.fee_flag = td3.status_cd
         and td3.table_name = 'pay_fee'
         and td3.table_columns = 'fee_flag'
+        and pfc.bill_type = td4.status_cd
+        and td4.table_name = 'pay_fee_config'
+        and td4.table_columns = 'bill_type'
+        <if test="ownerId != null and ownerId != ''">
+            and t.fee_id = pfao.fee_id
+            and pfao.spec_cd = '390007'
+            and pfao.status_cd = '0'
+            and pfao.value= #{ownerId}
+        </if>
         <if test="amount !=null and amount != ''">
             and t.amount= #{amount}
         </if>
@@ -311,7 +335,7 @@
             and t.end_time &lt; #{arrearsEndTime}
         </if>
         <if test="noArrearsEndTime != null">
-            and t.end_time &gt;  #{noArrearsEndTime}
+            and t.end_time &gt; #{noArrearsEndTime}
         </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
@@ -348,7 +372,498 @@
             and t.payer_obj_type = #{payerObjType}
         </if>
 
+    </select>
 
+
+    <!-- 查询账期 -->
+    <select id="queryBills" parameterType="Map" resultType="Map">
+        select
+        t.bill_id billId,
+        t.bill_name billName,
+        t.receivable,
+        t.cur_receivable curReceivable,
+        t.receipts,
+        t.bill_time billTime,
+        t.community_id communityId,
+        t.config_id configId,
+        t.cur_bill curBill,
+        c.fee_name feeName
+        from bill t
+        left join pay_fee_config c on t.config_id = c.config_id and c.community_id = t.community_id and c.status_cd =
+        '0'
+        where 1 =1
+        <if test="billId !=null and billId != ''">
+            and t.bill_id= #{billId}
+        </if>
+        <if test="billName !=null and billName != ''">
+            and t.bill_name= #{billName}
+        </if>
+        <if test="receivable !=null and receivable != ''">
+            and t.receivable= #{receivable}
+        </if>
+        <if test="receipts !=null">
+            and t.receipts= #{receipts}
+        </if>
+        <if test="billTime !=null">
+            and t.bill_time= #{billTime}
+        </if>
+        <if test="curBillTime !=null">
+            and t.bill_time &gt; #{curBillTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="configId != null and configId != ''">
+            and t.config_id = #{configId}
+        </if>
+        <if test="curBill != null and curBill != ''">
+            and t.cur_bill = #{curBill}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 查询账期 -->
+    <select id="queryBillCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from bill t
+        left join pay_fee_config c on t.config_id = c.config_id and c.community_id = t.community_id and c.status_cd =
+        '0'
+        where 1 =1
+        <if test="billId !=null and billId != ''">
+            and t.bill_id= #{billId}
+        </if>
+        <if test="billName !=null and billName != ''">
+            and t.bill_name= #{billName}
+        </if>
+        <if test="receivable !=null and receivable != ''">
+            and t.receivable= #{receivable}
+        </if>
+        <if test="curReceivable !=null and curReceivable != ''">
+            and t.cur_receivable= #{curReceivable}
+        </if>
+        <if test="receipts !=null">
+            and t.receipts= #{receipts}
+        </if>
+        <if test="billTime !=null">
+            and t.bill_time= #{billTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="configId != null and configId != ''">
+            and t.config_id = #{configId}
+        </if>
+        <if test="curBill != null and curBill != ''">
+            and t.cur_bill = #{curBill}
+        </if>
+    </select>
+
+
+    <!-- 查询账期 -->
+    <select id="queryBillOweFees" parameterType="Map" resultType="Map">
+        select
+        t.owe_id oweId,
+        t.bill_id billId,
+        t.fee_id feeId,
+        t.bill_amount_owed billAmountOwed,
+        t.amount_owed amountOwed,
+        t.fee_end_time feeEndTime,
+        t.owner_id ownerId,
+        t.owner_name ownerName,
+        t.owner_tel ownerTel,
+        t.payer_obj_name payerObjName,
+        t.payer_obj_type payerObjType,
+        t.community_id communityId,
+        t.state,
+        t.create_time createTime,
+        t.deadline_time deadlineTime,
+        pf.payer_obj_id payObjId,
+        td.`name` feeTypeName
+        from bill_owe_fee t
+        <if test="curBill !=null and curBill != ''">
+            inner join bill b on t.bill_id = b.bill_id and b.community_id = t.community_id and b.cur_bill = #{curBill}
+        </if>
+        left join pay_fee pf on t.fee_id = pf.fee_id and t.community_id = pf.community_id and pf.status_cd = '0'
+        left join t_dict td on pf.fee_type_cd = td.status_cd and td.table_name = 'pay_fee_config' and td.table_columns =
+        'fee_type_cd'
+        where 1 =1
+        <if test="oweId !=null and oweId != ''">
+            and t.owe_id= #{oweId}
+        </if>
+        <if test="billId !=null and billId != ''">
+            and t.bill_id= #{billId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="billAmountOwed !=null and billAmountOwed != ''">
+            and t.bill_amount_owed= #{billAmountOwed}
+        </if>
+        <if test="amountOwed !=null and amountOwed != ''">
+            and t.amount_owed= #{amountOwed}
+        </if>
+        <if test="feeEndTime != null">
+            and t.fee_end_time = #{feeEndTime}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and t.owner_id = #{ownerId}
+        </if>
+        <if test="ownerIds !=null">
+            and t.owner_id in
+            <foreach collection="ownerIds" open="(" close=")"
+                     separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and t.owner_name = #{ownerName}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 查询账期 -->
+    <select id="queryBillOweFeeCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from bill_owe_fee t
+        where 1 =1
+        <if test="oweId !=null and oweId != ''">
+            and t.owe_id= #{oweId}
+        </if>
+        <if test="billId !=null and billId != ''">
+            and t.bill_id= #{billId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="billAmountOwed !=null and billAmountOwed != ''">
+            and t.bill_amount_owed= #{billAmountOwed}
+        </if>
+        <if test="amountOwed !=null and amountOwed != ''">
+            and t.amount_owed= #{amountOwed}
+        </if>
+        <if test="feeEndTime != null">
+            and t.fee_end_time = #{feeEndTime}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and t.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and t.owner_name = #{ownerName}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+    </select>
+
+
+    <insert id="insertBillOweFees" parameterType="Map">
+        INSERT INTO bill_owe_fee
+        (`owe_id`, `bill_id`, `fee_id`, `bill_amount_owed`, `amount_owed`, `fee_end_time`, `owner_id`, `owner_name`,
+        `owner_tel`, `payer_obj_name`, `payer_obj_type`, `community_id`, `state`,deadline_time)
+        VALUES (#{oweId}, #{billId}, #{feeId}, #{billAmountOwed}, #{amountOwed}, #{feeEndTime}, #{ownerId},
+        #{ownerName},
+        #{ownerTel}, #{payerObjName}, #{payerObjType}, #{communityId}, #{state},#{deadlineTime})
+    </insert>
+
+    <update id="updateBillOweFees" parameterType="Map">
+        update bill_owe_fee t set t.state = #{state} where t.fee_id = #{feeId} and t.community_id=#{communityId}
+        and t.bill_id=#{billId}
+    </update>
+
+    <insert id="insertBill" parameterType="Map">
+        INSERT INTO bill (`bill_id`, `bill_name`, `receivable`, `receipts`, `bill_time`, `community_id`, `config_id`,
+        `remark`, `cur_bill`, `cur_receivable`)
+        VALUES (#{billId}, #{billName}, #{receivable}, #{receipts}, #{billTime}, #{communityId}, #{configId},
+        #{remark}, #{curBill}, #{curReceivable})
+    </insert>
+
+    <update id="updateBill" parameterType="Map">
+        update bill set cur_bill= 'F' where config_id = #{configId}
+    </update>
+
+
+    <!-- 查询费用数量 add by wuxw 2018-07-03 -->
+    <select id="queryFeeByAttrCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from pay_fee t
+        left join pay_fee_config pfc on t.fee_type_cd = pfc.fee_type_cd and t.config_id = pfc.config_id and
+        pfc.status_cd = '0'
+        left join t_dict td1 on pfc.fee_type_cd = td1.status_cd and td1.table_columns = 'fee_type_cd' and td1.table_name
+        = 'pay_fee_config'
+        left join t_dict td2 on t.state = td2.status_cd and td2.table_name = 'pay_fee' and td2.table_columns = 'state'
+        left join t_dict td3 on t.fee_flag = td3.status_cd and td3.table_name = 'pay_fee' and td3.table_columns =
+        'fee_flag'
+        left join pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.status_cd='0'
+        where pfa.spec_cd = #{specCd}
+        and pfa.value = #{value}
+        <if test="amount !=null and amount != ''">
+            and t.amount= #{amount}
+        </if>
+        <if test="incomeObjId !=null and incomeObjId != ''">
+            and t.income_obj_id= #{incomeObjId}
+        </if>
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="feeTypeCds != null ">
+            and t.fee_type_cd in
+            <foreach collection="feeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startTime !=null">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="endTime !=null ">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="arrearsEndTime != null">
+            and t.end_time &lt; #{arrearsEndTime}
+        </if>
+        <if test="noArrearsEndTime != null">
+            and t.end_time &gt; #{noArrearsEndTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+            and pfc.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="payerObjId !=null and payerObjId != ''">
+            and t.payer_obj_id= #{payerObjId}
+        </if>
+        <if test="payerObjIds != null ">
+            and t.payer_obj_id in
+            <foreach collection="payerObjIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            and t.fee_flag= #{feeFlag}
+        </if>
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="payerObjType !=null and payerObjType != ''">
+            and t.payer_obj_type = #{payerObjType}
+        </if>
+
+    </select>
+
+
+    <!-- 查询费用信息 add by wuxw 2018-07-03 -->
+    <select id="queryFeeByAttr" parameterType="Map" resultType="Map">
+        select t.amount,t.income_obj_id,t.income_obj_id incomeObjId,t.fee_type_cd,t.fee_type_cd
+        feeTypeCd,t.start_time,t.start_time startTime,t.status_cd,t.status_cd statusCd,t.end_time,t.end_time
+        endTime,t.community_id,t.community_id communityId,t.b_id,t.b_id bId,t.fee_id,t.fee_id feeId,t.user_id,t.user_id
+        userId,t.payer_obj_id,t.payer_obj_id payerObjId,pfc.square_price squarePrice,pfc.additional_amount
+        additionalAmount,t.fee_flag,t.fee_flag feeFlag,t.state,t.config_id,t.config_id configId,
+        pfc.fee_name feeName,td1.name feeTypeCdName,td2.name stateName,td3.name feeFlagName,pfc.computing_formula
+        computingFormula,
+        t.payer_obj_type,t.payer_obj_type payerObjType,pfc.is_default isDefault,pfc.start_time
+        configStartTime,pfc.end_time configEndTime,pfc.payment_cd paymentCd,pfc.payment_cycle paymentCycle
+        from pay_fee t
+        left join pay_fee_config pfc on t.fee_type_cd = pfc.fee_type_cd and t.config_id = pfc.config_id and
+        pfc.status_cd = '0'
+        left join t_dict td1 on pfc.fee_type_cd = td1.status_cd and td1.table_columns = 'fee_type_cd' and td1.table_name
+        = 'pay_fee_config'
+        left join t_dict td2 on t.state = td2.status_cd and td2.table_name = 'pay_fee' and td2.table_columns = 'state'
+        left join t_dict td3 on t.fee_flag = td3.status_cd and td3.table_name = 'pay_fee' and td3.table_columns =
+        'fee_flag'
+        left join pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.status_cd='0'
+        where pfa.spec_cd = #{specCd}
+        and pfa.value = #{value}
+        <if test="amount !=null and amount != ''">
+            and t.amount= #{amount}
+        </if>
+        <if test="incomeObjId !=null and incomeObjId != ''">
+            and t.income_obj_id= #{incomeObjId}
+        </if>
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="feeTypeCds != null ">
+            and t.fee_type_cd in
+            <foreach collection="feeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startTime !=null ">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="endTime !=null ">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="arrearsEndTime != null">
+            and t.end_time &lt; #{arrearsEndTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+            and pfc.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="payerObjId !=null and payerObjId != ''">
+            and t.payer_obj_id= #{payerObjId}
+        </if>
+        <if test="payerObjIds != null ">
+            and t.payer_obj_id in
+            <foreach collection="payerObjIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            and t.fee_flag= #{feeFlag}
+        </if>
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="payerObjType !=null and payerObjType != ''">
+            and t.payer_obj_type = #{payerObjType}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+    <!-- 批量插入费用 -->
+    <insert id="insertFees" parameterType="Map">
+        insert into pay_fee (amount,status_cd,income_obj_id,fee_type_cd,start_time,end_time,community_id,b_id,fee_id,
+        user_id,payer_obj_id,fee_flag,state,config_id,payer_obj_type)
+        VALUES
+        <foreach collection="payFeePos" item="item" separator=",">
+            (#{item.amount},'0',#{item.incomeObjId},#{item.feeTypeCd},#{item.startTime},#{item.endTime},#{item.communityId},
+            '-1',#{item.feeId},#{item.userId},#{item.payerObjId},#{item.feeFlag},#{item.state},#{item.configId},#{item.payerObjType})
+        </foreach>
+    </insert>
+
+
+    <select id="computeBillOweFeeCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from pay_fee pf
+        INNER JOIN pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.bill_type in ('001','002','003') and
+        pfc.status_cd = '0' and pf.community_id = pfc.community_id
+        inner join bill_owe_fee bof on pf.fee_id = bof.fee_id and bof.community_id = pf.community_id and bof.state
+        ='1000' and bof.amount_owed &gt; 0
+        inner join bill b on bof.bill_id = b.bill_id and b.community_id = bof.community_id and b.cur_bill = 'T'
+        where pf.status_cd = '0'
+        and pf.state = '2008001'
+        and pf.community_id = #{communityId}
+        <if test="payerObjId !=null and payerObjId != ''">
+            and pf.payer_obj_id= #{payerObjId}
+        </if>
+        <if test="payerObjType !=null and payerObjType != ''">
+            and pf.payer_obj_type = #{payerObjType}
+        </if>
+    </select>
+
+    <select id="computeBillOweFee" parameterType="Map" resultType="Map">
+        select pfc.fee_name feeName,pf.fee_id feeId,pf.end_time endTime,bof.amount_owed amountOwed,bof.payer_obj_name
+        roomName,bof.owner_name ownerName,bof.owner_tel ownerTel,pf.payer_obj_id payerObjId,pf.payer_obj_type
+        payerObjType,
+        pf.community_id communityId
+        from pay_fee pf
+        INNER JOIN pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.bill_type in ('001','002','003') and
+        pfc.status_cd = '0' and pf.community_id = pfc.community_id
+        inner join bill_owe_fee bof on pf.fee_id = bof.fee_id and bof.community_id = pf.community_id and bof.state
+        ='1000' and bof.amount_owed &gt; 0
+        inner join bill b on bof.bill_id = b.bill_id and b.community_id = bof.community_id and b.cur_bill = 'T'
+        where pf.status_cd = '0'
+        and pf.state = '2008001'
+        and pf.community_id = #{communityId}
+        <if test="payerObjId !=null and payerObjId != ''">
+            and pf.payer_obj_id= #{payerObjId}
+        </if>
+        <if test="payerObjType !=null and payerObjType != ''">
+            and pf.payer_obj_type = #{payerObjType}
+        </if>
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+
+    <select id="computeEveryOweFeeCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from pay_fee pf
+        INNER JOIN pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.bill_type = '004' and pfc.status_cd = '0'
+        and pf.community_id = pfc.community_id
+        where pf.end_time &lt; NOW()
+        and pf.status_cd = '0'
+        and pf.state = '2008001'
+        and pf.community_id = #{communityId}
+        <if test="payerObjId !=null and payerObjId != ''">
+            and pf.payer_obj_id= #{payerObjId}
+        </if>
+        <if test="payerObjType !=null and payerObjType != ''">
+            and pf.payer_obj_type = #{payerObjType}
+        </if>
+    </select>
+
+    <select id="computeEveryOweFee" parameterType="Map" resultType="Map">
+        select pfc.fee_name feeName,pf.fee_id feeId,pf.end_time endTime,pf.payer_obj_id payerObjId,pf.payer_obj_type
+        payerObjType,
+        pf.community_id communityId,pfc.computing_formula computingFormula,pfc.square_price
+        squarePrice,pfc.additional_amount additionalAmount
+        from pay_fee pf
+        INNER JOIN pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.bill_type = '004' and pfc.status_cd = '0'
+        and pf.community_id = pfc.community_id
+        where pf.end_time &lt; NOW()
+        and pf.status_cd = '0'
+        and pf.state = '2008001'
+        and pf.community_id = #{communityId}
+        <if test="payerObjId !=null and payerObjId != ''">
+            and pf.payer_obj_id= #{payerObjId}
+        </if>
+        <if test="payerObjType !=null and payerObjType != ''">
+            and pf.payer_obj_type = #{payerObjType}
+        </if>
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
     </select>
 
 </mapper>

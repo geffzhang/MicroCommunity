@@ -15,6 +15,9 @@ import java.util.Date;
  **/
 public class ParkingSpaceDto extends PageDto implements Serializable {
 
+    public static final String STATE_FREE = "F";
+    public static final String STATE_HIRE = "H";
+
     private String area;
     private String typeCd;
     private String typeCdName;

@@ -15,6 +15,24 @@ import java.util.Date;
  **/
 public class FeeConfigDto extends PageDto implements Serializable {
 
+    public static final String BILL_TYPE_YEAR = "001";// 按年出账
+    public static final String BILL_TYPE_MONTH = "002";// 每月1日
+    public static final String BILL_TYPE_DAY = "003";// 每日
+    public static final String BILL_TYPE_EVERY = "004";// 实时
+    public static final String BILL_TYPE_ONCE_MONTH = "005";// 一次性按月
+
+    public static final String DEFAULT_FEE_CONFIG = "T";
+    public static final String CUSTOME_FEE_CONFIG = "F";
+
+    public static final String FEE_TYPE_CD_WATER = "888800010016";//电费
+    public static final String FEE_TYPE_CD_METER = "888800010015";//水费
+    public static final String FEE_TYPE_CD_SYSTEM = "888800010000";//系统
+
+    public static final String CONFIG_ID_RENTING = "920000000000000000";//租赁费用项
+    public static final String CONFIG_ID_GOODS = "930000000000000000";//商品费用项
+
+
+
     private String feeTypeCd;
     private String computingFormula;
     private String additionalAmount;
@@ -25,9 +43,20 @@ public class FeeConfigDto extends PageDto implements Serializable {
     private String feeName;
     private String startTime;
     private String endTime;
+    private String curTime;
     private String communityId;
     private String feeTypeCdName;
     private String feeFlagName;
+
+    private String billType;
+
+    private String billTypeName;
+
+    private String paymentCd;
+
+    private String paymentCycle;
+
+    private String valid;
 
 
     private Date createTime;
@@ -154,5 +183,54 @@ public class FeeConfigDto extends PageDto implements Serializable {
 
     public void setFeeFlagName(String feeFlagName) {
         this.feeFlagName = feeFlagName;
+    }
+
+    public String getBillType() {
+        return billType;
+    }
+
+    public void setBillType(String billType) {
+        this.billType = billType;
+    }
+
+    public String getBillTypeName() {
+        return billTypeName;
+    }
+
+    public void setBillTypeName(String billTypeName) {
+        this.billTypeName = billTypeName;
+    }
+
+
+    public String getPaymentCd() {
+        return paymentCd;
+    }
+
+    public void setPaymentCd(String paymentCd) {
+        this.paymentCd = paymentCd;
+    }
+
+    public String getPaymentCycle() {
+        return paymentCycle;
+    }
+
+    public void setPaymentCycle(String paymentCycle) {
+        this.paymentCycle = paymentCycle;
+    }
+
+    public String getCurTime() {
+        return curTime;
+    }
+
+    public void setCurTime(String curTime) {
+        this.curTime = curTime;
+    }
+
+    public String getValid() {
+        return valid;
+    }
+
+    public void setValid(String valid) {
+        this.valid = valid;
     }
 }

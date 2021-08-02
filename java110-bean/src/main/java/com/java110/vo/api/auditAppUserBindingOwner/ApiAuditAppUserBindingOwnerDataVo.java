@@ -16,6 +16,13 @@ public class ApiAuditAppUserBindingOwnerDataVo implements Serializable {
     private String stateName;
     private String createTime;
 
+    private String areaCode;
+    private String areaName;
+    private String parentAreaCode;
+    private String parentAreaName;
+
+    private String userId;
+
     public String getAppUserId() {
         return appUserId;
     }
@@ -94,5 +101,45 @@ public class ApiAuditAppUserBindingOwnerDataVo implements Serializable {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
+
+    public String getParentAreaCode() {
+        return parentAreaCode;
+    }
+
+    public void setParentAreaCode(String parentAreaCode) {
+        this.parentAreaCode = parentAreaCode;
+    }
+
+    public String getParentAreaName() {
+        return parentAreaName;
+    }
+
+    public void setParentAreaName(String parentAreaName) {
+        this.parentAreaName = parentAreaName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

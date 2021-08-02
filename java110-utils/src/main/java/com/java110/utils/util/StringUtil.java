@@ -7,6 +7,8 @@
 package com.java110.utils.util;
 
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -270,6 +272,18 @@ public class StringUtil {
         }
     }
 
+    public static boolean isInteger(String str) {
+        try {
+            double value = Double.parseDouble(str);
+            if (value == Math.ceil(value)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return false;
+    }
 
     /**
      * Description: 获得字符(byte)的实际长度<br>
@@ -447,7 +461,22 @@ public class StringUtil {
      * @return
      */
     public static boolean isEmpty(String str) {
-        return str == null || "".equals(str);
+        return str == null || "".equals(str.trim());
+    }
+
+    /**
+     * 校验是否为JSON
+     *
+     * @param msg
+     * @return
+     */
+    public static Boolean isJsonObject(String msg) {
+        try {
+            JSONObject.parseObject(msg);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -481,4 +510,51 @@ public class StringUtil {
 
         return description;
     }
+
+    /**
+     * json是否包含key 并且存在值
+     *
+     * @param param
+     * @param key
+     * @return
+     */
+    public static boolean jsonHasKayAndValue(JSONObject param, String key) {
+        if (param == null) {
+            return false;
+        }
+
+        if (!param.containsKey(key)) {
+            return false;
+        }
+
+        if (isEmpty(param.getString(key))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * json是否包含key 并且存在值
+     *
+     * @param param
+     * @param key
+     * @return
+     */
+    public static boolean jsonHasKayAndValue(String param, String key) {
+        JSONObject paramObj = null;
+        try {
+            paramObj = JSONObject.parseObject(param);
+            return jsonHasKayAndValue(paramObj, key);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public static String delHtmlTag(String str){
+        String newstr = "";
+        newstr = str.replaceAll("<[.[^>]]*>","");
+        newstr = newstr.replaceAll(" ", "");
+        return newstr;
+    }
+
 }

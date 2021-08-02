@@ -30,13 +30,27 @@
         </dependency>
 
         <dependency>
-            <groupId>com.java110</groupId>
-            <artifactId>java110-cacheAgent</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
+
 
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-ecs</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
         </dependency>
 
 
@@ -65,6 +79,10 @@
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.java110</groupId>
+            <artifactId>java110-utils</artifactId>
         </dependency>
 
     </dependencies>

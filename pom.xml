@@ -10,36 +10,25 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>java110-bean</module>
-        <module>java110-config</module>
+        <module>java110-interface</module>
         <module>java110-utils</module>
-        <module>UserService</module>
-        <module>LogService</module>
-        <module>FeeService</module>
-        <module>eureka</module>
         <module>java110-core</module>
         <module>java110-service</module>
-        <module>CodeService</module>
-        <module>StoreService</module>
-        <module>RuleService</module>
-        <module>java110-event</module>
-        <module>OrderService</module>
-        <module>java110-cacheAgent</module>
-        <module>WebService</module>
-        <module>java110-logAgent</module>
-        <module>zipkin</module>
-        <module>ShopService</module>
-        <module>CommentService</module>
-        <module>Api</module>
-        <module>CommunityService</module>
-        <module>java110-code-generator</module>
         <module>java110-db</module>
-        <module>JobService</module>
-        <module>CommonService</module>
-        <module>ReportService</module>
-        <module>ReportComponent</module>
-        <module>HardwareAdapationService</module>
-        <module>AppFrontService</module>
-        <module>java110-front</module>
+        <module>service-user</module>
+        <module>service-fee</module>
+        <module>service-eureka</module>
+        <module>service-store</module>
+        <module>service-order</module>
+        <module>service-api</module>
+        <module>service-community</module>
+        <module>service-job</module>
+        <module>service-common</module>
+        <module>service-report</module>
+        <module>service-front</module>
+        <module>service-goods</module>
+        <module>java110-generator</module>
+
     </modules>
 
     <parent>
@@ -53,7 +42,6 @@
         <maven.compile.target>1.8</maven.compile.target>
         <sourceEncoding>UTF-8</sourceEncoding>
         <spring-boot>2.0.4.RELEASE</spring-boot>
-        <shiro.version>1.2.4</shiro.version>
         <mybatis.version>3.3.0</mybatis.version>
         <microcommunity.version>1.0-SNAPSHOT</microcommunity.version>
         <dubbo.version>2.5.4-SNAPSHOT</dubbo.version>
@@ -61,11 +49,11 @@
 
         <apache.common.lang3.version>3.4</apache.common.lang3.version>
         <mybatis.version>3.4.1</mybatis.version>
-        <log4j.version>2.11.0</log4j.version>
+        <log4j.version>2.13.2</log4j.version>
         <tomcat.servlet.version>6.0.37</tomcat.servlet.version>
         <druid.version>1.1.10</druid.version>
         <mybatis-spring.version>1.3.1</mybatis-spring.version>
-        <mysql.version>5.1.39</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
         <commons-pool2.version>2.2</commons-pool2.version>
         <commons-collections.version>3.2.1</commons-collections.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
@@ -82,6 +70,8 @@
         <spring.version>5.0.8.RELEASE</spring.version>
         <zookeeper.version>3.4.14</zookeeper.version>
         <swagger.version>2.5.0</swagger.version>
+        <pinyin4j.version>2.5.0</pinyin4j.version>
+        <oss.aliyun>2.8.2</oss.aliyun>
     </properties>
 
     <dependencyManagement>
@@ -101,7 +91,11 @@
                 <version>${spring.version}</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>${pinyin4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
@@ -143,11 +137,6 @@
                 <version>${microcommunity.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.java110</groupId>
-                <artifactId>java110-event</artifactId>
-                <version>${microcommunity.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.java110</groupId>
@@ -162,33 +151,14 @@
             </dependency>
             <dependency>
                 <groupId>com.java110</groupId>
-                <artifactId>java110-config</artifactId>
+                <artifactId>java110-interface</artifactId>
                 <version>${microcommunity.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.java110</groupId>
-                <artifactId>java110-cacheAgent</artifactId>
-                <version>${microcommunity.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.java110</groupId>
-                <artifactId>java110-logAgent</artifactId>
-                <version>${microcommunity.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>com.java110</groupId>
                 <artifactId>java110-db</artifactId>
-                <version>${microcommunity.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.java110</groupId>
-                <artifactId>java110-front</artifactId>
-                <version>${microcommunity.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.java110</groupId>
-                <artifactId>ReportComponent</artifactId>
                 <version>${microcommunity.version}</version>
             </dependency>
             <!-- logback 日志组件支持  -->
@@ -213,12 +183,6 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.vaersion}</version>
             </dependency>
-
-<!--            <dependency>-->
-<!--                <groupId>log4j</groupId>-->
-<!--                <artifactId>log4j</artifactId>-->
-<!--                <version>1.2.17</version>-->
-<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -267,6 +231,11 @@
                 <version>3.0.9.RELEASE</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.49</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.activemq</groupId>
@@ -334,7 +303,7 @@
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
-                <version>1.9.3</version>
+                <version>1.9.4</version>
             </dependency>
 
 
@@ -367,17 +336,6 @@
                 <version>${httpclient.verion}</version>
             </dependency>
 
-            <!--<dependency>
-                <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-jdbc</artifactId>
-                <version>3.0.0.M3</version>
-            </dependency>-->
-
-            <!--<dependency>
-                <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-jdbc-core</artifactId>
-                <version>3.1.0</version>
-            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
@@ -385,30 +343,6 @@
                 <version>4.0.0-RC1</version>
             </dependency>
 
-
-            <!-- https://mvnrepository.com/artifact/org.apache.axis2/axis2
-            <dependency>
-                <groupId>org.apache.axis</groupId>
-                <artifactId>axis</artifactId>
-                <version>${axis.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.axis</groupId>
-                <artifactId>axis-jaxrpc</artifactId>
-                <version>${axis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.axis</groupId>
-                <artifactId>axis-saaj</artifactId>
-                <version>${axis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>wsdl4j</groupId>
-                <artifactId>wsdl4j</artifactId>
-                <version>${axis.version}</version>
-            </dependency>
-            -->
 
             <dependency>
                 <groupId>net.sf.ehcache</groupId>
@@ -423,15 +357,10 @@
             </dependency>
 
 
-            <!-- <dependency>
-                 <groupId>org.quartz-scheduler</groupId>
-                 <artifactId>quartz</artifactId>
-                 <version>2.3.0</version>
-             </dependency>-->
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
-                <version>2.3.0</version>
+                <version>2.3.2</version>
             </dependency>
 
             <dependency>
@@ -482,7 +411,13 @@
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>aliyun-java-sdk-core</artifactId>
-                <version>4.0.3</version>
+                <version>4.4.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-ecs</artifactId>
+                <version>4.17.6</version>
             </dependency>
 
             <!--flowable工作流依赖
@@ -523,19 +458,38 @@
                 <artifactId>activiti-spring</artifactId>
                 <version>6.0.0</version>
             </dependency>
-
-            <!--<dependency>
+            <dependency>
                 <groupId>org.activiti</groupId>
-                <artifactId>activiti-modeler</artifactId>
-                <version>5.22.0</version>
+                <artifactId>activiti-bpmn-layout</artifactId>
+                <version>6.0.0.RC1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.activiti</groupId>
+                <artifactId>activiti-spring-boot-starter-basic</artifactId>
+                <version>6.0.0</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.activiti</groupId>
-                        <artifactId>activiti-bpmn-model</artifactId>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>-->
+            </dependency>
 
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java</artifactId>
+                <!-- go to https://search.maven.org/search?q=tencentcloud-sdk-java and get the latest version. -->
+                <!-- 请到https://search.maven.org/search?q=tencentcloud-sdk-java查询最新版本 -->
+                <version>3.0.112</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.aliyun.oss/aliyun-sdk-oss -->
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${oss.aliyun}</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
@@ -584,7 +538,34 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <!--发行版本-->
+            <id>releases</id>
+            <url>http://maven.homecommunity.cn:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <!--快照版本-->
+            <id>snapshots</id>
+            <url>http://maven.homecommunity.cn:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
