@@ -1,6 +1,6 @@
 package com.java110.service.smo;
 
-import com.java110.po.logSystemError.LogSystemErrorPo;
+import com.java110.po.log.LogSystemErrorPo;
 
 /**
  * @ClassName ISaveTransactionLog
@@ -12,7 +12,7 @@ import com.java110.po.logSystemError.LogSystemErrorPo;
  **/
 public interface ISaveSystemErrorSMO {
 
-    public void saveLog(LogSystemErrorPo logSystemErrorPo);
+     void saveLog(LogSystemErrorPo logSystemErrorPo);
 
 
 }

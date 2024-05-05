@@ -14,10 +14,20 @@
     </insert>
 
 
+    <insert id="saveOwnerRoomRels" parameterType="Map">
+        insert into building_owner_room_rel(
+        rel_id,remark,state,owner_id,b_id,user_id,room_id,start_time,end_time
+        ) values (
+        #{relId},#{remark},#{state},#{ownerId},-1,#{userId},#{roomId},#{startTime},#{endTime}
+        )
+    </insert>
+
+
     <!-- 查询业主房屋信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessOwnerRoomRelInfo" parameterType="Map" resultType="Map">
         select t.rel_id,t.rel_id relId,t.operate,t.remark,t.state,t.owner_id,t.owner_id ownerId,t.b_id,t.b_id
-        bId,t.user_id,t.user_id userId,t.room_id,t.room_id roomId,t.start_time,t.end_time,t.start_time startTime,t.end_time endTime
+        bId,t.user_id,t.user_id userId,t.room_id,t.room_id roomId,t.start_time,t.end_time,t.start_time
+        startTime,t.end_time endTime
         from business_building_owner_room_rel t
         where 1 =1
         <if test="relId !=null and relId != ''">
@@ -97,10 +107,14 @@
         where 1 =1
         <if test="byOwnerInfo == true">
             and t.owner_id = bow.owner_id
+            and bow.community_id = #{communityId}
             and bow.status_cd = '0'
         </if>
         <if test="byOwnerInfo == true and ownerName !=null and ownerName != ''">
-            and bow.name like concat('%',#{ownerName},'%')
+            and bow.name = #{ownerName}
+        </if>
+        <if test="byOwnerInfo == true and ownerNameLike !=null and ownerNameLike != ''">
+            and bow.name like concat('%',#{ownerNameLike},'%')
         </if>
         <if test="byOwnerInfo == true and idCard !=null and idCard != ''">
             and bow.id_card = #{idCard}
@@ -108,8 +122,8 @@
         <if test="relId !=null and relId != ''">
             and t.rel_id= #{relId}
         </if>
-        <if test="relId !=null and relId != ''">
-            and t.rel_id= #{relId}
+        <if test="roomId !=null and roomId != ''">
+            and t.room_id= #{roomId}
         </if>
         <if test="statusCd !=null and statusCd != ''">
             and t.status_cd= #{statusCd}
@@ -184,10 +198,14 @@
         where 1 =1
         <if test="byOwnerInfo == true">
             and t.owner_id = bow.owner_id
+            and bow.community_id = #{communityId}
             and bow.status_cd = '0'
         </if>
         <if test="byOwnerInfo == true and ownerName !=null and ownerName != ''">
-            and bow.name like concat('%',#{ownerName},'%')
+            and bow.name = #{ownerName}
+        </if>
+        <if test="byOwnerInfo == true and ownerNameLike !=null and ownerNameLike != ''">
+            and bow.name like concat('%',#{ownerNameLike},'%')
         </if>
         <if test="byOwnerInfo == true and idCard !=null and idCard != ''">
             and bow.id_card = #{idCard}

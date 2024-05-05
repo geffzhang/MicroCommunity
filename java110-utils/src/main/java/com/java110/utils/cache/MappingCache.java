@@ -1,12 +1,11 @@
 package com.java110.utils.cache;
 
-import com.java110.entity.mapping.Mapping;
+import com.java110.dto.mapping.Mapping;
 import com.java110.utils.constant.DomainContant;
 import com.java110.utils.util.DateUtil;
 import com.java110.utils.util.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
 
 import java.util.List;
 
@@ -23,6 +22,7 @@ public class MappingCache extends BaseCache {
     public final static String _SUFFIX_MAPPING = "_SUFFIX_MAPPING";
     //日志
     public final static String LOG_SERVICE_CODE = "LOG_SERVICE_CODE";
+    public final static String CALL_OUT_LOG = "CALL_OUT_LOG";
 
 
     /**
@@ -65,12 +65,16 @@ public class MappingCache extends BaseCache {
     }
 
     public static Mapping getMapping(String key) {
+        return getMapping(DomainContant.COMMON_DOMAIN,key);
+    }
+
+    public static Mapping getMapping(String domain,String key) {
         Jedis redis = null;
         long startTime = DateUtil.getCurrentDate().getTime();
 
         try {
             redis = getJedis();
-            Object obj = SerializeUtil.unserialize(redis.get((DomainContant.COMMON_DOMAIN + key + _SUFFIX_MAPPING).getBytes()));
+            Object obj = SerializeUtil.unserialize(redis.get((domain + key + _SUFFIX_MAPPING).getBytes()));
             if (obj instanceof Mapping) {
                 return (Mapping) obj;
             }

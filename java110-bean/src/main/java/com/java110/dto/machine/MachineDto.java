@@ -15,10 +15,18 @@ import java.util.List;
  **/
 public class MachineDto extends PageDto implements Serializable {
 
-    public static final String MACHINE_TYPE_CAR = "9996";
+    public static final String MACHINE_TYPE_CAR = "9996";//自有道闸设备道闸
+    public static final String MACHINE_TYPE_CAR_THIRD = "9995";//第三方道闸平台
     public static final String MACHINE_TYPE_ACCESS_CONTROL = "9999";
+    public static final String MACHINE_TYPE_ATTENDANCE = "9997"; // 考勤机
+    public static final String MACHINE_TYPE_MONITOR = "9998"; // 监控
     public static final String MACHINE_STATE_ON = "1200";
     public static final String MACHINE_STATE_OFF = "1300";
+
+    public static final String DIRECTION_IN = "3306"; //进场
+    public static final String DIRECTION_OUT = "3307"; //出场
+
+    public static final String HM_HK = "16";// 海康平台
 
     private String machineMac;
     private String machineId;
@@ -28,6 +36,7 @@ public class MachineDto extends PageDto implements Serializable {
     private String communityId;
     private String machineName;
     private String machineTypeCd;
+    private String[] machineTypeCds;
     private String locationType;
     private String machineTypeCdName;
     private String machineIp;
@@ -47,6 +56,10 @@ public class MachineDto extends PageDto implements Serializable {
     private String locationObjName;
     private String direction;//设备方向
     private String directionName;
+    private String typeId;
+    private String domain;
+
+    private String hmId;
 
     private List<MachineAttrDto> machineAttrs;
 
@@ -305,5 +318,37 @@ public class MachineDto extends PageDto implements Serializable {
 
     public void setHeartbeatTime(String heartbeatTime) {
         this.heartbeatTime = heartbeatTime;
+    }
+
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String[] getMachineTypeCds() {
+        return machineTypeCds;
+    }
+
+    public void setMachineTypeCds(String[] machineTypeCds) {
+        this.machineTypeCds = machineTypeCds;
+    }
+
+    public String getHmId() {
+        return hmId;
+    }
+
+    public void setHmId(String hmId) {
+        this.hmId = hmId;
     }
 }

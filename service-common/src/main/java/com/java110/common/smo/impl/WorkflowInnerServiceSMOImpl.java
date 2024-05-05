@@ -1,23 +1,34 @@
 package com.java110.common.smo.impl;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.java110.common.dao.IWorkflowServiceDao;
 import com.java110.core.base.smo.BaseServiceSMO;
-import com.java110.intf.common.IWorkflowInnerServiceSMO;
-import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.dto.PageDto;
 import com.java110.dto.user.UserDto;
-import com.java110.dto.workflow.WorkflowAuditInfoDto;
-import com.java110.dto.workflow.WorkflowDto;
-import com.java110.dto.workflow.WorkflowStepDto;
-import com.java110.dto.workflow.WorkflowStepStaffDto;
+import com.java110.dto.oaWorkflow.WorkflowAuditInfoDto;
+import com.java110.dto.oaWorkflow.WorkflowDto;
+import com.java110.dto.oaWorkflow.WorkflowModelDto;
+import com.java110.dto.oaWorkflow.WorkflowStepDto;
+import com.java110.dto.oaWorkflow.WorkflowStepStaffDto;
+import com.java110.intf.common.IWorkflowInnerServiceSMO;
+import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.utils.util.Base64Convert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
 import com.java110.utils.util.StringUtil;
 import org.activiti.bpmn.BpmnAutoLayout;
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.EndEvent;
+import org.activiti.bpmn.model.ExclusiveGateway;
+import org.activiti.bpmn.model.FlowNode;
+import org.activiti.bpmn.model.ParallelGateway;
 import org.activiti.bpmn.model.Process;
-import org.activiti.bpmn.model.*;
+import org.activiti.bpmn.model.SequenceFlow;
+import org.activiti.bpmn.model.StartEvent;
+import org.activiti.bpmn.model.UserTask;
+import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
@@ -25,13 +36,13 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.Model;
 import org.activiti.engine.task.Comment;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +81,9 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public List<WorkflowDto> queryWorkflows(@RequestBody WorkflowDto workflowDto) {
@@ -344,7 +358,12 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
                         process.addFlowElement(createSequenceFlow("userTask" + y + u, "parallelGateway-join" + y, "userTask-parallelGateway-join", ""));
                         if (u == (userList.size() - 1)) {
                             if (y == (workflowStepDtos.size() - 1)) {
-                                process.addFlowElement(createSequenceFlow("parallelGateway-join" + y, "repulse" + y, "parallelGateway-join-repulse", ""));
+                                if("Y".equals(workflowDto.getStartNodeFinish())){ //需要提交者确认
+                                    process.addFlowElement(createSequenceFlow("parallelGateway-join" + y, "repulse" + y, "parallelGateway-join-repulse", ""));
+                                }else {
+                                    process.addFlowElement(createSequenceFlow("parallelGateway-join" + y, "endEvent", "parallelGateway-join-endEvent" + y, "${flag=='true'}"));
+                                    process.addFlowElement(createSequenceFlow("parallelGateway-join" + y, "repulse" + y, "tparallelGateway-join-repulse" + y, "${flag=='false'}"));
+                                }
                             } else {
                                 process.addFlowElement(createSequenceFlow("parallelGateway-join" + y, "repulse" + y, "parallelGateway-join-repulse", "${flag=='false'}"));
                             }
@@ -383,7 +402,12 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
                     }*/
                     process.addFlowElement(createSequenceFlow("repulse" + y, "endEvent", "repulse" + y + "endEvent", "${flag=='false'}"));
                     if (y == (workflowStepDtos.size() - 1)) {
-                        process.addFlowElement(createSequenceFlow("task" + y, "repulse" + y, "task-repulse" + y, ""));
+                        if("Y".equals(workflowDto.getStartNodeFinish())){ //需要提交者确认
+                            process.addFlowElement(createSequenceFlow("task" + y, "repulse" + y, "task-repulse" + y, ""));
+                        }else {
+                            process.addFlowElement(createSequenceFlow("task" + y, "endEvent", "task-endEvent" + y, "${flag=='true'}"));
+                            process.addFlowElement(createSequenceFlow("task" + y, "repulse" + y, "task-repulse" + y, "${flag=='false'}"));
+                        }
                     } else {
                         process.addFlowElement(createSequenceFlow("task" + y, "repulse" + y, "task-repulse" + y, "${flag=='false'}"));
                     }
@@ -399,22 +423,7 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
             Deployment deployment = processEngine.getRepositoryService().createDeployment()
                     .addBpmnModel(process.getId() + ".bpmn", model).name(process.getId() + "_deployment").deploy();
             workflowDto.setProcessDefinitionKey(deployment.getId());
-            //        // 4. 启动一个流程实例
-//        ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(process.getId());
-//
-//        // 5. 获取流程任务
-//        List<Task> tasks = processEngine.getTaskService().createTaskQuery().processInstanceId(processInstance.getId()).list();
-//        try{
-//            // 6. 将流程图保存到本地文件
-//            InputStream processDiagram = processEngine.getRepositoryService().getProcessDiagram(processInstance.getProcessDefinitionId());
-//            FileUtils.copyInputStreamToFile(processDiagram, new File("/deployments/"+process.getId()+".png"));
-//
-//            // 7. 保存BPMN.xml到本地文件
-//            InputStream processBpmn = processEngine.getRepositoryService().getResourceAsStream(deployment.getId(), process.getId()+".bpmn");
-//            FileUtils.copyInputStreamToFile(processBpmn,new File("/deployments/"+process.getId()+".bpmn"));
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
+
         } catch (Exception e) {
             logger.error("部署工作流失败", e);
         }
@@ -524,18 +533,18 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
         HistoricProcessInstance hisProcessInstance = (HistoricProcessInstance) historyService
                 .createHistoricProcessInstanceQuery()
                 .processInstanceBusinessKey(workflowAuditInfoDto.getBusinessKey()).singleResult();
-        // 该流程实例的所有节点审批记录
-        List<HistoricActivityInstance> hisActInstList = getHisUserTaskActivityInstanceList(hisProcessInstance
-                .getId());
+        List<HistoricActivityInstance> hisActInstList = new ArrayList<>();
+        if (hisProcessInstance != null) {
+            // 该流程实例的所有节点审批记录
+            hisActInstList = getHisUserTaskActivityInstanceList(hisProcessInstance
+                    .getId());
+        }
         List<WorkflowAuditInfoDto> workflowAuditInfoDtos = new ArrayList<>();
         WorkflowAuditInfoDto tmpWorkflowAuditInfoDto = null;
         for (Iterator iterator = hisActInstList.iterator(); iterator.hasNext(); ) {
             // 需要转换成HistoricActivityInstance
             HistoricActivityInstance activityInstance = (HistoricActivityInstance) iterator
                     .next();
-//            if (activityInstance.getEndTime() == null) {
-//                continue;
-//            }
 
             tmpWorkflowAuditInfoDto = new WorkflowAuditInfoDto();
             tmpWorkflowAuditInfoDto.setAuditName(activityInstance.getActivityName());
@@ -566,6 +575,49 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
         }
         return workflowAuditInfoDtos;
     }
+
+    @Override
+    public WorkflowModelDto createModel(@RequestBody  WorkflowModelDto workflowModelDto) {
+        logger.info("创建模型入参name：{},key:{}", workflowModelDto.getName(), workflowModelDto.getKey());
+        Model model = repositoryService.newModel();
+        ObjectNode modelNode = objectMapper.createObjectNode();
+        modelNode.put(ModelDataJsonConstants.MODEL_NAME, workflowModelDto.getName());
+        modelNode.put(ModelDataJsonConstants.MODEL_DESCRIPTION, "");
+        modelNode.put(ModelDataJsonConstants.MODEL_REVISION, 1);
+        model.setName(workflowModelDto.getName());
+        model.setKey(workflowModelDto.getKey());
+        model.setMetaInfo(modelNode.toString());
+        repositoryService.saveModel(model);
+        createObjectNode(model.getId());
+        logger.info("创建模型结束，返回模型ID：{}", model.getId());
+        workflowModelDto.setModelId(model.getId());
+        return workflowModelDto;
+    }
+
+
+    /**
+     * 创建模型时完善ModelEditorSource
+     *
+     * @param modelId
+     */
+    @SuppressWarnings("deprecation")
+    private void createObjectNode(String modelId) {
+        logger.info("创建模型完善ModelEditorSource入参模型ID：{}", modelId);
+        ObjectNode editorNode = objectMapper.createObjectNode();
+        editorNode.put("id", "canvas");
+        editorNode.put("resourceId", "canvas");
+        ObjectNode stencilSetNode = objectMapper.createObjectNode();
+        stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
+        editorNode.put("stencilset", stencilSetNode);
+        try {
+            repositoryService.addModelEditorSource(modelId, editorNode.toString().getBytes("utf-8"));
+        } catch (Exception e) {
+            logger.info("创建模型时完善ModelEditorSource服务异常：{}", e);
+        }
+        logger.info("创建模型完善ModelEditorSource结束");
+    }
+
+
 
     /**
      * @param processInstanceId
@@ -617,4 +669,6 @@ public class WorkflowInnerServiceSMOImpl extends BaseServiceSMO implements IWork
         }
         return diffTime;
     }
+
+
 }

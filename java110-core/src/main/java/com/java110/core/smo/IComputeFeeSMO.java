@@ -1,12 +1,17 @@
 package com.java110.core.smo;
 
-import com.java110.dto.RoomDto;
+import com.alibaba.fastjson.JSONObject;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.fee.FeeDto;
+import com.java110.dto.integral.IntegralRuleConfigDto;
+import com.java110.dto.machine.CarInoutDetailDto;
+import com.java110.dto.machine.CarInoutDto;
 import com.java110.dto.owner.OwnerCarDto;
+import com.java110.dto.owner.OwnerDto;
 import com.java110.dto.report.ReportCarDto;
 import com.java110.dto.report.ReportFeeDto;
 import com.java110.dto.report.ReportRoomDto;
-import com.java110.po.feeReceiptDetail.FeeReceiptDetailPo;
+import com.java110.po.fee.FeeReceiptDetailPo;
 
 import java.util.Date;
 import java.util.List;
@@ -28,6 +33,13 @@ public interface IComputeFeeSMO {
      * @return
      */
     Date getFeeEndTime();
+
+    /**
+     * 获取 deadlineTime
+     * @param feeDto
+     * @return
+     */
+    Date getDeadlineTime(FeeDto feeDto);
 
     /**
      * 计算欠费金额
@@ -62,7 +74,16 @@ public interface IComputeFeeSMO {
     public String getFeeObjName(FeeDto feeDto);
 
     /**
+     * 查询费用的业主信息
+     *
+     * @param feeDto
+     * @return
+     */
+    public OwnerDto getFeeOwnerDto(FeeDto feeDto);
+
+    /**
      * 刷入 付费方名称
+     *
      * @param feeDtos
      */
     public void freshFeeObjName(List<FeeDto> feeDtos);
@@ -105,7 +126,7 @@ public interface IComputeFeeSMO {
      * oweMonth:1.0
      * }
      */
-    public Map getTargetEndDateAndOweMonth(FeeDto feeDto);
+     Map getTargetEndDateAndOweMonth(FeeDto feeDto);
 
 
     /**
@@ -113,10 +134,10 @@ public interface IComputeFeeSMO {
      *
      * @return
      */
-    double getFeePrice(FeeDto feeDto);
+     Map getFeePrice(FeeDto feeDto);
 
 
-    public double getFeePrice(FeeDto feeDto, RoomDto roomDto);
+     Map getFeePrice(FeeDto feeDto, RoomDto roomDto);
 
     /**
      * 时间差 按天折算
@@ -125,10 +146,54 @@ public interface IComputeFeeSMO {
      * @param toDate   结束时间
      * @return 相差月数
      */
-    double dayCompare(Date fromDate, Date toDate);
+//    double dayCompare(Date fromDate, Date toDate);
+
+    /**
+     　　 *字符串的日期格式的计算
+     　　 */
+    long daysBetween(Date smdate,Date bdate) ;
 
     double getReportFeePrice(ReportFeeDto tmpReportFeeDto, ReportRoomDto reportRoomDto, ReportCarDto reportCarDto);
 
     void computeEveryOweFee(FeeDto tmpFeeDto);
+
     void computeEveryOweFee(FeeDto tmpFeeDto, RoomDto roomDto);
+
+    /**
+     * 计算停车时间和费用
+     *
+     * @param carInoutDtos
+     */
+    List<CarInoutDto> computeTempCarStopTimeAndFee(List<CarInoutDto> carInoutDtos);
+
+    /**
+     * 计算停车时间和费用
+     *
+     * @param carInoutDtos
+     */
+    List<CarInoutDetailDto> computeTempCarInoutDetailStopTimeAndFee(List<CarInoutDetailDto> carInoutDtos);
+
+    /**
+     * 租金处理
+     *
+     * @param feeDto
+     */
+    void dealRentRate(FeeDto feeDto);
+
+    /**
+     * 租金处理
+     *
+     * @param feeDto
+     */
+    void dealRentRateCycle(FeeDto feeDto,double cycle);
+
+
+    /**
+     * 租金处理
+     * @param feeDto
+     * @param custEndTime
+     */
+    void dealRentRateCustEndTime(FeeDto feeDto, Date custEndTime);
+
+    long computeOneIntegralQuantity(IntegralRuleConfigDto integralRuleConfigDto, JSONObject reqJson);
 }

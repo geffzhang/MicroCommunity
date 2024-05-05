@@ -29,6 +29,7 @@ public class ApiOwnerDataVo extends Vo {
 
     private String link;
 
+    private String address;
 
     private String remark;
 
@@ -45,6 +46,20 @@ public class ApiOwnerDataVo extends Vo {
 
     private String idCard;
 
+    private List<String> urls;
+
+    private String url;
+
+
+    private long roomCount;
+    private long memberCount;
+    private long carCount;
+    private long complaintCount;
+    private long repairCount;
+
+    private double oweFee;
+
+    private String contractCount;
     public String getOwnerId() {
         return ownerId;
     }
@@ -155,5 +170,85 @@ public class ApiOwnerDataVo extends Vo {
 
     public void setRoomName(String roomName) {
         this.roomName = roomName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public List<String> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<String> urls) {
+        this.urls = urls;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public long getRoomCount() {
+        return roomCount;
+    }
+
+    public void setRoomCount(long roomCount) {
+        this.roomCount = roomCount;
+    }
+
+    public long getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(long memberCount) {
+        this.memberCount = memberCount;
+    }
+
+    public long getCarCount() {
+        return carCount;
+    }
+
+    public void setCarCount(long carCount) {
+        this.carCount = carCount;
+    }
+
+    public long getComplaintCount() {
+        return complaintCount;
+    }
+
+    public void setComplaintCount(long complaintCount) {
+        this.complaintCount = complaintCount;
+    }
+
+    public long getRepairCount() {
+        return repairCount;
+    }
+
+    public void setRepairCount(long repairCount) {
+        this.repairCount = repairCount;
+    }
+
+    public double getOweFee() {
+        return oweFee;
+    }
+
+    public void setOweFee(double oweFee) {
+        this.oweFee = oweFee;
+    }
+
+    public String getContractCount() {
+        return contractCount;
+    }
+
+    public void setContractCount(String contractCount) {
+        this.contractCount = contractCount;
     }
 }

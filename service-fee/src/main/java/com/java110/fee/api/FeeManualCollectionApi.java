@@ -1,8 +1,8 @@
 package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.feeManualCollection.FeeManualCollectionDto;
-import com.java110.dto.feeManualCollectionDetail.FeeManualCollectionDetailDto;
+import com.java110.dto.fee.FeeManualCollectionDto;
+import com.java110.dto.fee.FeeManualCollectionDetailDto;
 import com.java110.fee.bmo.feeManualCollection.IDeleteFeeManualCollectionBMO;
 import com.java110.fee.bmo.feeManualCollection.IGetFeeManualCollectionBMO;
 import com.java110.fee.bmo.feeManualCollection.ISaveFeeManualCollectionBMO;
@@ -12,8 +12,8 @@ import com.java110.fee.bmo.feeManualCollectionDetail.IGetExportCollectionBMO;
 import com.java110.fee.bmo.feeManualCollectionDetail.IGetFeeManualCollectionDetailBMO;
 import com.java110.fee.bmo.feeManualCollectionDetail.ISaveFeeManualCollectionDetailBMO;
 import com.java110.fee.bmo.feeManualCollectionDetail.IUpdateFeeManualCollectionDetailBMO;
-import com.java110.po.feeManualCollection.FeeManualCollectionPo;
-import com.java110.po.feeManualCollectionDetail.FeeManualCollectionDetailPo;
+import com.java110.po.fee.FeeManualCollectionPo;
+import com.java110.po.fee.FeeManualCollectionDetailPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;

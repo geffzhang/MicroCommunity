@@ -15,6 +15,9 @@ import java.util.Date;
  **/
 public class CarBlackWhiteDto extends PageDto implements Serializable {
 
+    public static final String BLACK_WHITE_BLACK = "1111"; //黑名单
+    public static final String BLACK_WHITE_WHITE = "2222"; //黑名单
+
     private String blackWhite;
     private String blackWhiteName;
     private String carNum;
@@ -23,13 +26,11 @@ public class CarBlackWhiteDto extends PageDto implements Serializable {
     private String communityId;
     private String bwId;
     private String paId;
+    private String[] paIds;
     private String paNum;
-
-
+    private String validity;
     private Date createTime;
-
     private String statusCd = "0";
-
 
     public String getBlackWhite() {
         return blackWhite;
@@ -79,7 +80,6 @@ public class CarBlackWhiteDto extends PageDto implements Serializable {
         this.bwId = bwId;
     }
 
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -119,4 +119,21 @@ public class CarBlackWhiteDto extends PageDto implements Serializable {
     public void setPaNum(String paNum) {
         this.paNum = paNum;
     }
+
+    public String[] getPaIds() {
+        return paIds;
+    }
+
+    public void setPaIds(String[] paIds) {
+        this.paIds = paIds;
+    }
+
+    public String getValidity() {
+        return validity;
+    }
+
+    public void setValidity(String validity) {
+        this.validity = validity;
+    }
+
 }

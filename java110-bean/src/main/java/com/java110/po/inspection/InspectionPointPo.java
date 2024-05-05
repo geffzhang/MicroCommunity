@@ -19,6 +19,10 @@ public class InspectionPointPo implements Serializable {
     private String pointObjId;
     private String pointObjName;
     private String remark;
+    private String itemId;
+    private String nfcCode;
+
+    public String statusCd="0";
 
     public String getInspectionId() {
         return inspectionId;
@@ -76,5 +80,29 @@ public class InspectionPointPo implements Serializable {
 
     public void setPointObjName(String pointObjName) {
         this.pointObjName = pointObjName;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getNfcCode() {
+        return nfcCode;
+    }
+
+    public void setNfcCode(String nfcCode) {
+        this.nfcCode = nfcCode;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
     }
 }

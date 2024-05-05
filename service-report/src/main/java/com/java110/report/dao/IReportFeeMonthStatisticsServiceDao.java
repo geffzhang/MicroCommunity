@@ -81,6 +81,25 @@ public interface IReportFeeMonthStatisticsServiceDao {
      */
     List<Map> queryReportFeeSummary(Map info) throws DAOException;
 
+    /**
+     * 查询费用月统计总数
+     *
+     * @param info 费用月统计信息
+     * @return 费用月统计数量
+     */
+    int queryReportFeeSummaryDetailCount(Map info);
+
+
+    /**
+     * 查询费用月统计信息（instance过程）
+     * 根据bId 查询费用月统计信息
+     *
+     * @param info bId 信息
+     * @return 费用月统计信息
+     * @throws DAOException DAO异常
+     */
+    List<Map> queryReportFeeSummaryDetail(Map info) throws DAOException;
+
 
     /**
      * 查询费用月统计总数
@@ -101,6 +120,27 @@ public interface IReportFeeMonthStatisticsServiceDao {
      */
     List<Map> queryReportFloorUnitFeeSummary(Map info) throws DAOException;
 
+
+    /**
+     * 查询费用月统计总数
+     *
+     * @param info 费用月统计信息
+     * @return 费用月统计数量
+     */
+    int queryReportFloorUnitFeeSummaryDetailCount(Map info);
+
+
+    /**
+     * 查询费用月统计信息（instance过程）
+     * 根据bId 查询费用月统计信息
+     *
+     * @param info bId 信息
+     * @return 费用月统计信息
+     * @throws DAOException DAO异常
+     */
+    List<Map> queryReportFloorUnitFeeSummaryDetail(Map info) throws DAOException;
+
+
     /**
      * 查询费用月统计总数
      *
@@ -119,6 +159,25 @@ public interface IReportFeeMonthStatisticsServiceDao {
      * @throws DAOException DAO异常
      */
     List<Map> queryFeeBreakdown(Map info) throws DAOException;
+
+    /**
+     * 查询费用月统计总数
+     *
+     * @param info 费用月统计信息
+     * @return 费用月统计数量
+     */
+    int queryFeeBreakdownDetailCount(Map info);
+
+
+    /**
+     * 查询费用月统计信息（instance过程）
+     * 根据bId 查询费用月统计信息
+     *
+     * @param info bId 信息
+     * @return 费用月统计信息
+     * @throws DAOException DAO异常
+     */
+    List<Map> queryFeeBreakdownDetail(Map info) throws DAOException;
 
     /**
      * 查询费用月统计总数
@@ -249,4 +308,110 @@ public interface IReportFeeMonthStatisticsServiceDao {
      * @throws DAOException DAO异常
      */
     List<Map> getFeeConfigInfo(Map info) throws DAOException;
+
+    /**
+     * 查询维修师傅报修信息
+     *
+     * @param info
+     * @return
+     */
+    List<Map> getRepairUserInfo(Map info);
+
+    /**
+     * 查询报修信息
+     *
+     * @param info
+     * @return
+     */
+    List<Map> getRepairWithOutPage(Map info);
+
+    /**
+     * 获取报修员工表员工信息
+     *
+     * @param info
+     * @return
+     */
+    List<Map> getRepairStaff(Map info);
+
+    /**
+     * 计算应收 信息
+     * @param beanCovertMap
+     * @return
+     */
+    Map getReceivableInformation(Map beanCovertMap);
+
+    /**
+     * 计算应收 信息
+     * @param beanCovertMap
+     * @return
+     */
+    List<Map> getFloorReceivableInformation(Map beanCovertMap);
+
+    /**
+     * 计算应收 信息
+     * @param beanCovertMap
+     * @return
+     */
+    List<Map> getFeeConfigReceivableInformation(Map beanCovertMap);
+
+    int queryNoFeeRoomsCount(Map beanCovertMap);
+
+    List<Map> queryNoFeeRooms(Map beanCovertMap);
+
+    List<Map> queryPayFeeDeposit(Map beanCovertMap);
+
+    List<Map> queryFeeDepositAmount(Map beanCovertMap);
+
+    Map queryReportFeeSummaryMajor(Map beanCovertMap);
+
+    Map queryReportFloorUnitFeeSummaryMajor(Map beanCovertMap);
+
+    Map queryFeeBreakdownMajor(Map beanCovertMap);
+
+    Map queryOweFeeDetailMajor(Map beanCovertMap);
+
+    int queryHuaningOweFeeCount(Map beanCovertMap);
+
+    List<Map> queryHuaningOweFee(Map beanCovertMap);
+
+    int queryHuaningPayFeeCount(Map paramInfo);
+
+    int queryHuaningOweFeeCounts(Map paramInfo);
+
+    List<Map> queryHuaningPayFee(Map beanCovertMap);
+
+    int queryHuaningPayFeeCounts(Map paramInfo);
+
+    int queryHuaningPayFeeTwoCount(Map paramInfo);
+
+    List<Map> queryHuaningPayFeeTwo(Map beanCovertMap);
+
+    int queryHuaningOweFeeDetailCount(Map paramInfo);
+
+    List<Map> queryHuaningOweFeeDetail(Map beanCovertMap);
+
+    void deleteReportFeeMonthStatisticsInfo(Map beanCovertMap);
+
+    /**
+     * 查询当月实收
+     * @param beanCovertMap
+     * @return
+     */
+    double getReceivedAmountByMonth(Map beanCovertMap);
+
+    /**
+     *
+     * @param info
+     * @return
+     */
+    List<Map> queryRoomAndParkingSpace(Map info);
+
+    int deleteInvalidFee(Map info);
+
+    /**
+     * 查询无效的数据
+     * @param reportFeeDto
+     * @return
+     */
+    List<Map> queryInvalidFeeMonthStatistics(Map reportFeeDto);
 }

@@ -8,7 +8,7 @@ import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -129,6 +129,12 @@ public class OrgStaffRelServiceDaoImpl extends BaseServiceDao implements IOrgSta
     @Override
     public List<OrgStaffRelDto> queryOrgInfoByStaffIds(Map info) {
         List<OrgStaffRelDto> orgStaffRelDtoList = sqlSessionTemplate.selectList("orgStaffRelServiceDaoImpl.queryOrgInfoByStaffIds", info);
+        return orgStaffRelDtoList;
+    }
+
+    @Override
+    public List<OrgStaffRelDto> queryOrgInfoByStaffIdsNew(Map info) {
+        List<OrgStaffRelDto> orgStaffRelDtoList = sqlSessionTemplate.selectList("orgStaffRelServiceDaoImpl.queryOrgInfoByStaffIdNew", info);
         return orgStaffRelDtoList;
     }
 

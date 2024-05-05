@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="menuCatalogV1ServiceDaoImpl">
+
+
+    <!-- 保存菜单目录信息 add by wuxw 2018-07-03 -->
+    <insert id="saveMenuCatalogInfo" parameterType="Map">
+        insert into m_menu_catalog(
+        store_type,ca_id,name,icon,seq,url,is_show
+        ) values (
+        #{storeType},#{caId},#{name},#{icon},#{seq},#{url},#{isShow}
+        )
+    </insert>
+
+
+    <!-- 查询菜单目录信息 add by wuxw 2018-07-03 -->
+    <select id="getMenuCatalogInfo" parameterType="Map" resultType="Map">
+        select t.store_type,t.store_type storeType,t.ca_id,t.ca_id caId,t.name,t.icon,t.status_cd,t.status_cd
+        statusCd,t.seq,t.url,t.is_show,t.is_show isShow
+        from m_menu_catalog t
+        where 1 =1
+        <if test="storeType !=null and storeType != ''">
+            and t.store_type= #{storeType}
+        </if>
+        <if test="caId !=null and caId != ''">
+            and t.ca_id= #{caId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="icon !=null and icon != ''">
+            and t.icon= #{icon}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="seq !=null and seq != ''">
+            and t.seq= #{seq}
+        </if>
+        <if test="url !=null and url != ''">
+            and t.url= #{url}
+        </if>
+        <if test="isShow !=null and isShow != ''">
+            and t.is_show= #{isShow}
+        </if>
+        order by t.seq
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+
+    <!-- 修改菜单目录信息 add by wuxw 2018-07-03 -->
+    <update id="updateMenuCatalogInfo" parameterType="Map">
+        update m_menu_catalog t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="storeType !=null and storeType != ''">
+            , t.store_type= #{storeType}
+        </if>
+        <if test="name !=null and name != ''">
+            , t.name= #{name}
+        </if>
+        <if test="icon !=null and icon != ''">
+            , t.icon= #{icon}
+        </if>
+        <if test="seq !=null and seq != ''">
+            , t.seq= #{seq}
+        </if>
+        <if test="url !=null and url != ''">
+            , t.url= #{url}
+        </if>
+        <if test="isShow !=null and isShow != ''">
+            , t.is_show= #{isShow}
+        </if>
+        where 1=1
+        <if test="caId !=null and caId != ''">
+            and t.ca_id= #{caId}
+        </if>
+
+    </update>
+
+    <!-- 查询菜单目录数量 add by wuxw 2018-07-03 -->
+    <select id="queryMenuCatalogsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from m_menu_catalog t
+        where 1 =1
+        <if test="storeType !=null and storeType != ''">
+            and t.store_type= #{storeType}
+        </if>
+        <if test="caId !=null and caId != ''">
+            and t.ca_id= #{caId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="icon !=null and icon != ''">
+            and t.icon= #{icon}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="seq !=null and seq != ''">
+            and t.seq= #{seq}
+        </if>
+        <if test="url !=null and url != ''">
+            and t.url= #{url}
+        </if>
+        <if test="isShow !=null and isShow != ''">
+            and t.is_show= #{isShow}
+        </if>
+
+
+    </select>
+
+    <!-- 查询菜单目录数量 add by wuxw 2018-07-03 -->
+    <select id="queryMenus" parameterType="Map" resultType="Map">
+        SELECT mm.`m_id` `mId`,mm.name menuName,mm.`g_id` gId,mm.`url`,mm.seq menuSeq,mm.`p_id` pId,
+        mm.`description` menuDescription, mmg.name menuGroupName,mmg.`icon`,mmg.`label`,mmg.`seq` menuGroupSeq,
+        mmg.`description` menuGroupDescription,mm.is_show isShow,mm.description
+        FROM m_menu mm
+        inner join m_menu_group mmg on mm.`g_id` = mmg.`g_id` AND mmg.`status_cd` = '0'
+        <if test="caId !=null and caId != ''">
+            inner join m_menu_group_catalog mgc on mmg.g_id = mgc.g_id and mgc.status_cd = '0'
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            inner join m_menu_group_community mgcy on mgcy.g_id = mmg.g_id and mgcy.status_cd = '0'
+        </if>
+        WHERE
+        mmg.group_type = #{groupType}
+        and mmg.store_type= #{domain}
+        <if test="caId !=null and caId != ''">
+            and mgc.ca_id = #{caId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and mgcy.community_id = #{communityId}
+        </if>
+        AND mm.`status_cd` = '0'
+        AND mm.`m_id` IN (
+        SELECT pp.`m_id` FROM p_privilege_user ppu,p_privilege pp
+        WHERE ppu.`p_id` = pp.`p_id`
+        and pp.domain in (#{domain},'9999')
+        AND ppu.`privilege_flag` = '0'
+        AND ppu.`user_id` = #{userId}
+        AND ppu.`status_cd` = '0'
+        AND pp.`status_cd` = '0'
+        UNION
+        SELECT pp.`m_id` FROM p_privilege_user ppu,p_privilege_group ppg,p_privilege pp,p_privilege_rel ppr
+        WHERE ppu.`p_id` = ppr.pg_id
+        AND ppr.pg_id = ppg.pg_id
+        AND ppr.p_id = pp.`p_id`
+        and pp.domain in (#{domain},'9999')
+        AND ppu.`privilege_flag` = '1'
+        AND ppu.`user_id` = #{userId}
+        AND ppu.`status_cd` = '0'
+        AND pp.`status_cd` = '0'
+        AND ppg.status_cd = '0'
+        AND ppr.status_cd = '0'
+        )
+    </select>
+</mapper>

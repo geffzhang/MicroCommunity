@@ -1,22 +1,26 @@
 package com.java110.community.smo.impl;
 
-
 import com.java110.community.dao.IRoomAttrServiceDao;
 import com.java110.community.dao.IRoomServiceDao;
 import com.java110.core.base.smo.BaseServiceSMO;
+import com.java110.core.log.LoggerFactory;
 import com.java110.dto.PageDto;
-import com.java110.dto.RoomAttrDto;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomAttrDto;
+import com.java110.dto.room.RoomDto;
+import com.java110.dto.owner.OwnerRoomRelDto;
 import com.java110.dto.user.UserDto;
-import com.java110.entity.assetImport.ImportRoomFee;
+import com.java110.dto.importData.ImportCustomCreateFeeDto;
+import com.java110.dto.importData.ImportRoomFee;
 import com.java110.intf.community.IRoomInnerServiceSMO;
+import com.java110.intf.user.IOwnerRoomRelV1InnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
+import com.java110.po.room.RoomPo;
 import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.StatusConstant;
+import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.StringUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +52,9 @@ public class RoomInnerServiceSMOImpl extends BaseServiceSMO implements IRoomInne
     @Autowired
     private IUserInnerServiceSMO userInnerServiceSMOImpl;
 
+    @Autowired
+    private IOwnerRoomRelV1InnerServiceSMO ownerRoomRelV1InnerServiceSMOImpl;
+
     @Override
     public List<RoomDto> queryRooms(@RequestBody RoomDto roomDto) {
 
@@ -62,6 +69,10 @@ public class RoomInnerServiceSMOImpl extends BaseServiceSMO implements IRoomInne
         List<RoomDto> rooms = BeanConvertUtil.covertBeanList(roomServiceDaoImpl.getRoomInfoByCommunityId(BeanConvertUtil.beanCovertMap(roomDto)), RoomDto.class);
 
         if (rooms == null || rooms.size() == 0) {
+            return rooms;
+        }
+
+        if (rooms.size() > 50) {
             return rooms;
         }
 
@@ -81,13 +92,25 @@ public class RoomInnerServiceSMOImpl extends BaseServiceSMO implements IRoomInne
 
         for (RoomDto room : rooms) {
             try {
-                room.setApartmentName(MappingCache.getValue(room.getApartment().substring(0, 2).toString()) + MappingCache.getValue(room.getApartment().substring(2, 4).toString()));
+                OwnerRoomRelDto ownerRoomRelDto = new OwnerRoomRelDto();
+                ownerRoomRelDto.setRoomId(room.getRoomId());
+                List<OwnerRoomRelDto> ownerRoomRelDtos = ownerRoomRelV1InnerServiceSMOImpl.queryOwnerRoomRels(ownerRoomRelDto);
+                Assert.listOnlyOne(ownerRoomRelDtos, "查询业主房屋关系表错误！");
+                room.setApartmentName(MappingCache.getValue(room.getApartment().substring(0, 2).toString()) + MappingCache.getValue(room.getApartment().substring(2, 5).toString()));
+                room.setOwnerId(ownerRoomRelDtos.get(0).getOwnerId());
+                room.setOwnerName(ownerRoomRelDtos.get(0).getOwnerName());
             } catch (Exception e) {
                 logger.error("设置房屋户型失败", e);
             }
             refreshRoom(room, users, roomAttrDtos);
         }
         return rooms;
+    }
+
+    @Override
+    public int updateRooms(@RequestBody RoomPo roomPo) {
+        roomServiceDaoImpl.updateRoomInfoInstance(BeanConvertUtil.beanCovertMap(roomPo));
+        return 1;
     }
 
     /**
@@ -246,33 +269,34 @@ public class RoomInnerServiceSMOImpl extends BaseServiceSMO implements IRoomInne
     @Override
     public List<RoomDto> queryRoomsByOwner(@RequestBody RoomDto roomDto) {
 
-        List<RoomDto> rooms = BeanConvertUtil.covertBeanList(roomServiceDaoImpl.getRoomInfoByOwner(BeanConvertUtil.beanCovertMap(roomDto)),
-                RoomDto.class);
+//        List<RoomDto> rooms = BeanConvertUtil.covertBeanList(roomServiceDaoImpl.getRoomInfoByOwner(BeanConvertUtil.beanCovertMap(roomDto)),
+//                RoomDto.class);
+//
+//        if (rooms == null || rooms.size() == 0) {
+//            return rooms;
+//        }
 
-        if (rooms == null || rooms.size() == 0) {
-            return rooms;
+        OwnerRoomRelDto ownerRoomRelDto = new OwnerRoomRelDto();
+        ownerRoomRelDto.setOwnerId(roomDto.getOwnerId());
+        ownerRoomRelDto.setOwnerNameLike(roomDto.getOwnerNameLike());
+        ownerRoomRelDto.setStatusCd(roomDto.getStatusCd());
+        List<OwnerRoomRelDto> ownerRoomRelDtos = ownerRoomRelV1InnerServiceSMOImpl.queryOwnerRoomRels(ownerRoomRelDto);
+        if (ownerRoomRelDtos == null || ownerRoomRelDtos.size() < 1) {
+            return new ArrayList<>();
         }
 
-        String[] roomIds = getRoomIds(rooms);
-        Map attrParamInfo = new HashMap();
-        attrParamInfo.put("roomIds", roomIds);
-        attrParamInfo.put("statusCd", StatusConstant.STATUS_CD_VALID);
-        List<RoomAttrDto> roomAttrDtos = BeanConvertUtil.covertBeanList(roomAttrServiceDaoImpl.getRoomAttrInfo(attrParamInfo), RoomAttrDto.class);
-
-        String[] userIds = getUserIds(rooms);
-        //根据 userId 查询用户信息
-        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
-
-        for (RoomDto room : rooms) {
-            //处理下户型转义问题
-            try {
-                room.setApartment(MappingCache.getValue(room.getApartment().substring(0, 2).toString()) + MappingCache.getValue(room.getApartment().substring(2, 5).toString()));
-            } catch (Exception e) {
-                logger.error("设置房屋户型失败", e);
-            }
-            refreshRoom(room, users, roomAttrDtos);
+        RoomDto tmpRoomDto = new RoomDto();
+        List<String> roomIds = new ArrayList<>();
+        for (OwnerRoomRelDto tmpOwnerRoomRelDto : ownerRoomRelDtos) {
+            roomIds.add(tmpOwnerRoomRelDto.getRoomId());
+            tmpRoomDto.setOwnerId(tmpOwnerRoomRelDto.getOwnerId());
+            tmpRoomDto.setOwnerName(tmpOwnerRoomRelDto.getOwnerName());
         }
-        return rooms;
+        tmpRoomDto.setRoomIds(roomIds.toArray(new String[roomIds.size()]));
+        tmpRoomDto.setRoomNum(roomDto.getRoomNum());
+        tmpRoomDto.setCommunityId(roomDto.getCommunityId());
+        return queryRooms(tmpRoomDto);
+
     }
 
     /**
@@ -285,12 +309,12 @@ public class RoomInnerServiceSMOImpl extends BaseServiceSMO implements IRoomInne
     public List<ImportRoomFee> freshRoomIds(@RequestBody List<ImportRoomFee> importRoomFees) {
         for (ImportRoomFee importRoomFee : importRoomFees) {
             List<Map> infos = null;
-            if(!StringUtil.isEmpty(importRoomFee.getRoomId()) && !importRoomFee.getRoomId().startsWith("-")){
+            if (!StringUtil.isEmpty(importRoomFee.getRoomId()) && !importRoomFee.getRoomId().startsWith("-")) {
                 Map paramIn = new HashMap();
-                paramIn.put("communityId",importRoomFee.getCommunityId());
-                paramIn.put("roomId",importRoomFee.getRoomId());
+                paramIn.put("communityId", importRoomFee.getCommunityId());
+                paramIn.put("roomId", importRoomFee.getRoomId());
                 infos = roomServiceDaoImpl.getRoomInfos(BeanConvertUtil.beanCovertMap(importRoomFee));
-            }else{
+            } else {
                 infos = roomServiceDaoImpl.getRoomInfos(BeanConvertUtil.beanCovertMap(importRoomFee));
             }
 
@@ -301,9 +325,25 @@ public class RoomInnerServiceSMOImpl extends BaseServiceSMO implements IRoomInne
             importRoomFee.setFloorNum(infos.get(0).get("floorNum").toString());
             importRoomFee.setUnitNum(infos.get(0).get("unitNum").toString());
             importRoomFee.setRoomNum(infos.get(0).get("roomNum").toString());
+            importRoomFee.setRoomName(importRoomFee.getFloorNum() + "-" + importRoomFee.getUnitNum() + "-" + importRoomFee.getRoomNum());
 
         }
         return importRoomFees;
+    }
+
+    public List<ImportCustomCreateFeeDto> freshRoomIdsByImportCustomCreateFee(@RequestBody List<ImportCustomCreateFeeDto> importCustomCreateFeeDtos) {
+        for (ImportCustomCreateFeeDto importRoomFee : importCustomCreateFeeDtos) {
+            List<Map> infos = null;
+            infos = roomServiceDaoImpl.getRoomInfos(BeanConvertUtil.beanCovertMap(importRoomFee));
+            if (infos == null || infos.size() < 1) {
+                continue;
+            }
+            importRoomFee.setPayObjId(infos.get(0).get("roomId").toString());
+            importRoomFee.setFloorNum(infos.get(0).get("floorNum").toString());
+            importRoomFee.setUnitNum(infos.get(0).get("unitNum").toString());
+            importRoomFee.setRoomNum(infos.get(0).get("roomNum").toString());
+        }
+        return importCustomCreateFeeDtos;
     }
 
     public IRoomServiceDao getRoomServiceDaoImpl() {

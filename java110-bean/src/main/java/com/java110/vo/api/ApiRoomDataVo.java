@@ -1,6 +1,6 @@
 package com.java110.vo.api;
 
-import com.java110.dto.RoomAttrDto;
+import com.java110.dto.room.RoomAttrDto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,13 +32,31 @@ public class ApiRoomDataVo implements Serializable {
     private String apartment;
     private String apartmentName;
     private String roomType;
-
+    private String roomSubType;
+    private String roomRent;
+    private String roomArea;
+    private String roomSubTypeName;
     private String ownerId;
     private String ownerName;
     private String idCard;
     private String link;
+    private String startTime;
+    private String endTime;
+
+    private String roomName;
 
     private List<RoomAttrDto> roomAttrDto;
+
+
+    private String memberCount;
+    private String carCount;
+    private String roomCount;
+    private String complaintCount;
+    private String repairCount;
+    private String roomOweFee;
+    private String oweFee;
+
+    private String contractCount;
 
 
     public String getFeeCoefficient() {
@@ -120,7 +138,6 @@ public class ApiRoomDataVo implements Serializable {
     public void setApartment(String apartment) {
         this.apartment = apartment;
     }
-
 
     public String getUnitNum() {
         return unitNum;
@@ -216,5 +233,125 @@ public class ApiRoomDataVo implements Serializable {
 
     public void setRoomType(String roomType) {
         this.roomType = roomType;
+    }
+
+    public String getRoomSubType() {
+        return roomSubType;
+    }
+
+    public void setRoomSubType(String roomSubType) {
+        this.roomSubType = roomSubType;
+    }
+
+    public String getRoomRent() {
+        return roomRent;
+    }
+
+    public void setRoomRent(String roomRent) {
+        this.roomRent = roomRent;
+    }
+
+    public String getRoomArea() {
+        return roomArea;
+    }
+
+    public void setRoomArea(String roomArea) {
+        this.roomArea = roomArea;
+    }
+
+    public String getRoomSubTypeName() {
+        return roomSubTypeName;
+    }
+
+    public void setRoomSubTypeName(String roomSubTypeName) {
+        this.roomSubTypeName = roomSubTypeName;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
+
+    public String getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(String memberCount) {
+        this.memberCount = memberCount;
+    }
+
+    public String getCarCount() {
+        return carCount;
+    }
+
+    public void setCarCount(String carCount) {
+        this.carCount = carCount;
+    }
+
+    public String getRoomCount() {
+        return roomCount;
+    }
+
+    public void setRoomCount(String roomCount) {
+        this.roomCount = roomCount;
+    }
+
+    public String getComplaintCount() {
+        return complaintCount;
+    }
+
+    public void setComplaintCount(String complaintCount) {
+        this.complaintCount = complaintCount;
+    }
+
+    public String getRepairCount() {
+        return repairCount;
+    }
+
+    public void setRepairCount(String repairCount) {
+        this.repairCount = repairCount;
+    }
+
+    public String getRoomOweFee() {
+        return roomOweFee;
+    }
+
+    public void setRoomOweFee(String roomOweFee) {
+        this.roomOweFee = roomOweFee;
+    }
+
+    public String getOweFee() {
+        return oweFee;
+    }
+
+    public void setOweFee(String oweFee) {
+        this.oweFee = oweFee;
+    }
+
+    public String getContractCount() {
+        return contractCount;
+    }
+
+    public void setContractCount(String contractCount) {
+        this.contractCount = contractCount;
     }
 }

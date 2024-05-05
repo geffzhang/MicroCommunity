@@ -1,8 +1,7 @@
 package com.java110.utils.cache;
 
 import com.java110.utils.util.SerializeUtil;
-import com.java110.entity.service.ServiceSql;
-import redis.clients.jedis.Jedis;
+import com.java110.dto.system.ServiceSql;
 
 /**
  * 缓存

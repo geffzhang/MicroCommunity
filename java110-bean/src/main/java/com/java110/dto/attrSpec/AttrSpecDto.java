@@ -26,7 +26,8 @@ public class AttrSpecDto extends PageDto implements Serializable {
     private String required;
     private String tableName;
     private String listShow;
-
+    private String domain;
+    private String specId;
 
     private Date createTime;
 
@@ -123,5 +124,19 @@ public class AttrSpecDto extends PageDto implements Serializable {
     }
 
 
+    public String getDomain() {
+        return domain;
+    }
 
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getSpecId() {
+        return specId;
+    }
+
+    public void setSpecId(String specId) {
+        this.specId = specId;
+    }
 }

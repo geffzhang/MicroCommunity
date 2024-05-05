@@ -1,5 +1,7 @@
 package com.java110.utils.constant;
 
+import org.springframework.http.HttpMethod;
+
 /**
  * 公共常量定义
  * Created by wuxw on 2016/12/28.
@@ -58,7 +60,7 @@ public class CommonConstant {
     /**
      * 默认过期时间
      */
-    public final static String DEFAULT_JWT_EXPIRE_TIME = 2*60*60 + "";
+    public final static String DEFAULT_JWT_EXPIRE_TIME = 2 * 60 * 60 + "";
 
     /**
      * 登录时的用户ID
@@ -85,7 +87,7 @@ public class CommonConstant {
     public final static String TEMPLATE_URL_INSERT = "INSERT->";
     public final static String TEMPLATE_URL_SPILT = ";";
 
-
+    public final static String HTTP_SESSION_ID = "session-id";
     /**
      * 添加数据
      */
@@ -126,6 +128,10 @@ public class CommonConstant {
      */
     public final static String CACHE_DATABUS = "DATABUS";
 
+    /**
+     * 映射 databus
+     */
+    public final static String CACHE_BUSINESS_TABLE_HIS = "BUSINESS_TABLE_HIS";
 
 
     /**
@@ -146,11 +152,14 @@ public class CommonConstant {
 
     public final static String INSTANCE_N = "N";
 
-
+    public static final String LANG_ZH_CN = "zh-cn";
+    public static final String JAVA110_LANG = "java110-lang";
     public static final String APP_ID = "app-id";
     public static final String TRANSACTION_ID = "transaction-id";
     public static final String REQUEST_TIME = "req-time";
     public static final String USER_ID = "user-id";
+    public static final String LOGIN_U_ID = "login-user-id";
+    public static final String STORE_ID = "store-id";
 
     public final static String HTTP_SERVICE_API = "API";
     public final static String HTTP_SERVICE = "SERVICE";
@@ -204,5 +213,31 @@ public class CommonConstant {
     public final static String HC_APP_FRONT_APP_ID = "8000418004";
 
 
+    /**
+     * 调用链相关
 
+     */
+    // trace-id
+    public static final String TRACE_ID = "trace-id";
+
+    //SPAN-ID
+    public static final String SPAN_ID = "span-id";
+
+    //SPAN-ID
+    public static final String PARENT_SPAN_ID = "parent-span-id";
+
+
+    public static String getHttpMethodStr(HttpMethod httpMethod) {
+        if (HttpMethod.GET == httpMethod) {
+            return HTTP_METHOD_GET;
+        } else if (HttpMethod.POST == httpMethod) {
+            return HTTP_METHOD_POST;
+        } else if (HttpMethod.PUT == httpMethod) {
+            return HTTP_METHOD_PUT;
+        } else if (HttpMethod.DELETE == httpMethod) {
+            return HTTP_METHOD_DELETE;
+        } else {
+            return HTTP_METHOD_POST;
+        }
+    }
 }

@@ -7,7 +7,7 @@ import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -91,10 +91,6 @@ public class FileRelServiceDaoImpl extends BaseServiceDao implements IFileRelSer
     @Override
     public int deleteFileRel(Map info) {
         int deleteFlag = sqlSessionTemplate.insert("fileRelServiceDaoImpl.deleteFileRel", info);
-
-        if (deleteFlag < 1) {
-            throw new DAOException(ResponseConstant.RESULT_PARAM_ERROR, "删除文件存放信息Instance数据失败：" + JSONObject.toJSONString(info));
-        }
 
         return deleteFlag;
     }

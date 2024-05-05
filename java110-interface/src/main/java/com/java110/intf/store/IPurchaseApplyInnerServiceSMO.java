@@ -1,8 +1,8 @@
 package com.java110.intf.store;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.purchaseApply.PurchaseApplyDetailDto;
-import com.java110.dto.purchaseApply.PurchaseApplyDto;
+import com.java110.dto.purchase.PurchaseApplyDetailDto;
+import com.java110.dto.purchase.PurchaseApplyDto;
 import com.java110.po.purchase.PurchaseApplyPo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +27,6 @@ public interface IPurchaseApplyInnerServiceSMO {
     /**
      * <p>保存 采购申请</p>
      *
-     *
      * @param purchaseApplyPo 数据对象分享
      * @return PurchaseApplyDto 对象数据
      */
@@ -36,7 +35,6 @@ public interface IPurchaseApplyInnerServiceSMO {
 
     /**
      * <p>查询小区楼信息</p>
-     *
      *
      * @param purchaseApplyDto 数据对象分享
      * @return PurchaseApplyDto 对象数据
@@ -61,5 +59,32 @@ public interface IPurchaseApplyInnerServiceSMO {
     //查询采购明细表
     @RequestMapping(value = "/queryPurchaseApplyDetails", method = RequestMethod.POST)
     List<PurchaseApplyDetailDto> queryPurchaseApplyDetails(@RequestBody PurchaseApplyDetailDto purchaseApplyDetailDto);
+
+    //修改采购申请
+    @RequestMapping(value = "/updatePurchaseApply", method = RequestMethod.POST)
+    void updatePurchaseApply(@RequestBody PurchaseApplyPo purchaseApplyPo);
+
+    /**
+     * 获取下级处理人id
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getActRuTaskUserId", method = RequestMethod.POST)
+    List<PurchaseApplyDto> getActRuTaskUserId(PurchaseApplyDto purchaseApplyDto);
+
+    /**
+     * 获取流程任务id
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getActRuTaskId", method = RequestMethod.POST)
+    List<PurchaseApplyDto> getActRuTaskId(PurchaseApplyDto purchaseApplyDto);
+    /**
+     * 获取流程任务id
+     *
+     * @return
+     */
+    @RequestMapping(value = "/updateActRuTaskById", method = RequestMethod.POST)
+    void updateActRuTaskById(@RequestBody PurchaseApplyDto purchaseApplyDto);
 
 }

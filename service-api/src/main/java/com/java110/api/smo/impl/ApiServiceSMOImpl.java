@@ -3,7 +3,6 @@ package com.java110.api.smo.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.api.smo.IApiServiceSMO;
-import com.java110.api.smo.ISaveTransactionLogSMO;
 import com.java110.core.client.RestTemplate;
 import com.java110.core.context.ApiDataFlow;
 import com.java110.core.context.DataFlow;
@@ -11,30 +10,24 @@ import com.java110.core.event.service.api.ServiceDataFlowEventPublishing;
 import com.java110.core.factory.AuthenticationFactory;
 import com.java110.core.factory.DataFlowFactory;
 import com.java110.core.factory.GenerateCodeFactory;
-import com.java110.entity.center.AppRoute;
-import com.java110.entity.center.AppService;
-import com.java110.entity.center.DataFlowLinksCost;
-import com.java110.po.transactionLog.TransactionLogPo;
+import com.java110.core.log.LoggerFactory;
+import com.java110.core.smo.ISaveTransactionLogSMO;
+import com.java110.core.trace.Java110TraceLog;
+import com.java110.dto.system.AppRoute;
+import com.java110.dto.system.AppService;
+import com.java110.dto.system.DataFlowLinksCost;
+import com.java110.po.log.TransactionLogPo;
 import com.java110.utils.cache.AppRouteCache;
 import com.java110.utils.cache.MappingCache;
-import com.java110.utils.constant.CommonConstant;
-import com.java110.utils.constant.KafkaConstant;
-import com.java110.utils.constant.MappingConstant;
-import com.java110.utils.constant.ResponseConstant;
-import com.java110.utils.constant.ServiceCodeConstant;
-import com.java110.utils.exception.BusinessException;
-import com.java110.utils.exception.DecryptException;
-import com.java110.utils.exception.InitConfigDataException;
-import com.java110.utils.exception.ListenerExecuteException;
-import com.java110.utils.exception.NoAuthorityException;
-import com.java110.utils.exception.SMOException;
+import com.java110.utils.constant.*;
+import com.java110.utils.exception.*;
 import com.java110.utils.kafka.KafkaFactory;
 import com.java110.utils.log.LoggerEngine;
 import com.java110.utils.util.DateUtil;
 import com.java110.utils.util.StringUtil;
+import com.java110.vo.ResultVo;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +67,7 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
      * @throws SMOException
      */
     @Override
+    @Java110TraceLog
     public ResponseEntity<String> service(String reqJson, Map<String, String> headers) throws SMOException {
 
         ApiDataFlow dataFlow = null;
@@ -105,17 +99,20 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
             responseEntity = dataFlow.getResponseEntity();
 
         } catch (DecryptException e) { //解密异常
-            responseEntity = new ResponseEntity<String>("解密异常：" + e.getMessage(), HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+            logger.error("内部异常：", e);
+            responseEntity = ResultVo.error("解密异常：" + e.getMessage());
         } catch (BusinessException e) {
-            responseEntity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            logger.error("内部异常：", e);
+            responseEntity = ResultVo.error(e.getMessage());
         } catch (NoAuthorityException e) {
-            responseEntity = new ResponseEntity<String>("鉴权失败：" + e.getMessage(), HttpStatus.UNAUTHORIZED);
+            logger.error("内部异常：", e);
+            responseEntity = ResultVo.error("鉴权失败：" + e.getMessage());
         } catch (InitConfigDataException e) {
-            responseEntity = new ResponseEntity<String>("初始化失败：" + e.getMessage(), HttpStatus.BAD_REQUEST);
+            logger.error("内部异常：", e);
+            responseEntity = ResultVo.error("初始化失败：" + e.getMessage());
         } catch (Exception e) {
             logger.error("内部异常：", e);
-            responseEntity = new ResponseEntity<String>("内部异常：" + e.getMessage() + e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
+            responseEntity = ResultVo.error("内部异常：" + e.getMessage() + e.getLocalizedMessage());
         } finally {
             Date endDate = DateUtil.getCurrentDate();
             if (dataFlow != null) {
@@ -132,10 +129,8 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
             //添加耗时
             saveLog(dataFlow, startDate, endDate, reqJson, responseEntity);
             //这里保存耗时，以及日志
-            return responseEntity;
-
         }
-
+        return responseEntity;
     }
 
     /**
@@ -153,18 +148,19 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
 
         String serviceCode = dataFlow.getRequestHeaders().get(CommonConstant.HTTP_SERVICE);
 
-        String logServiceCode = MappingCache.getValue(MappingCache.LOG_SERVICE_CODE);
+        String logServiceCode = MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingCache.LOG_SERVICE_CODE);
 
         //日志查询不记录
         if ("/transactionLog/queryTransactionLog".equals(serviceCode)
                 || "/transactionLog/queryTransactionLogMessage".equals(serviceCode)
                 || "file.getFile".equals(serviceCode)
                 || "file.getFileByObjId".equals(serviceCode)
+                || "/machine/heartbeat".equals(serviceCode) // 心跳也不记录
         ) {
             return;
         }
 
-        if (StringUtil.isEmpty(logServiceCode)) {
+        if (StringUtil.isEmpty(logServiceCode) || "OFF".equals(logServiceCode.toUpperCase())) {
             return;
         }
         if (logServiceCode.contains("|")) {
@@ -316,7 +312,7 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
 
         if (!StringUtil.isNullOrNone(dataFlow.getAppRoutes().get(0).getSecurityCode())) {
             String sign = AuthenticationFactory.apiDataFlowMd5(dataFlow);
-            if (!sign.equals(dataFlow.getReqSign().toLowerCase())) {
+            if (StringUtil.isEmpty(dataFlow.getReqSign()) || !sign.equals(dataFlow.getReqSign().toLowerCase())) {
                 throw new NoAuthorityException(ResponseConstant.RESULT_CODE_NO_AUTHORITY_ERROR, "签名失败");
             }
         }
@@ -390,6 +386,14 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
                         "服务【" + appService.getServiceCode() + "】调用方式不对请检查,当前请求方式为：" + httpMethod);
             }
             dataFlow.setApiCurrentService(ServiceCodeConstant.SERVICE_CODE_SYSTEM_TRANSFER);
+        } else if ("CMD".equals(appService.getIsInstance())) {
+            //如果是透传类 请求方式必须与接口提供方调用方式一致
+            String httpMethod = dataFlow.getRequestCurrentHeaders().get(CommonConstant.HTTP_METHOD);
+            if (!appService.getMethod().equals(httpMethod)) {
+                throw new ListenerExecuteException(ResponseConstant.RESULT_CODE_ERROR,
+                        "服务【" + appService.getServiceCode() + "】调用方式不对请检查,当前请求方式为：" + httpMethod);
+            }
+            dataFlow.setApiCurrentService(ServiceCodeConstant.SERVICE_CODE_SYSTEM_CMD);
         } else {
             dataFlow.setApiCurrentService(dataFlow.getRequestHeaders().get(CommonConstant.HTTP_SERVICE));
         }
@@ -406,7 +410,7 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
     private void saveLogMessage(String requestJson, String responseJson) {
 
         try {
-            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_LOG_ON_OFF))) {
+            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_LOG_ON_OFF))) {
                 JSONObject log = new JSONObject();
                 log.put("request", requestJson);
                 log.put("response", responseJson);
@@ -424,7 +428,7 @@ public class ApiServiceSMOImpl extends LoggerEngine implements IApiServiceSMO {
      */
     private void saveCostTimeLogMessage(DataFlow dataFlow) {
         try {
-            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_COST_TIME_ON_OFF))) {
+            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_COST_TIME_ON_OFF))) {
                 List<DataFlowLinksCost> dataFlowLinksCosts = dataFlow.getLinksCostDates();
                 JSONObject costDate = new JSONObject();
                 JSONArray costDates = new JSONArray();

@@ -16,6 +16,7 @@ public class InspectionTaskPo implements Serializable {
     private String communityId;
     private String inspectionPlanId;
     private String planInsTime;
+    private String planEndTime;
     private String actInsTime;
     private String planUserId;
     private String planUserName;
@@ -23,8 +24,13 @@ public class InspectionTaskPo implements Serializable {
     private String actUserName;
     private String signType;
     private String ipStaffId;
+    private String originalPlanUserId;
+    private String originalPlanUserName;
+    private String transferDesc;
+    private String taskType;
 
     private String state;
+    private String statusCd = "0";
 
     public String getTaskId() {
         return taskId;
@@ -120,5 +126,53 @@ public class InspectionTaskPo implements Serializable {
 
     public void setIpStaffId(String ipStaffId) {
         this.ipStaffId = ipStaffId;
+    }
+
+    public String getPlanEndTime() {
+        return planEndTime;
+    }
+
+    public void setPlanEndTime(String planEndTime) {
+        this.planEndTime = planEndTime;
+    }
+
+    public String getOriginalPlanUserId() {
+        return originalPlanUserId;
+    }
+
+    public void setOriginalPlanUserId(String originalPlanUserId) {
+        this.originalPlanUserId = originalPlanUserId;
+    }
+
+    public String getOriginalPlanUserName() {
+        return originalPlanUserName;
+    }
+
+    public void setOriginalPlanUserName(String originalPlanUserName) {
+        this.originalPlanUserName = originalPlanUserName;
+    }
+
+    public String getTransferDesc() {
+        return transferDesc;
+    }
+
+    public void setTransferDesc(String transferDesc) {
+        this.transferDesc = transferDesc;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
     }
 }

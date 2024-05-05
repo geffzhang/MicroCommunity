@@ -1,6 +1,7 @@
 package com.java110.common.thread;
 
 import com.alibaba.fastjson.JSONObject;
+import com.java110.core.factory.AuthenticationFactory;
 import com.java110.intf.common.IApplicationKeyInnerServiceSMO;
 import com.java110.dto.machine.ApplicationKeyDto;
 import com.java110.utils.constant.CommonConstant;
@@ -8,7 +9,7 @@ import com.java110.utils.constant.ServiceConstant;
 import com.java110.utils.factory.ApplicationContextFactory;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -74,7 +75,7 @@ public class UpdateApplicationKeyPwd implements Runnable {
         applicationKeyDto.setEndTime(DateUtil.getFormatTimeString(new Date(), DateUtil.DATE_FORMATE_STRING_A));
         //查询订单信息
         List<ApplicationKeyDto> applicationKeyDtos = applicationKeyInnerServiceSMOImpl.queryApplicationKeys(applicationKeyDto);
-        String url = ServiceConstant.SERVICE_API_URL + "/api/applicationKey.updateApplicationKey";
+        String url = "applicationKey.updateApplicationKey";
         for (ApplicationKeyDto tmpApplicationKeyDto : applicationKeyDtos) {
             try {
                 logger.debug("开始处理订单" + JSONObject.toJSONString(tmpApplicationKeyDto));
@@ -95,7 +96,9 @@ public class UpdateApplicationKeyPwd implements Runnable {
         header.add(CommonConstant.HTTP_USER_ID.toLowerCase(), CommonConstant.ORDER_DEFAULT_USER_ID);
         header.add(CommonConstant.HTTP_TRANSACTION_ID.toLowerCase(), UUID.randomUUID().toString());
         header.add(CommonConstant.HTTP_REQ_TIME.toLowerCase(), DateUtil.getDefaultFormateTimeString(new Date()));
-        header.add(CommonConstant.HTTP_SIGN.toLowerCase(), "");
+        //header.add(CommonConstant.HTTP_SIGN.toLowerCase(), "");
+        AuthenticationFactory.createSign(header,httpMethod,url,param);
+
         HttpEntity<String> httpEntity = new HttpEntity<String>(param, header);
         //logger.debug("请求中心服务信息，{}", httpEntity);
         try {
@@ -106,8 +109,9 @@ public class UpdateApplicationKeyPwd implements Runnable {
             responseEntity = new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             logger.debug("请求地址为,{} 请求中心服务信息，{},中心服务返回信息，{}", url, httpEntity, responseEntity);
-            return responseEntity;
         }
+        
+        return responseEntity;
     }
 
     /**
@@ -131,4 +135,12 @@ public class UpdateApplicationKeyPwd implements Runnable {
         return calendar.get(Calendar.DAY_OF_MONTH) == 1;
     }
 
+    public static void main(String[]args){
+        String a="?";
+        String value = "'${nextUserId}'";
+        if(value.contains("${")){
+            value = value.replace("${","\\${");
+        }
+        System.out.println(a.replaceFirst("\\?",value));
+    }
 }

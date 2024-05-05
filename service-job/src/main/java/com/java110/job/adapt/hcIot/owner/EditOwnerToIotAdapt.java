@@ -17,15 +17,17 @@ package com.java110.job.adapt.hcIot.owner;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.file.FileDto;
 import com.java110.dto.file.FileRelDto;
 import com.java110.dto.machine.MachineDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.owner.OwnerDto;
+import com.java110.dto.system.Business;
 import com.java110.intf.common.IFileInnerServiceSMO;
 import com.java110.intf.common.IFileRelInnerServiceSMO;
 import com.java110.intf.common.IMachineInnerServiceSMO;
 import com.java110.intf.community.IRoomInnerServiceSMO;
+import com.java110.intf.user.IOwnerInnerServiceSMO;
 import com.java110.job.adapt.DatabusAdaptImpl;
 import com.java110.job.adapt.hcIot.asyn.IIotSendAsyn;
 import com.java110.po.owner.OwnerPo;
@@ -34,8 +36,6 @@ import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +64,9 @@ public class EditOwnerToIotAdapt extends DatabusAdaptImpl {
     @Autowired
     private IFileInnerServiceSMO fileInnerServiceSMOImpl;
 
+    @Autowired
+    private IOwnerInnerServiceSMO ownerInnerServiceSMOImpl;
+
     /**
      * accessToken={access_token}
      * &extCommunityUuid=01000
@@ -79,21 +82,26 @@ public class EditOwnerToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray  businessMachines = new JSONArray();
         if (data.containsKey(OwnerPo.class.getSimpleName())) {
             Object bObj = data.get(OwnerPo.class.getSimpleName());
-            JSONArray businessMachines = null;
             if (bObj instanceof JSONObject) {
-                businessMachines = new JSONArray();
                 businessMachines.add(bObj);
             } else if (bObj instanceof List) {
                 businessMachines = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessMachines = (JSONArray) bObj;
             }
-            for (int bOwnerIndex = 0; bOwnerIndex < businessMachines.size(); bOwnerIndex++) {
-                JSONObject businessOwner = businessMachines.getJSONObject(bOwnerIndex);
-                doSendMachine(business, businessOwner);
+
+        }else {
+            if (data instanceof JSONObject) {
+                businessMachines.add(data);
             }
+        }
+
+        for (int bOwnerIndex = 0; bOwnerIndex < businessMachines.size(); bOwnerIndex++) {
+            JSONObject businessOwner = businessMachines.getJSONObject(bOwnerIndex);
+            doSendMachine(business, businessOwner);
         }
     }
 
@@ -122,6 +130,12 @@ public class EditOwnerToIotAdapt extends DatabusAdaptImpl {
         //这种情况说明 业主已经删掉了 需要查询状态为 1 的数据
         List<RoomDto> rooms = roomInnerServiceSMOImpl.queryRoomsByOwner(roomDto);
 
+        OwnerDto ownerDto = new OwnerDto();
+        ownerDto.setMemberId(ownerPo.getMemberId());
+        ownerDto.setCommunityId(ownerPo.getCommunityId());
+        List<OwnerDto> ownerDtos = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
+        Assert.listOnlyOne(ownerDtos,"业主不存在");
+
         //拿到小区ID
         String communityId = ownerPo.getCommunityId();
         //根据小区ID查询现有设备
@@ -130,9 +144,12 @@ public class EditOwnerToIotAdapt extends DatabusAdaptImpl {
         //String[] locationObjIds = new String[]{communityId};
         List<String> locationObjIds = new ArrayList<>();
         locationObjIds.add(communityId);
-        for (RoomDto tRoomDto : rooms) {
-            locationObjIds.add(tRoomDto.getUnitId());
-            locationObjIds.add(tRoomDto.getRoomId());
+        if(rooms != null && rooms.size() >0) {
+            for (RoomDto tRoomDto : rooms) {
+                locationObjIds.add(tRoomDto.getUnitId());
+                locationObjIds.add(tRoomDto.getRoomId());
+                locationObjIds.add(tRoomDto.getFloorId());
+            }
         }
 
         machineDto.setLocationObjIds(locationObjIds.toArray(new String[locationObjIds.size()]));
@@ -150,8 +167,10 @@ public class EditOwnerToIotAdapt extends DatabusAdaptImpl {
             postParameters.put("name", ownerPo.getName());
             postParameters.put("idNumber", ownerPo.getIdCard());
             postParameters.put("machineCode", tmpMachineDto.getMachineCode());
+            postParameters.put("link",ownerPo.getLink());
             postParameters.put("extMachineId", tmpMachineDto.getMachineId());
             postParameters.put("extCommunityId", tmpMachineDto.getCommunityId());
+            postParameters.put("attrs",ownerDtos.get(0).getOwnerAttrDtos());
             hcMachineAsynImpl.sendUpdateOwner(postParameters);
         }
 

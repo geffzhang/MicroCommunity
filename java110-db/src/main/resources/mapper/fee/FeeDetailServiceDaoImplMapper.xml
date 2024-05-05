@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="feeDetailServiceDaoImpl">
-
     <!-- 保存费用明细信息 add by wuxw 2018-07-03 -->
     <insert id="saveBusinessFeeDetailInfo" parameterType="Map">
         insert into
         business_pay_fee_detail(
         operate,prime_rate,detail_id,
         receivable_amount,cycles,remark,
-        received_amount,community_id,b_id,fee_id,state,start_time,end_time) values (
+        received_amount,community_id,b_id,fee_id,state,start_time,end_time,payable_amount,open_invoice
+        <if test="createTime != null">
+            ,create_time
+        </if>
+        ) values (
         #{operate},#{primeRate},#{detailId},#{receivableAmount},
-        #{cycles},#{remark},#{receivedAmount},#{communityId},#{bId},#{feeId},#{state},#{startTime},#{endTime})
+        #{cycles},#{remark},#{receivedAmount},#{communityId},#{bId},#{feeId},#{state},#{startTime},#{endTime},#{payableAmount},#{openInvoice}
+        <if test="createTime != null">
+            ,#{createTime}
+        </if>
+        )
     </insert>
-
 
     <!-- 查询费用明细信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessFeeDetailInfo" parameterType="Map" resultType="Map">
@@ -24,7 +29,8 @@
         t.receivable_amount receivableAmount,t.cycles,
         t.remark,t.received_amount,t.received_amount receivedAmount,
         t.community_id,t.community_id communityId,t.b_id,t.b_id bId,
-        t.fee_id,t.fee_id feeId,t.state,t.start_time,t.end_time,t.start_time startTime,t.end_time endTime
+        t.fee_id,t.fee_id feeId,t.state,t.start_time,t.end_time,t.start_time startTime,t.end_time endTime,
+        t.payable_amount,t.payable_amount payableAmount
         from business_pay_fee_detail t
         where 1 =1
         <if test="operate !=null and operate != ''">
@@ -38,6 +44,9 @@
         </if>
         <if test="receivableAmount !=null and receivableAmount != ''">
             and t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="payableAmount !=null and payableAmount != ''">
+            and t.payable_amount= #{payableAmount}
         </if>
         <if test="cycles !=null and cycles != ''">
             and t.cycles= #{cycles}
@@ -57,17 +66,16 @@
         <if test="feeId !=null and feeId != ''">
             and t.fee_id= #{feeId}
         </if>
-
     </select>
-
 
     <!-- 保存费用明细信息至 instance表中 add by wuxw 2018-07-03 -->
     <insert id="saveFeeDetailInfoInstance" parameterType="Map">
         insert into
         pay_fee_detail(
-        prime_rate,detail_id,receivable_amount,cycles,remark,status_cd,received_amount,community_id,b_id,fee_id,state,start_time,end_time)
+        prime_rate,detail_id,receivable_amount,cycles,remark,status_cd,received_amount,community_id,b_id,fee_id,state,start_time,end_time,create_time,payable_amount)
         select
-        t.prime_rate,t.detail_id,t.receivable_amount,t.cycles,t.remark,'0',t.received_amount,t.community_id,t.b_id,t.fee_id,state,t.start_time,t.end_time
+        t.prime_rate,t.detail_id,t.receivable_amount,t.cycles,t.remark,'0',t.received_amount,t.community_id,t.b_id,t.fee_id,state,t.start_time,t.end_time,
+        t.create_time,t.payable_amount
         from business_pay_fee_detail t where 1=1
         and t.operate= 'ADD'
         <if test="primeRate !=null and primeRate != ''">
@@ -88,6 +96,9 @@
         <if test="receivedAmount !=null and receivedAmount != ''">
             and t.received_amount= #{receivedAmount}
         </if>
+        <if test="payableAmount !=null and payableAmount != ''">
+            and t.payable_amount= #{payableAmount}
+        </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
         </if>
@@ -97,9 +108,7 @@
         <if test="feeId !=null and feeId != ''">
             and t.fee_id= #{feeId}
         </if>
-
     </insert>
-
 
     <!-- 查询费用明细信息 add by wuxw 2018-07-03 -->
     <select id="getFeeDetailInfo" parameterType="Map" resultType="Map">
@@ -109,15 +118,48 @@
         t.receivable_amount,t.receivable_amount receivableAmount,
         t.cycles,t.remark,t.status_cd,t.status_cd statusCd,t.received_amount,t.received_amount receivedAmount,
         t.community_id,t.community_id communityId,t.b_id,t.b_id bId,t.fee_id,t.fee_id feeId ,t.create_time createTime,
-        t.state,d.name stateName,t.start_time,t.end_time,t.start_time startTime,t.end_time endTime
+        t.state,d.name stateName,t.start_time,t.end_time,t.start_time startTime,t.end_time endTime,pfa.`value`
+        importFeeName,pfc.fee_name feeName,t.payable_amount,t.payable_amount payableAmount,
+        mw.cur_degrees curDegrees,mw.pre_degrees preDegrees, mw.pre_reading_time preReadingTime,mw.cur_reading_time
+        curReadingTime,t.pay_order_id payOrderId,pfc.config_id configId,td.`name` primeRateName,pfao1.`value` payerObjName,
+        t.cashier_id cashierId,t.cashier_name cashierName,pfc.fee_flag feeFlag,fr.receipt_code receiptCode,t.open_invoice openInvoice
         from pay_fee_detail t
+        left join pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.spec_cd = '390002'
+        left join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '0'
+        left join pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.status_cd = '0'
+        LEFT JOIN meter_water mw on t.fee_id = mw.fee_id and mw.status_cd = '0' and mw.community_id = t.community_id
+        left join pay_fee_attrs pfao1 on pfao1.fee_id = t.fee_id and pfao1.spec_cd = '390012' and pfao1.status_cd = '0'
+        <if test="ownerId != null and ownerId != ''">
+            left join pay_fee_attrs pfao on pfao.fee_id = t.fee_id and pfao.spec_cd = '390007' and pfao.status_cd = '0'
+        </if>
         left join t_dict d on t.state = d.status_cd and d.table_name = 'pay_fee_detail' and d.table_columns = 'state'
+        left join t_dict td on t.prime_rate = td.status_cd and td.table_name = 'pay_fee_detail' and td.table_columns = 'prime_rate'
+        left join fee_receipt_detail frd on t.detail_id = frd.detail_id and frd.status_cd = '0'
+        left join fee_receipt fr on frd.receipt_id = fr.receipt_id and fr.status_cd = '0'
         where 1 =1
+        <if test="configId != null and configId != ''">
+            and pf.config_id = #{configId}
+        </if>
+        <if test="payerObjId != null and payerObjId != ''">
+            and pf.payer_obj_id = #{payerObjId}
+        </if>
+        <if test="payerObjType != null and payerObjType != ''">
+            and pf.payer_obj_type = #{payerObjType}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and pfao.value = #{ownerId}
+        </if>
         <if test="primeRate !=null and primeRate != ''">
             and t.prime_rate= #{primeRate}
         </if>
         <if test="detailId !=null and detailId != ''">
             and t.detail_id= #{detailId}
+        </if>
+        <if test="detailIds !=null ">
+            and t.detail_id in
+            <foreach collection="detailIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="receivableAmount !=null and receivableAmount != ''">
             and t.receivable_amount= #{receivableAmount}
@@ -134,6 +176,9 @@
         <if test="receivedAmount !=null and receivedAmount != ''">
             and t.received_amount= #{receivedAmount}
         </if>
+        <if test="payableAmount !=null and payableAmount != ''">
+            and t.payable_amount= #{payableAmount}
+        </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
         </if>
@@ -149,14 +194,32 @@
         <if test="endTime !=null ">
             and t.create_time &lt;= #{endTime}
         </if>
-        order by t.create_time desc
+        <if test="curYear != null and curYear != ''">
+            and DATE_FORMAT(DATE_SUB(t.end_time,INTERVAL 1 DAY),'%Y') = #{curYear}
+        </if>
+        <if test="states != null">
+            and t.state in
+            <foreach collection="states" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="cashierId !=null and cashierId != ''">
+            and t.cashier_id= #{cashierId}
+        </if>
+        <if test="cashierName !=null and cashierName != ''">
+            and t.cashier_name= #{cashierName}
+        </if>
+        <if test="openInvoice !=null and openInvoice != ''">
+            and t.open_invoice= #{openInvoice}
+        </if>
+        order by pf.payer_obj_id,  t.create_time desc
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
-
     </select>
-
 
     <!-- 修改费用明细信息 add by wuxw 2018-07-03 -->
     <update id="updateFeeDetailInfoInstance" parameterType="Map">
@@ -179,6 +242,9 @@
         <if test="receivedAmount !=null and receivedAmount != ''">
             , t.received_amount= #{receivedAmount}
         </if>
+        <if test="payableAmount !=null and payableAmount != ''">
+            , t.payable_amount= #{payableAmount}
+        </if>
         <if test="communityId !=null and communityId != ''">
             , t.community_id= #{communityId}
         </if>
@@ -188,6 +254,9 @@
         <if test="feeId !=null and feeId != ''">
             , t.fee_id= #{feeId}
         </if>
+        <if test="openInvoice !=null and openInvoice != ''">
+            , t.open_invoice= #{openInvoice}
+        </if>
         where 1=1
         <if test="detailId !=null and detailId != ''">
             and t.detail_id= #{detailId}
@@ -195,19 +264,40 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-
     </update>
 
     <!-- 查询费用明细数量 add by wuxw 2018-07-03 -->
     <select id="queryFeeDetailsCount" parameterType="Map" resultType="Map">
         select count(1) count
         from pay_fee_detail t
+        left join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '0'
+        <if test="ownerId != null and ownerId != ''">
+            left join pay_fee_attrs pfa on pfa.fee_id = t.fee_id and pfa.spec_cd = '390007' and pfa.status_cd = '0'
+        </if>
         where 1 =1
+        <if test="configId != null and configId != ''">
+            and pf.config_id = #{configId}
+        </if>
+        <if test="payerObjId != null and payerObjId != ''">
+            and pf.payer_obj_id = #{payerObjId}
+        </if>
+        <if test="payerObjType != null and payerObjType != ''">
+            and pf.payer_obj_type = #{payerObjType}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and pfa.value = #{ownerId}
+        </if>
         <if test="primeRate !=null and primeRate != ''">
             and t.prime_rate= #{primeRate}
         </if>
         <if test="detailId !=null and detailId != ''">
             and t.detail_id= #{detailId}
+        </if>
+        <if test="detailIds !=null ">
+            and t.detail_id in
+            <foreach collection="detailIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="receivableAmount !=null and receivableAmount != ''">
             and t.receivable_amount= #{receivableAmount}
@@ -224,6 +314,9 @@
         <if test="receivedAmount !=null and receivedAmount != ''">
             and t.received_amount= #{receivedAmount}
         </if>
+        <if test="payableAmount !=null and payableAmount != ''">
+            and t.payable_amount= #{payableAmount}
+        </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
         </if>
@@ -233,33 +326,43 @@
         <if test="feeId !=null and feeId != ''">
             and t.fee_id= #{feeId}
         </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
         <if test="startTime !=null ">
             and t.create_time &gt;= #{startTime}
         </if>
         <if test="endTime !=null ">
             and t.create_time &lt;= #{endTime}
         </if>
-
-
+        <if test="cashierId !=null and cashierId != ''">
+            and t.cashier_id= #{cashierId}
+        </if>
+        <if test="cashierName !=null and cashierName != ''">
+            and t.cashier_name= #{cashierName}
+        </if>
+        <if test="openInvoice !=null and openInvoice != ''">
+            and t.open_invoice= #{openInvoice}
+        </if>
+        <if test="curYear != null and curYear != ''">
+            and DATE_FORMAT(DATE_SUB(t.end_time,INTERVAL 1 DAY),'%Y') = #{curYear}
+        </if>
     </select>
 
     <!-- 保存费用明细信息至 instance表中 add by wuxw 2018-07-03 -->
     <insert id="saveFeeDetail" parameterType="Map">
         insert into
         pay_fee_detail(
-        prime_rate,detail_id,receivable_amount,cycles,remark,status_cd,received_amount,community_id,b_id,fee_id,state,start_time,end_time
+        prime_rate,detail_id,receivable_amount,cycles,remark,received_amount,community_id,fee_id,state,start_time,end_time,payable_amount,cashier_name,cashier_id,open_invoice
         <if test="createTime != null and createTime != ''">
             ,create_time
         </if>
-
         )
-        values(#{primeRate},#{detailId},#{receivableAmount},#{cycles},#{remark},'0',#{receivedAmount},#{communityId},'-1',#{feeId},#{state},
-        #{startTime},#{endTime}
+        values(#{primeRate},#{detailId},#{receivableAmount},#{cycles},#{remark},#{receivedAmount},#{communityId},#{feeId},#{state},
+        #{startTime},#{endTime},#{payableAmount},#{cashierName},#{cashierId},#{openInvoice}
         <if test="createTime != null and createTime != ''">
             ,#{createTime}
         </if>
         )
-
     </insert>
-
 </mapper>

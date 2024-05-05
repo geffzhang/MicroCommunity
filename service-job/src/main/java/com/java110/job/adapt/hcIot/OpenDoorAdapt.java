@@ -114,11 +114,91 @@ public class OpenDoorAdapt extends DatabusAdaptImpl {
             JSONObject postParameters = new JSONObject();
             postParameters.put("taskId", GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_machineTranslateId));
             postParameters.put("machineCode", paramIn.getString("machineCode"));
+            postParameters.put("extStaffId", userId);
+            postParameters.put("staffName", userName);
+
             HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity(postParameters.toJSONString(), getHeaders(outRestTemplate));
             ResponseEntity<String> responseEntity = outRestTemplate.exchange(IotConstant.getUrl(IotConstant.OPEN_DOOR), HttpMethod.POST, httpEntity, String.class);
             if (responseEntity.getStatusCode() != HttpStatus.OK) {
                 machineTranslateDto.setState(MachineTranslateDto.STATE_ERROR);
                 machineTranslateDto.setRemark("开门失败");
+                return new ResultVo(ResultVo.CODE_ERROR, responseEntity.getBody());
+            }
+            JSONObject paramOut = JSONObject.parseObject(responseEntity.getBody());
+            if (!paramOut.containsKey("code") || ResultVo.CODE_OK != paramOut.getInteger("code")) {
+                machineTranslateDto.setState(MachineTranslateDto.STATE_ERROR);
+                machineTranslateDto.setRemark(paramOut.getString("msg"));
+            } else {
+                machineTranslateDto.setState(MachineTranslateDto.STATE_SUCCESS);
+                machineTranslateDto.setRemark("同步物联网系统成功");
+            }
+            return new ResultVo(paramOut.getInteger("code"), paramOut.getString("msg"));
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }finally {
+            machineTranslateDto.setbId("-1");
+            machineTranslateDto.setObjBId("-1");
+            machineTranslateDto.setUpdateTime(DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
+            machineTranslateInnerServiceSMOImpl.saveMachineTranslate(machineTranslateDto);
+        }
+    }
+
+    /**
+     * 开门实现方法
+     *
+     * @param paramIn 业务信息
+     * @return
+     */
+    @Override
+    public ResultVo closeDoor(JSONObject paramIn) {
+
+        MachineDto machineDto = new MachineDto();
+        machineDto.setMachineCode(paramIn.getString("machineCode"));
+        machineDto.setCommunityId(paramIn.getString("communityId"));
+        List<MachineDto> machineDtos = machineInnerServiceSMOImpl.queryMachines(machineDto);
+
+        Assert.listOnlyOne(machineDtos, "设备不存在");
+        String userId = "";
+        String userName = "";
+
+        if (!"owner".equals(paramIn.getString("userRole"))) {
+            UserDto userDto = new UserDto();
+            userDto.setUserId(paramIn.getString("userId"));
+            List<UserDto> userDtos = userInnerServiceSMOImpl.getUsers(userDto);
+            Assert.listOnlyOne(userDtos, "用户不存在");
+            userId = userDtos.get(0).getUserId();
+            userName = userDtos.get(0).getUserName();
+        } else {
+            OwnerDto ownerDto = new OwnerDto();
+            ownerDto.setMemberId(paramIn.getString("userId"));
+            ownerDto.setCommunityId(paramIn.getString("communityId"));
+            List<OwnerDto> ownerDtos = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
+            Assert.listOnlyOne(ownerDtos, "业主不存在");
+            userId = ownerDtos.get(0).getMemberId();
+            userName = ownerDtos.get(0).getName();
+        }
+        MachineTranslateDto machineTranslateDto = new MachineTranslateDto();
+        machineTranslateDto.setMachineTranslateId(GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_machineTranslateId));
+        machineTranslateDto.setCommunityId(paramIn.getString("communityId"));
+        machineTranslateDto.setMachineCmd(MachineTranslateDto.CMD_CLOSE_DOOR);
+        machineTranslateDto.setMachineCode(machineDtos.get(0).getMachineCode());
+        machineTranslateDto.setMachineId(machineDtos.get(0).getMachineId());
+        machineTranslateDto.setObjId(userId);
+        machineTranslateDto.setObjName(userName);
+        machineTranslateDto.setTypeCd(MachineTranslateDto.TYPE_COMMUNITY);
+        machineTranslateDto.setState(MachineTranslateDto.STATE_SUCCESS);
+        machineTranslateDto.setRemark("同步物联网系统成功");
+
+        try {
+            JSONObject postParameters = new JSONObject();
+            postParameters.put("taskId", GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_machineTranslateId));
+            postParameters.put("machineCode", paramIn.getString("machineCode"));
+            HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity(postParameters.toJSONString(), getHeaders(outRestTemplate));
+            ResponseEntity<String> responseEntity = outRestTemplate.exchange(IotConstant.getUrl(IotConstant.CLOSE_DOOR), HttpMethod.POST, httpEntity, String.class);
+            if (responseEntity.getStatusCode() != HttpStatus.OK) {
+                machineTranslateDto.setState(MachineTranslateDto.STATE_ERROR);
+                machineTranslateDto.setRemark("关门失败");
                 return new ResultVo(ResultVo.CODE_ERROR, responseEntity.getBody());
             }
             JSONObject paramOut = JSONObject.parseObject(responseEntity.getBody());
@@ -136,6 +216,75 @@ public class OpenDoorAdapt extends DatabusAdaptImpl {
             machineTranslateDto.setUpdateTime(DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
             machineTranslateInnerServiceSMOImpl.saveMachineTranslate(machineTranslateDto);
         }
+    }
+
+    /**
+     * 开门实现方法
+     *
+     * @param paramIn 业务信息
+     * @return
+     */
+    @Override
+    public ResultVo customCarInOut(JSONObject paramIn) {
+
+        MachineDto machineDto = new MachineDto();
+        machineDto.setMachineId(paramIn.getString("machineId"));
+        machineDto.setCommunityId(paramIn.getString("communityId"));
+        List<MachineDto> machineDtos = machineInnerServiceSMOImpl.queryMachines(machineDto);
+
+        Assert.listOnlyOne(machineDtos, "设备不存在");
+
+        JSONObject postParameters = new JSONObject();
+        postParameters.put("taskId", GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_machineTranslateId));
+        postParameters.put("extMachineId", paramIn.getString("machineId"));
+        postParameters.put("carNum", paramIn.getString("carNum"));
+        postParameters.put("type", paramIn.getString("type"));
+        postParameters.put("amount", paramIn.getString("amount"));
+        postParameters.put("payCharge", paramIn.getString("payCharge"));
+        postParameters.put("payType", paramIn.getString("payType"));
+        postParameters.put("unlicense", paramIn.getString("unlicense"));
+
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity(postParameters.toJSONString(), getHeaders(outRestTemplate));
+        ResponseEntity<String> responseEntity = outRestTemplate.exchange(IotConstant.getUrl(IotConstant.CUSTOM_CAR_INOUT), HttpMethod.POST, httpEntity, String.class);
+        if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            return new ResultVo(ResultVo.CODE_ERROR, responseEntity.getBody());
+        }
+        JSONObject paramOut = JSONObject.parseObject(responseEntity.getBody());
+
+        return new ResultVo(paramOut.getInteger("code"), paramOut.getString("msg"));
+
+    }
+
+    @Override
+    public ResultVo payVideo(MachineDto machineDto) {
+
+        JSONObject postParameters = new JSONObject();
+        postParameters.put("taskId", GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_machineTranslateId));
+        postParameters.put("deviceId", machineDto.getMachineCode());
+        postParameters.put("channelId", machineDto.getMachineVersion());
+        postParameters.put("port", machineDto.getMachineIp());
+        postParameters.put("mediaProtocol", "UDP");
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity(postParameters.toJSONString(), getHeaders(outRestTemplate));
+        ResponseEntity<String> responseEntity = outRestTemplate.exchange(IotConstant.getUrl(IotConstant.PLAY_VIDEO), HttpMethod.POST, httpEntity, String.class);
+        if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            return new ResultVo(ResultVo.CODE_ERROR, responseEntity.getBody());
+        }
+        JSONObject paramOut = JSONObject.parseObject(responseEntity.getBody());
+        return new ResultVo(paramOut.getInteger("code"), paramOut.getString("msg"), paramOut.getJSONObject("data"));
+    }
+
+    @Override
+    public ResultVo heartbeatVideo(JSONObject reqJson) {
+        JSONObject postParameters = new JSONObject();
+        postParameters.put("taskId", GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_machineTranslateId));
+        postParameters.put("callIds", reqJson.getString("callIds"));
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity(postParameters.toJSONString(), getHeaders(outRestTemplate));
+        ResponseEntity<String> responseEntity = outRestTemplate.exchange(IotConstant.getUrl(IotConstant.HEARTBEAT_VIDEO), HttpMethod.POST, httpEntity, String.class);
+        if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            return new ResultVo(ResultVo.CODE_ERROR, responseEntity.getBody());
+        }
+        JSONObject paramOut = JSONObject.parseObject(responseEntity.getBody());
+        return new ResultVo(paramOut.getInteger("code"), paramOut.getString("msg"));
     }
 
 }

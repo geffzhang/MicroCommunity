@@ -6,7 +6,7 @@ import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.intf.community.IInspectionTaskDetailInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.inspectionTaskDetail.InspectionTaskDetailDto;
+import com.java110.dto.inspection.InspectionTaskDetailDto;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +51,11 @@ public class InspectionTaskDetailInnerServiceSMOImpl extends BaseServiceSMO impl
     @Override
     public int queryInspectionTaskDetailsCount(@RequestBody InspectionTaskDetailDto inspectionTaskDetailDto) {
         return inspectionTaskDetailServiceDaoImpl.queryInspectionTaskDetailsCount(BeanConvertUtil.beanCovertMap(inspectionTaskDetailDto));
+    }
+
+    @Override
+    public void updateInspectionTaskDetail(@RequestBody InspectionTaskDetailDto inspectionTaskDetailDto) {
+        inspectionTaskDetailServiceDaoImpl.updateInspectionTaskDetailInfoInstance(BeanConvertUtil.beanCovertMap(inspectionTaskDetailDto));
     }
 
     public IInspectionTaskDetailServiceDao getInspectionTaskDetailServiceDaoImpl() {

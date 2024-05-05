@@ -4,6 +4,7 @@ import com.java110.dto.PageDto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -15,12 +16,17 @@ import java.util.Date;
  **/
 public class OrgDto extends PageDto implements Serializable {
 
+    public static final String ORG_LEVEL_STORE = "1";
+    public static final String ORG_LEVEL_COMPANY = "2";
+    public static final String ORG_LEVEL_DEPARTMENT = "3";
+
     private String orgName;
     private String parentOrgId;
     private String description;
     private String orgLevel;
     private String storeId;
     private String orgId;
+    private String[] orgIds;
     private String belongCommunityId;
     private String belongCommunityName;
     private String allowOperation;
@@ -157,5 +163,13 @@ public class OrgDto extends PageDto implements Serializable {
 
     public void setStaffName(String staffName) {
         this.staffName = staffName;
+    }
+
+    public String[] getOrgIds() {
+        return orgIds;
+    }
+
+    public void setOrgIds(String[] orgIds) {
+        this.orgIds = orgIds;
     }
 }

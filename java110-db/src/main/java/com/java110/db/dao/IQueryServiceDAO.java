@@ -1,7 +1,7 @@
 package com.java110.db.dao;
 
-import com.java110.entity.order.ServiceBusiness;
-import com.java110.entity.service.ServiceSql;
+import com.java110.dto.system.ServiceBusiness;
+import com.java110.dto.system.ServiceSql;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +18,15 @@ public interface IQueryServiceDAO {
      * @return
      */
     public List<Map<String,Object>> executeSql(String sql,Object []params);
+
+    /**
+     * 防止sql注入 改造成直接用prepareStatement 预处理sql
+     *
+     * @param sql
+     * @param params
+     * @return
+     */
+    public List<Map<String, Object>> executeSql(String sql, Object[] params, List<String> columns);
 
     public int updateSql(String sql,Object[] params);
 

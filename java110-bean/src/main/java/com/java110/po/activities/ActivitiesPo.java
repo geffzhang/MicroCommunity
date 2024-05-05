@@ -5,6 +5,7 @@ import com.java110.dto.PageDto;
 import java.io.Serializable;
 import java.util.Date;
 
+
 /**
  * @ClassName FloorDto
  * @Description 活动数据层封装
@@ -29,6 +30,7 @@ public class ActivitiesPo implements Serializable {
     private String communityId;
     private String headerImg;
     private String state;
+    private String statusCd ="0";
 
 
     public String getCollectCount() {
@@ -144,5 +146,11 @@ public class ActivitiesPo implements Serializable {
         this.state = state;
     }
 
+    public String getStatusCd() {
+        return statusCd;
+    }
 
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
 }

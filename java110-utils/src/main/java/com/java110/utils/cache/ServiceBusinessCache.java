@@ -1,8 +1,7 @@
 package com.java110.utils.cache;
 
 import com.java110.utils.util.SerializeUtil;
-import com.java110.entity.order.ServiceBusiness;
-import redis.clients.jedis.Jedis;
+import com.java110.dto.system.ServiceBusiness;
 
 import java.util.List;
 

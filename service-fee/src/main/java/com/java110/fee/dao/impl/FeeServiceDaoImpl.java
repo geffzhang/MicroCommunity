@@ -7,7 +7,7 @@ import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -317,6 +317,15 @@ public class FeeServiceDaoImpl extends BaseServiceDao implements IFeeServiceDao 
         List<Map> businessFeeInfos = sqlSessionTemplate.selectList("feeServiceDaoImpl.computeEveryOweFee", beanCovertMap);
 
         return businessFeeInfos;
+    }
+
+    @Override
+    public int deleteFeesByBatch(Map info) {
+        logger.debug("修改费用信息Instance 入参 info : {}", info);
+
+        int saveFlag = sqlSessionTemplate.update("feeServiceDaoImpl.deleteFeesByBatch", info);
+
+        return saveFlag;
     }
 
 

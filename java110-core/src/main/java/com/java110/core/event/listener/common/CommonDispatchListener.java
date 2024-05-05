@@ -6,7 +6,7 @@ import com.java110.utils.util.Assert;
 import com.java110.utils.util.ProtocolUtil;
 import com.java110.utils.util.StringUtil;
 import com.java110.core.context.AppContext;
-import com.java110.entity.order.BusiOrder;
+import com.java110.dto.system.BusiOrder;
 import com.java110.core.event.app.AppListener;
 import com.java110.core.event.app.common.AppCommonEvent;
 import com.java110.core.event.method.CommonDispatchAfterMethod;
@@ -99,7 +99,7 @@ public class CommonDispatchListener implements AppListener<AppCommonEvent> {
         if(!"0".equals(after_method) && !StringUtil.isEmpty(after_method)){
 
             try {
-                Class clazz = commonDispatchAfterMethod.getClass();
+                Class<?> clazz = commonDispatchAfterMethod.getClass();
 
                 Method method = clazz.getDeclaredMethod(after_method,new Class[]{AppContext.class,JSONArray.class,JSONObject.class});
 

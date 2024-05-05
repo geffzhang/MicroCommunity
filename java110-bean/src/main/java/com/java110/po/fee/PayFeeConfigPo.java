@@ -25,12 +25,21 @@ public class PayFeeConfigPo implements Serializable {
     private String feeFlag;
     private String feeName;
     private String computingFormula;
+    private String computingFormulaText;
 
     private String billType;
 
     private String paymentCd;
 
     private String paymentCycle;
+    private String deductFrom;
+    private String statusCd = "0";
+
+    private String payOnline;
+    private String scale;
+    private String decimalPlace;
+    private String units;
+    private String prepaymentPeriod;
 
     public String getConfigId() {
         return configId;
@@ -142,5 +151,65 @@ public class PayFeeConfigPo implements Serializable {
 
     public void setPaymentCycle(String paymentCycle) {
         this.paymentCycle = paymentCycle;
+    }
+
+    public String getComputingFormulaText() {
+        return computingFormulaText;
+    }
+
+    public void setComputingFormulaText(String computingFormulaText) {
+        this.computingFormulaText = computingFormulaText;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public String getDeductFrom() { return deductFrom; }
+
+    public void setDeductFrom(String deductFrom) { this.deductFrom = deductFrom; }
+
+    public String getPayOnline() {
+        return payOnline;
+    }
+
+    public void setPayOnline(String payOnline) {
+        this.payOnline = payOnline;
+    }
+
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setDecimalPlace(String decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+    public String getPrepaymentPeriod() {
+        return prepaymentPeriod;
+    }
+
+    public void setPrepaymentPeriod(String prepaymentPeriod) {
+        this.prepaymentPeriod = prepaymentPeriod;
     }
 }

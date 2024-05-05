@@ -33,7 +33,7 @@ public interface IIotSendAsyn {
      *
      * @param postParameters
      */
-    public void addCommunity(JSONObject postParameters);
+    public void addCommunity(JSONObject postParameters) throws Exception;
 
     /**
      * 编辑小区信息
@@ -107,11 +107,100 @@ public interface IIotSendAsyn {
      */
     void addOwnerCar(JSONObject postParameters);
 
+    /**
+     * 添加访客信息
+     *
+     * @param postParameters
+     */
+    void addVisit(JSONObject postParameters);
+
     void updateOwnerCar(JSONObject postParameters);
 
     void deleteOwnerCar(JSONObject postParameters);
 
     void addCarBlackWhite(JSONObject postParameters);
 
+    void updateCarBlackWhite(JSONObject postParameters);
+
     void deleteCarBlackWhite(JSONObject postParameters);
+
+    /**
+     * 同步临时车费用
+     *
+     * @param postParameters
+     */
+    void addTempCarFeeConfig(JSONObject postParameters);
+
+    /**
+     * 同步临时车费用
+     *
+     * @param postParameters
+     */
+    void updateTempCarFeeConfig(JSONObject postParameters);
+
+    void deleteTempCarFeeConfig(JSONObject postParameters);
+
+    /**
+     * 考勤班组同步
+     *
+     * @param postParameters
+     * @param staffs
+     */
+    void addAttendance(JSONObject postParameters, List<JSONObject> staffs);
+
+    /**
+     * 考勤员工同步
+     *
+     * @param postParameters
+     * @param staffs
+     */
+    void addAttendanceStaff(JSONObject postParameters, List<JSONObject> staffs);
+
+
+    void updateAttendanceStaff(JSONObject postParameters, List<JSONObject> storeUserObjs);
+
+    /**
+     * 编辑考勤 同步
+     *
+     * @param postParameters
+     */
+    void updateAttendance(JSONObject postParameters);
+
+    /**
+     * 删除考勤 同步
+     *
+     * @param postParameters
+     */
+    void deleteAttendance(JSONObject postParameters);
+
+    void deleteAttendanceStaff(JSONObject postParameters);
+
+    /**
+     * 添加 道闸问候语
+     *
+     * @param postParameters
+     */
+    void addParkingAreaText(JSONObject postParameters);
+
+    /**
+     * 添加岗亭
+     *
+     * @param postParameters
+     */
+    void addParkingBox(JSONObject postParameters);
+
+    /**
+     * 删除岗亭
+     *
+     * @param postParameters
+     */
+    void deleteParkingBox(JSONObject postParameters);
+
+    /**
+     * 同步 停车劵
+     * @param postParameters
+     */
+    void addParkingCouponCar(JSONObject postParameters);
+
+    void deleteParkingCouponCar(JSONObject postParameters);
 }

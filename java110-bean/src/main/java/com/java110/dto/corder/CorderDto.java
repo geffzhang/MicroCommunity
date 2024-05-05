@@ -9,6 +9,8 @@ import java.util.List;
 public class CorderDto extends PageDto implements Serializable {
     private String oId;
     private String appId;
+    private String appName;
+    private String name;
     private String extTransactionId;
     private String userId;
     private String requestTime;
@@ -17,9 +19,22 @@ public class CorderDto extends PageDto implements Serializable {
     private String finishTime;
     private String remark;
     private String statusCd;
+    private String staffNameLike;
+    private String startTime;
+    private String endTime;
     private List<CbusinessVo> cBusiness;
     private String orderTypeCdName;
     private String userName;
+
+    private String bId;
+
+    private String businessTypeCd;
+
+    private String action;
+
+    private String actionObj;
+
+    private String businessTypeNameLike;
 
     public String getoId() {
         return oId;
@@ -123,5 +138,85 @@ public class CorderDto extends PageDto implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getStaffNameLike() {
+        return staffNameLike;
+    }
+
+    public void setStaffNameLike(String staffNameLike) {
+        this.staffNameLike = staffNameLike;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getBusinessTypeCd() {
+        return businessTypeCd;
+    }
+
+    public void setBusinessTypeCd(String businessTypeCd) {
+        this.businessTypeCd = businessTypeCd;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getActionObj() {
+        return actionObj;
+    }
+
+    public void setActionObj(String actionObj) {
+        this.actionObj = actionObj;
+    }
+
+    public String getBusinessTypeNameLike() {
+        return businessTypeNameLike;
+    }
+
+    public void setBusinessTypeNameLike(String businessTypeNameLike) {
+        this.businessTypeNameLike = businessTypeNameLike;
     }
 }

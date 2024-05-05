@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="userServiceDaoImpl">
 
-    <resultMap type="com.java110.entity.user.Cust" id="custMap">
+    <resultMap type="com.java110.dto.user.Cust" id="custMap">
         <id column="custId" jdbcType="VARCHAR" property="custId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="email" jdbcType="VARCHAR" property="email"/>
@@ -18,7 +18,7 @@
         <result column="openId" jdbcType="VARCHAR" property="openId"/>
         <!-- 一对多关系 -->
         <!-- <collection property="stus" resultMap="Student.StudentResult"></collection>  -->
-        <collection property="custAttrs" javaType="com.java110.entity.user.CustAttr">
+        <collection property="custAttrs" javaType="com.java110.dto.user.CustAttr">
             <id property="custId" column="custId"/>
             <result property="attrCd" column="attrCd"/>
             <result property="value" column="value"/>
@@ -38,42 +38,62 @@
     </select>
 -->
     <!--保存数据至过程表 bo_cust 中 -->
-    <insert id="saveDataToBoCust" parameterType="com.java110.entity.user.BoCust">
+    <insert id="saveDataToBoCust" parameterType="com.java110.dto.user.BoCust">
         <![CDATA[
-            insert into bo_cust(boId,custId,name,email,cellphone,realName,sex,password,lanId,custAdress,custType,openId,state)
-            values(#{boId},#{custId},#{name},#{email},#{cellphone},#{realName},#{sex},#{password},#{lanId},#{custAdress},#{custType},#{openId},#{state})
+
+
+                            insert into bo_cust(boId,custId,name,email,cellphone,realName,sex,password,lanId,custAdress,custType,openId,state)
+                            values(#{boId},#{custId},#{name},#{email},#{cellphone},#{realName},#{sex},#{password},#{lanId},#{custAdress},#{custType},#{openId},#{state})
+
+
         ]]>
     </insert>
     <!-- 保存数据至过程表bo_cust_attr 中-->
-    <insert id="saveDataToBoCustAttr" parameterType="com.java110.entity.user.BoCustAttr">
+    <insert id="saveDataToBoCustAttr" parameterType="com.java110.dto.user.BoCustAttr">
         <![CDATA[
-            insert into bo_cust_attr(boId,custId,attrCd,value,state)
-            values(#{boId},#{custId},#{attrCd},#{value},#{state})
+
+
+                            insert into bo_cust_attr(boId,custId,attrCd,value,state)
+                            values(#{boId},#{custId},#{attrCd},#{value},#{state})
+
+
         ]]>
     </insert>
     <!-- 保存 实例客户信息 cust -->
-    <insert id="saveDataToCust" parameterType="com.java110.entity.user.Cust">
+    <insert id="saveDataToCust" parameterType="com.java110.dto.user.Cust">
         <![CDATA[
-            insert into cust(custId,name,email,cellphone,realName,sex,password,lanId,custAdress,custType,openId,status_cd)
-            values(#{custId},#{name},#{email},#{cellphone},#{realName},#{sex},#{password},#{lanId},#{custAdress},#{custType},#{openId},#{status_cd})
+
+
+                            insert into cust(custId,name,email,cellphone,realName,sex,password,lanId,custAdress,custType,openId,status_cd)
+                            values(#{custId},#{name},#{email},#{cellphone},#{realName},#{sex},#{password},#{lanId},#{custAdress},#{custType},#{openId},#{status_cd})
+
+
         ]]>
     </insert>
     <!-- 删除实例客户信息 cust -->
-    <insert id="deleteDataToCust" parameterType="com.java110.entity.user.Cust">
+    <insert id="deleteDataToCust" parameterType="com.java110.dto.user.Cust">
         <![CDATA[
-           delete * from cust c where c.custId = #{custId}
+
+
+                           delete * from cust c where c.custId = #{custId}
+
+
         ]]>
     </insert>
 
     <!-- 保存 实例客户属性信息 cust_attr -->
-    <insert id="saveDataToCustAttr" parameterType="com.java110.entity.user.CustAttr">
+    <insert id="saveDataToCustAttr" parameterType="com.java110.dto.user.CustAttr">
         <![CDATA[
-            insert into cust_attr(custId,attrCd,value,status_cd)
-            values(#{custId},#{attrCd},#{value},#{status_cd})
+
+
+                            insert into cust_attr(custId,attrCd,value,status_cd)
+                            values(#{custId},#{attrCd},#{value},#{status_cd})
+
+
         ]]>
     </insert>
     <!-- 删除实例客户信息 cust -->
-    <update id="deleteDataToCustAttr" parameterType="com.java110.entity.user.CustAttr">
+    <update id="deleteDataToCustAttr" parameterType="com.java110.dto.user.CustAttr">
         delete * from cust_attr ct where 1=1
         <if test="custId != null and custId != ''">
             and ct.custId = #{custId}
@@ -83,7 +103,7 @@
         </if>
     </update>
     <!--根据客户ID 查询客户信息，其中包括 cust 和custAttr 数据-->
-    <select id="queryDataToCust" parameterType="com.java110.entity.user.Cust" resultMap="custMap">
+    <select id="queryDataToCust" parameterType="com.java110.dto.user.Cust" resultMap="custMap">
 
         select c.custId,c.name,c.email,c.cellphone,c.realName,c.sex,c.password,c.lanId,c.custAdress,c.custType,c.openId,
         ca.custId,ca.attrCd,ca.value
@@ -99,7 +119,7 @@
     </select>
 
     <!-- 查询客户过程数据 -->
-    <select id="queryBoCust" parameterType="com.java110.entity.user.BoCust" resultType="com.java110.entity.user.BoCust">
+    <select id="queryBoCust" parameterType="com.java110.dto.user.BoCust" resultType="com.java110.dto.user.BoCust">
         select
         bc.boId,bc.custId,bc.name,bc.email,bc.cellphone,bc.realName,bc.sex,bc.password,bc.lanId,bc.custAdress,bc.custType,bc.openId,bc.create_dt
         from bo_cust bc where 1=1
@@ -118,8 +138,8 @@
         </if>
     </select>
     <!-- 查询客户属性过程表-->
-    <select id="queryBoCustAttr" parameterType="com.java110.entity.user.BoCustAttr"
-            resultType="com.java110.entity.user.BoCustAttr">
+    <select id="queryBoCustAttr" parameterType="com.java110.dto.user.BoCustAttr"
+            resultType="com.java110.dto.user.BoCustAttr">
         select bca.boId,bca.custId,bca.attrCd,bca.value,bca.state,bca.create_dt from bo_cust_attr bca where 1=1
         <if test="boId !=null and boId != ''">
             and bca.boId = #{boId}
@@ -136,8 +156,8 @@
     </select>
 
     <!-- 查询客户属性信息 -->
-    <select id="queryDataToCustAttr" parameterType="com.java110.entity.user.CustAttr"
-            resultType="com.java110.entity.user.CustAttr">
+    <select id="queryDataToCustAttr" parameterType="com.java110.dto.user.CustAttr"
+            resultType="com.java110.dto.user.CustAttr">
         select * from cust_attr ca where 1=1
         <if test="custId != null and custId != ''">
             and ca.custId = #{custId}
@@ -204,6 +224,9 @@
         </if>
         <if test="tel !=null and tel != ''">
             ,u.tel= #{tel}
+        </if>
+        <if test="score !=null and score != ''">
+            ,u.score= #{score}
         </if>
         where 1 = 1
         <if test="bId != null and bId != ''">
@@ -442,88 +465,124 @@
 
     <!-- 查询员工总量 -->
     <select id="getStaffCount" parameterType="Map" resultType="Map">
+        <if test="orgIds != null and orgIds.length > 0">
+        select count(*) count from(
+        </if>
         select count(1) count
-        from
-        u_user a
-        ,u_org uo
-        ,u_org_staff_rel uosr
-        ,u_org puo
-        where a.level_cd = '01'
-        and a.user_id = uosr.staff_id
+        from u_user u
+        inner join s_store_user su on su.user_id = u.user_id
+        <if test="(orgId !=null and orgId != '')||(orgIds != null and orgIds.length > 0)">
+            left join u_org_staff_rel uosr on u.user_id = uosr.staff_id and uosr.status_cd = '0'
+            left join u_org uo on uosr.org_id = uo.org_id and uo.status_cd = '0'
+        </if>
+        where u.level_cd = '01'
         <if test="storeId !=null and storeId != ''">
-            and uosr.store_id = #{storeId}
-        </if>
-        and uosr.org_id = uo.org_id
-        and uo.parent_org_id = puo.org_id
-        <if test="parentOrgId !=null and parentOrgId != ''">
-            and uo.parent_org_id = #{parentOrgId}
-        </if>
-        and a.status_cd = '0'
-        and uo.status_cd = '0'
-        and uosr.status_cd = '0'
-        and puo.status_cd = '0'
-        <if test="tel !=null and tel != ''">
-            and a.tel= #{tel}
-        </if>
-        <if test="name !=null and name != ''">
-            and a.name like concat('%',#{name},'%')
-        </if>
-        <if test="staffName !=null and staffName != ''">
-            and a.name like concat('%',#{staffName},'%')
-        </if>
-        <if test="staffId != null and staffId !=''">
-            and uosr.staff_id = #{staffId}
+            and su.store_id = #{storeId}
         </if>
         <if test="orgId !=null and orgId != ''">
-            and uo.org_id = #{orgId}
-        </if>
-        <if test="bId != null and bId !=''">
-            and u.b_id = #{bId}
-        </if>
-    </select>
-
-    <!-- 查询员工总量 -->
-    <select id="getStaffs" parameterType="Map" resultType="Map">
-        select uo.org_id orgId,uo.org_name,uo.org_name orgName,u.user_id, u.user_id userId,u.name,u.name
-        userName,u.email,u.address,u.location_cd,u.location_cd locationCd,
-        u.age,u.sex,u.tel,u.level_cd,u.b_id,puo.org_id parentOrgId,puo.org_name parentOrgName,puo.belong_community_id belongCommunityId,
-        uosr.store_id storeId
-        from
-        u_user u
-        ,u_org uo
-        ,u_org_staff_rel uosr
-        ,u_org puo
-        where u.level_cd = '01'
-        and u.user_id = uosr.staff_id
-        <if test="storeId !=null and storeId != ''">
-            and uosr.store_id = #{storeId}
-        </if>
-        and uosr.org_id = uo.org_id
-        and uo.parent_org_id = puo.org_id
-        <if test="parentOrgId !=null and parentOrgId != ''">
-            and uo.parent_org_id = #{parentOrgId}
+            and uosr.org_id = #{orgId}
         </if>
         and u.status_cd = '0'
-        and uo.status_cd = '0'
-        and uosr.status_cd = '0'
-        and puo.status_cd = '0'
         <if test="tel !=null and tel != ''">
             and u.tel= #{tel}
         </if>
         <if test="name !=null and name != ''">
             and u.name like concat('%',#{name},'%')
         </if>
+        <if test="nameLike !=null and nameLike != ''">
+            and u.name like concat('%',#{nameLike},'%')
+        </if>
         <if test="staffName !=null and staffName != ''">
             and u.name like concat('%',#{staffName},'%')
         </if>
         <if test="staffId != null and staffId !=''">
-            and uosr.staff_id = #{staffId}
+            and u.user_id = #{staffId}
         </if>
         <if test="orgId !=null and orgId != ''">
             and uo.org_id = #{orgId}
         </if>
         <if test="bId != null and bId !=''">
             and u.b_id = #{bId}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orgIds != null and orgIds.length > 0">
+            and uosr.org_id in
+            <foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            and uosr.status_cd =0
+            GROUP BY u.user_id
+        </if>
+        <if test="orgIds != null and orgIds.length > 0">
+            )a
+        </if>
+    </select>
+
+    <!-- 查询员工总量 -->
+    <select id="getStaffs" parameterType="Map" resultType="Map">
+        select u.user_id, u.user_id userId,u.name,u.name
+        userName,u.email,u.address,u.location_cd,u.location_cd locationCd,
+        u.age,u.sex,u.tel,u.level_cd levelCd,u.b_id,su.rel_cd relCd,td.name relCdName
+        <if test="orgId !=null and orgId != ''">
+            ,uo.org_id orgId,uo.org_name,uo.org_name orgName,uosr.store_id storeId,uosr.rel_id relId
+        </if>
+        from
+        u_user u
+        inner join s_store_user su on su.user_id = u.user_id
+        left join t_dict td on su.rel_cd = td.status_cd and td.table_name='s_store_user' and td.table_columns='rel_cd'
+        <if test="(orgId !=null and orgId != '')||(orgIds != null and orgIds.length > 0)">
+            left join u_org_staff_rel uosr on u.user_id = uosr.staff_id and uosr.status_cd = '0'
+            left join u_org uo on uosr.org_id = uo.org_id and uo.status_cd = '0'
+        </if>
+        where u.level_cd = '01'
+        <if test="storeId !=null and storeId != ''">
+            and su.store_id = #{storeId}
+        </if>
+        <if test="orgId !=null and orgId != ''">
+            and uosr.org_id = #{orgId}
+        </if>
+        and u.status_cd = '0'
+        <if test="tel !=null and tel != ''">
+            and u.tel= #{tel}
+        </if>
+        <if test="name !=null and name != ''">
+            and u.name like concat('%',#{name},'%')
+        </if>
+        <if test="nameLike !=null and nameLike != ''">
+            and u.name like concat('%',#{nameLike},'%')
+        </if>
+        <if test="staffName !=null and staffName != ''">
+            and u.name like concat('%',#{staffName},'%')
+        </if>
+        <if test="staffId != null and staffId !=''">
+            and u.user_id = #{staffId}
+        </if>
+        <if test="orgId !=null and orgId != ''">
+            and uo.org_id = #{orgId}
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orgIds != null and orgIds.length > 0">
+            and uosr.org_id in
+            <foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            and uosr.status_cd =0
+            GROUP BY u.user_id,u.name,u.email,u.address,u.location_cd,
+            u.age,u.sex,u.tel,u.level_cd ,u.b_id,su.rel_cd ,td.name
+            ,uo.org_id,uo.org_name,uosr.store_id,uosr.rel_id
         </if>
         order by u.create_time desc
         <if test="page != -1 and page != null ">
@@ -535,7 +594,7 @@
     <select id="getUsers" parameterType="Map" resultType="Map">
         select u.user_id, u.user_id userId,u.name,u.name
         userName,u.email,u.address,u.password,u.location_cd,u.location_cd locationCd,
-        u.age,u.sex,u.tel,u.level_cd,u.b_id
+        u.age,u.sex,u.tel,u.level_cd,u.b_id,u.level_cd levelCd,u.score
         from u_user u
         <if test="openId != null and openId !=''">
             ,u_user_attr ua
@@ -543,11 +602,21 @@
         <if test="key != null and key !=''">
             ,u_user_attr ub
         </if>
+        <if test="unionId != null and unionId !=''">
+            ,u_user_attr ua
+        </if>
         where 1= 1
+
         <if test="openId != null and openId != ''">
             and u.user_id = ua.user_id
-            and ua.spec_cd = '100201911001'
+            and ua.spec_cd in ('100201911001','100201911003')
             and ua.value = #{openId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="unionId != null and unionId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911002'
+            and ua.value = #{unionId}
             and ua.status_cd = '0'
         </if>
         <if test="key != null and key != ''">
@@ -596,6 +665,18 @@
         <if test="tel !=null and tel != ''">
             and u.tel= #{tel}
         </if>
+        <if test="levelCd !=null and levelCd != ''">
+            and u.level_cd= #{levelCd}
+        </if>
+        <if test="levelCds != null">
+            and u.level_cd in
+            <foreach collection="levelCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test='userFlag !=null and userFlag =="1"'>
+            and u.level_cd != '02'
+        </if>
         order by u.create_time desc
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
@@ -608,11 +689,20 @@
         <if test="openId != null and openId !=''">
             ,u_user_attr ua
         </if>
+        <if test="unionId != null and unionId !=''">
+            ,u_user_attr ua
+        </if>
         where 1= 1
         <if test="openId != null and openId != ''">
             and u.user_id = ua.user_id
-            and ua.spec_cd = '100201911001'
+            and ua.spec_cd  in ('100201911001','100201911003')
             and ua.value = #{openId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="unionId != null and unionId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911002'
+            and ua.value = #{unionId}
             and ua.status_cd = '0'
         </if>
         <if test="bId != null and bId !=''">
@@ -642,11 +732,20 @@
         <if test="openId != null and openId !=''">
             ,u_user_attr ua
         </if>
+        <if test="unionId != null and unionId !=''">
+            ,u_user_attr ua
+        </if>
         where 1= 1
         <if test="openId != null and openId != ''">
             and u.user_id = ua.user_id
             and ua.spec_cd = '100201911001'
             and ua.value = #{openId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="unionId != null and unionId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911002'
+            and ua.value = #{unionId}
             and ua.status_cd = '0'
         </if>
         <if test="bId != null and bId !=''">

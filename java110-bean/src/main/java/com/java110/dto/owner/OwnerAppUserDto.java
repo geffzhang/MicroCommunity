@@ -24,6 +24,7 @@ public class OwnerAppUserDto extends PageDto implements Serializable {
 
     private String idCard;
     private String openId;
+    private String unionId;
     private String link;
     private String remark;
     private String appUserName;
@@ -39,6 +40,9 @@ public class OwnerAppUserDto extends PageDto implements Serializable {
     private String appType;
     private String[] userIds;
     private String oldAppUserId;
+    private String sCommunityTel;
+    private String communityQrCode;
+    private String defaultCommunityId;
 
 
     private String[] states;
@@ -52,6 +56,10 @@ public class OwnerAppUserDto extends PageDto implements Serializable {
     private Date createTime;
 
     private String statusCd = "0";
+
+    private String nickName;
+    private String headImgUrl;
+    private String ownerTypeCd;
 
 
     public String getIdCard() {
@@ -245,5 +253,61 @@ public class OwnerAppUserDto extends PageDto implements Serializable {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
+
+    public String getsCommunityTel() {
+        return sCommunityTel;
+    }
+
+    public void setsCommunityTel(String sCommunityTel) {
+        this.sCommunityTel = sCommunityTel;
+    }
+
+    public String getOwnerTypeCd() {
+        return ownerTypeCd;
+    }
+
+    public void setOwnerTypeCd(String ownerTypeCd) {
+        this.ownerTypeCd = ownerTypeCd;
+    }
+
+    public String getDefaultCommunityId() {
+        return defaultCommunityId;
+    }
+
+    public void setDefaultCommunityId(String defaultCommunityId) {
+        this.defaultCommunityId = defaultCommunityId;
+    }
+
+    public String getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
+    }
+
+    public String getCommunityQrCode() {
+        return communityQrCode;
+    }
+
+    public void setCommunityQrCode(String communityQrCode) {
+        this.communityQrCode = communityQrCode;
     }
 }

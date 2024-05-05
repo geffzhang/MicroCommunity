@@ -4,7 +4,7 @@ import com.java110.common.bmo.logSystemError.ISaveLogSystemErrorBMO;
 import com.java110.core.annotation.Java110Transactional;
 import com.java110.core.factory.GenerateCodeFactory;
 import com.java110.intf.common.ILogSystemErrorInnerServiceSMO;
-import com.java110.po.logSystemError.LogSystemErrorPo;
+import com.java110.po.log.LogSystemErrorPo;
 import com.java110.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +28,11 @@ public class SaveLogSystemErrorBMOImpl implements ISaveLogSystemErrorBMO {
         logSystemErrorPo.setErrId(GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_errId));
         int flag = logSystemErrorInnerServiceSMOImpl.saveLogSystemError(logSystemErrorPo);
 
-        if (flag > 0) {
-            return ResultVo.createResponseEntity(ResultVo.CODE_OK, "保存成功");
+        if (flag < 1) {
+            return ResultVo.createResponseEntity(ResultVo.CODE_ERROR, "保存失败");
         }
 
-        return ResultVo.createResponseEntity(ResultVo.CODE_ERROR, "保存失败");
+        return ResultVo.createResponseEntity(ResultVo.CODE_OK, "保存成功");
     }
 
 }

@@ -2,7 +2,7 @@ package com.java110.community.bmo.assets.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java110.community.bmo.assets.IQueryAssetsBMO;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.machine.MachineDto;
 import com.java110.dto.parking.ParkingSpaceDto;
 import com.java110.intf.common.IMachineInnerServiceSMO;
@@ -47,6 +47,8 @@ public class QueryAssetsBMOImpl implements IQueryAssetsBMO {
 
         RoomDto roomDto = new RoomDto();
         roomDto.setCommunityId(communityId);
+        //1010301表示房屋  2020602表示商铺
+        roomDto.setRoomType("1010301");
         int roomCount = roomInnerServiceSMOImpl.queryRoomsCount(roomDto);
 
         ParkingSpaceDto parkingSpaceDto = new ParkingSpaceDto();

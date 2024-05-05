@@ -3,19 +3,19 @@ package com.java110.po.repair;
 import java.io.Serializable;
 
 public class RepairSettingPo implements Serializable {
-
     private String repairTypeName;
     private String repairType;
     private String remark;
     private String communityId;
     private String repairWay;
     private String settingId;
-
     private String publicArea;
     private String payFeeFlag;
     private String priceScope;
     private String returnVisitFlag;
-
+    private String repairSettingType;
+    private String statusCd = "0";
+    private String isShow;
 
     public String getRepairTypeName() {
         return repairTypeName;
@@ -65,7 +65,6 @@ public class RepairSettingPo implements Serializable {
         this.settingId = settingId;
     }
 
-
     public String getPublicArea() {
         return publicArea;
     }
@@ -96,5 +95,29 @@ public class RepairSettingPo implements Serializable {
 
     public void setReturnVisitFlag(String returnVisitFlag) {
         this.returnVisitFlag = returnVisitFlag;
+    }
+
+    public String getRepairSettingType() {
+        return repairSettingType;
+    }
+
+    public void setRepairSettingType(String repairSettingType) {
+        this.repairSettingType = repairSettingType;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public String getIsShow() {
+        return isShow;
+    }
+
+    public void setIsShow(String isShow) {
+        this.isShow = isShow;
     }
 }

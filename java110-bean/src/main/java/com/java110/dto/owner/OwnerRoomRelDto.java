@@ -20,12 +20,15 @@ public class OwnerRoomRelDto extends PageDto implements Serializable {
     private String state;
     private String ownerId;
     private String ownerName;
+    private String ownerNameLike;
     private String idCard;
     private String link;
     private String userId;
     private String roomId;
+    private String[] roomIds;
     private String bId;
     private boolean byOwnerInfo = false;
+    private String communityId;
 
     private Date startTime;
     private Date endTime;
@@ -155,5 +158,29 @@ public class OwnerRoomRelDto extends PageDto implements Serializable {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public String getOwnerNameLike() {
+        return ownerNameLike;
+    }
+
+    public void setOwnerNameLike(String ownerNameLike) {
+        this.ownerNameLike = ownerNameLike;
+    }
+
+    public String getCommunityId() {
+        return communityId;
+    }
+
+    public void setCommunityId(String communityId) {
+        this.communityId = communityId;
+    }
+
+    public String[] getRoomIds() {
+        return roomIds;
+    }
+
+    public void setRoomIds(String[] roomIds) {
+        this.roomIds = roomIds;
     }
 }

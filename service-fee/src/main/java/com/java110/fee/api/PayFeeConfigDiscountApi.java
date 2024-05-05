@@ -1,18 +1,18 @@
 package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.payFeeConfigDiscount.PayFeeConfigDiscountDto;
+import com.java110.dto.payFee.PayFeeConfigDiscountDto;
 import com.java110.fee.bmo.payFeeConfigDiscount.IDeletePayFeeConfigDiscountBMO;
 import com.java110.fee.bmo.payFeeConfigDiscount.IGetPayFeeConfigDiscountBMO;
 import com.java110.fee.bmo.payFeeConfigDiscount.ISavePayFeeConfigDiscountBMO;
 import com.java110.fee.bmo.payFeeConfigDiscount.IUpdatePayFeeConfigDiscountBMO;
-import com.java110.po.payFeeConfigDiscount.PayFeeConfigDiscountPo;
+import com.java110.po.payFee.PayFeeConfigDiscountPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
+import com.java110.utils.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping(value = "/payFeeConfigDiscount")
@@ -20,8 +20,10 @@ public class PayFeeConfigDiscountApi {
 
     @Autowired
     private ISavePayFeeConfigDiscountBMO savePayFeeConfigDiscountBMOImpl;
+
     @Autowired
     private IUpdatePayFeeConfigDiscountBMO updatePayFeeConfigDiscountBMOImpl;
+
     @Autowired
     private IDeletePayFeeConfigDiscountBMO deletePayFeeConfigDiscountBMOImpl;
 
@@ -45,8 +47,12 @@ public class PayFeeConfigDiscountApi {
         Assert.hasKeyAndValue(reqJson, "startTime", "请求报文中未包含startTime");
         Assert.hasKeyAndValue(reqJson, "endTime", "请求报文中未包含endTime");
 
-
         PayFeeConfigDiscountPo payFeeConfigDiscountPo = BeanConvertUtil.covertBean(reqJson, PayFeeConfigDiscountPo.class);
+        String paymaxEndTime = reqJson.getString("payMaxEndTime");
+        if (StringUtil.isEmpty(paymaxEndTime)) {
+            //如果优惠最大时间为空，就默认为2037-12-31 00:00:00
+            payFeeConfigDiscountPo.setPayMaxEndTime("2037-12-31 00:00:00");
+        }
         return savePayFeeConfigDiscountBMOImpl.save(payFeeConfigDiscountPo);
     }
 

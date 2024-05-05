@@ -1,6 +1,8 @@
 package com.java110.core.factory;
 
+import com.java110.dto.sms.SmsConfigDto;
 import com.java110.utils.cache.MappingCache;
+import com.java110.vo.ResultVo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Random;
@@ -17,8 +19,9 @@ public class SendSmsFactory {
 
     private static final String SMS_DOMAIN = "SMS_DOMAIN";
     private static final String SMS_COMPANY = "SMS_COMPANY";
-    private static final String SMS_COMPANY_ALI = "ALI";
-    private static final String SMS_COMPANY_TENCENT = "TENCENT";
+    public static final String SMS_COMPANY_ALI = "ALI";
+    public static final String SMS_COMPANY_TENCENT = "TENCENT";
+    public static final String SMS_COMPANY_YIDONG = "YIDONG"; // 移动 短信
     public static final String VALIDATE_CODE = "_validateTel";
 
     /**
@@ -32,10 +35,28 @@ public class SendSmsFactory {
 
         if (!StringUtils.isEmpty(smsCompany) && SMS_COMPANY_ALI.equals(smsCompany.trim())) {
             AliSendMessageFactory.sendMessage(tel, code);
+        }else if(SMS_COMPANY_YIDONG.equals(smsCompany.trim())){
+            YidongSendMessageFactory.sendMessage(tel,code);
         } else {
             TencentSendMessageFactory.sendMessage(tel, code);
         }
     }
+
+    public static ResultVo sendOweFeeSms(String tel, SmsConfigDto smsConfigDto, Object param){
+
+        ResultVo resultVo = null;
+        if (SMS_COMPANY_ALI.equals(smsConfigDto.getSmsType().trim())) {
+            resultVo = AliSendMessageFactory.sendOweFeeSms(tel, param,smsConfigDto);
+        } else if(SMS_COMPANY_YIDONG.equals(smsConfigDto.getSmsType().trim())){
+            resultVo = YidongSendMessageFactory.sendOweFeeSms(tel, param,smsConfigDto);
+        } else {
+            resultVo = TencentSendMessageFactory.sendOweFeeSms(tel, param,smsConfigDto);
+        }
+
+        return resultVo;
+    }
+
+
 
     /**
      * 生成验证码

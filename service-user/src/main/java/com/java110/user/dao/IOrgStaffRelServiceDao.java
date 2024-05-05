@@ -3,10 +3,6 @@ package com.java110.user.dao;
 
 import com.java110.dto.org.OrgStaffRelDto;
 import com.java110.utils.exception.DAOException;
-import com.java110.entity.merchant.BoMerchant;
-import com.java110.entity.merchant.BoMerchantAttr;
-import com.java110.entity.merchant.Merchant;
-import com.java110.entity.merchant.MerchantAttr;
 
 
 import java.util.List;
@@ -80,5 +76,7 @@ public interface IOrgStaffRelServiceDao {
     int queryOrgStaffRelsCount(Map info);
 
     List<OrgStaffRelDto> queryOrgInfoByStaffIds(Map info);
+
+    List<OrgStaffRelDto> queryOrgInfoByStaffIdsNew(Map info);
 
 }

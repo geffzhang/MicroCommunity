@@ -4,13 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.utils.StringUtils;
 import com.java110.core.factory.GenerateCodeFactory;
-import com.java110.dto.rentingConfig.RentingConfigDto;
-import com.java110.dto.rentingPool.RentingPoolDto;
-import com.java110.dto.rentingPoolAttr.RentingPoolAttrDto;
-import com.java110.po.rentingConfig.RentingConfigPo;
-import com.java110.po.rentingPool.RentingPoolPo;
-import com.java110.po.rentingPoolAttr.RentingPoolAttrPo;
-import com.java110.po.rentingPoolFlow.RentingPoolFlowPo;
+import com.java110.dto.renting.RentingConfigDto;
+import com.java110.dto.renting.RentingPoolDto;
+import com.java110.dto.renting.RentingPoolAttrDto;
+import com.java110.po.renting.RentingConfigPo;
+import com.java110.po.renting.RentingPoolPo;
+import com.java110.po.renting.RentingPoolAttrPo;
+import com.java110.po.renting.RentingPoolFlowPo;
 import com.java110.user.bmo.rentingConfig.IDeleteRentingConfigBMO;
 import com.java110.user.bmo.rentingConfig.IGetRentingConfigBMO;
 import com.java110.user.bmo.rentingConfig.ISaveRentingConfigBMO;
@@ -147,11 +147,15 @@ public class RentingApi {
     public ResponseEntity<String> queryRentingConfig(
             @RequestParam(value = "page") int page,
             @RequestParam(value = "row") int row,
-            @RequestParam(value = "rentingConfigId", required = false) String rentingConfigId) {
+            @RequestParam(value = "rentingConfigId", required = false) String rentingConfigId,
+            @RequestParam(value = "rentingType",required = false) String rentingType,
+            @RequestParam(value = "rentingFormula",required = false) String rentingFormula) {
         RentingConfigDto rentingConfigDto = new RentingConfigDto();
         rentingConfigDto.setPage(page);
         rentingConfigDto.setRow(row);
         rentingConfigDto.setRentingConfigId(rentingConfigId);
+        rentingConfigDto.setRentingType(rentingType);
+        rentingConfigDto.setRentingFormula(rentingFormula);
         return getRentingConfigBMOImpl.get(rentingConfigDto);
     }
 

@@ -1,9 +1,10 @@
 package com.java110.intf.common;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.auditMessage.AuditMessageDto;
-import com.java110.dto.purchaseApply.PurchaseApplyDto;
-import com.java110.entity.audit.AuditUser;
+import com.java110.dto.audit.AuditMessageDto;
+import com.java110.dto.purchase.PurchaseApplyDto;
+import com.java110.dto.audit.AuditUser;
+import com.java110.po.purchase.PurchaseApplyPo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,5 +79,12 @@ public interface IPurchaseApplyUserInnerServiceSMO {
      */
     @RequestMapping(value = "/getTaskCurrentUser", method = RequestMethod.POST)
     public PurchaseApplyDto getTaskCurrentUser(@RequestBody PurchaseApplyDto purchaseApplyDto);
+
+    /**
+     * 处理任务
+     * @return true 为流程结束 false 为流程没有结束
+     */
+    @RequestMapping(value = "/deleteTask", method = RequestMethod.POST)
+    public boolean deleteTask(@RequestBody PurchaseApplyPo purchaseApplyPo);
 
 }

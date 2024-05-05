@@ -18,6 +18,9 @@ public class ApiUnitVo implements Serializable {
     //小区楼ID
     private String floorId;
 
+
+    private String floorNum;
+    private String floorName;
     //单元编号
     private String unitNum;
 
@@ -37,6 +40,8 @@ public class ApiUnitVo implements Serializable {
 
     //创建时间
     private String createTime;
+
+    private int seq;
 
 
     public String getUnitId() {
@@ -109,5 +114,29 @@ public class ApiUnitVo implements Serializable {
 
     public void setUnitArea(String unitArea) {
         this.unitArea = unitArea;
+    }
+
+    public String getFloorNum() {
+        return floorNum;
+    }
+
+    public void setFloorNum(String floorNum) {
+        this.floorNum = floorNum;
+    }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
+    public String getFloorName() {
+        return floorName;
+    }
+
+    public void setFloorName(String floorName) {
+        this.floorName = floorName;
     }
 }

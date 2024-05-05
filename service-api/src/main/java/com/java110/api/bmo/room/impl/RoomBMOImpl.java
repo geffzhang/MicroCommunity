@@ -5,7 +5,7 @@ import com.java110.api.bmo.ApiBaseBMO;
 import com.java110.api.bmo.room.IRoomBMO;
 import com.java110.core.context.DataFlowContext;
 import com.java110.core.factory.GenerateCodeFactory;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.fee.FeeConfigDto;
 import com.java110.dto.fee.FeeDto;
 import com.java110.dto.owner.OwnerRoomRelDto;
@@ -149,7 +149,7 @@ public class RoomBMOImpl extends ApiBaseBMO implements IRoomBMO {
         OwnerRoomRelDto ownerRoomRelDto = BeanConvertUtil.covertBean(paramInJson, OwnerRoomRelDto.class);
         List<OwnerRoomRelDto> ownerRoomRelDtos = ownerRoomRelInnerServiceSMOImpl.queryOwnerRoomRels(ownerRoomRelDto);
 
-        if (ownerRoomRelDtos == null || ownerRoomRelDtos.size() != 1) {
+        if (ownerRoomRelDtos == null || ownerRoomRelDtos.size() <1) {
             throw new ListenerExecuteException(ResponseConstant.RESULT_CODE_ERROR, "数据存在问题，业主和房屋对应关系不是一条");
         }
 
@@ -290,7 +290,6 @@ public class RoomBMOImpl extends ApiBaseBMO implements IRoomBMO {
      * @return 订单服务能够接受的报文
      */
     public void updateShellRoom(JSONObject paramInJson, DataFlowContext dataFlowContext) {
-
         JSONObject businessUnit = new JSONObject();
         businessUnit.putAll(paramInJson);
         businessUnit.put("userId", dataFlowContext.getRequestCurrentHeaders().get(CommonConstant.HTTP_USER_ID));

@@ -2,7 +2,7 @@ package com.java110.intf.community;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.inspectionTask.InspectionTaskDto;
+import com.java110.dto.inspection.InspectionTaskDto;
 import com.java110.po.inspection.InspectionTaskDetailPo;
 import com.java110.po.inspection.InspectionTaskPo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -56,4 +56,13 @@ public interface IInspectionTaskInnerServiceSMO {
 
     @RequestMapping(value = "/saveInspectionTaskDetail", method = RequestMethod.POST)
     int saveInspectionTaskDetail(@RequestBody List<InspectionTaskDetailPo> inspectionTaskDetailPos);
+
+    /**
+     * 更新巡检任务详情表
+     *
+     * @param inspectionTaskDto
+     * @return
+     */
+    @RequestMapping(value = "/updateInspectionTask", method = RequestMethod.POST)
+    void updateInspectionTask(@RequestBody InspectionTaskDto inspectionTaskDto);
 }

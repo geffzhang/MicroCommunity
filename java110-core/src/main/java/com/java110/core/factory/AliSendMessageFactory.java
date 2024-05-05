@@ -8,9 +8,14 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
+import com.java110.dto.sms.SmsConfigDto;
 import com.java110.utils.cache.MappingCache;
+import com.java110.vo.ResultVo;
+import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Random;
 /*
@@ -83,10 +88,41 @@ public class AliSendMessageFactory {
         try {
             CommonResponse response = client.getCommonResponse(request);
             logger.debug("发送验证码信息：{}", response.getData());
+            LogFactory.saveOutLog("SMS","{\"code\":" + code + "}",new ResponseEntity(response.getData(),HttpStatus.OK));
         } catch (ServerException e) {
             e.printStackTrace();
         } catch (ClientException e) {
             e.printStackTrace();
         }
+    }
+
+    public static ResultVo sendOweFeeSms(String tel, Object param, SmsConfigDto smsConfigDto) {
+        //开始发送验证码
+        DefaultProfile profile = DefaultProfile.getProfile(smsConfigDto.getRegion().trim(),
+                smsConfigDto.getAccessKeyId().trim(),
+                smsConfigDto.getAccessSecret().trim());
+        IAcsClient client = new DefaultAcsClient(profile);
+
+        CommonRequest request = new CommonRequest();
+        request.setSysMethod(MethodType.POST);
+        request.setSysDomain("dysmsapi.aliyuncs.com");
+        request.setSysVersion("2017-05-25");
+        request.setSysAction("SendSms");
+        request.putQueryParameter("RegionId", smsConfigDto.getRegion().trim());
+        request.putQueryParameter("PhoneNumbers", tel);
+        request.putQueryParameter("SignName", smsConfigDto.getSignName().trim());
+        request.putQueryParameter("TemplateCode", smsConfigDto.getTemplateCode().trim());
+        request.putQueryParameter("TemplateParam", param.toString());
+
+        try {
+            CommonResponse response = client.getCommonResponse(request);
+            logger.debug("发送欠费信息：{}", response.getData());
+        } catch (ServerException e) {
+            e.printStackTrace();
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
+
+        return new ResultVo(ResultVo.CODE_OK,ResultVo.MSG_OK);
     }
 }

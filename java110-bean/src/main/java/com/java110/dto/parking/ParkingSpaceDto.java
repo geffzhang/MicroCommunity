@@ -17,11 +17,18 @@ public class ParkingSpaceDto extends PageDto implements Serializable {
 
     public static final String STATE_FREE = "F";
     public static final String STATE_HIRE = "H";
+    public static final String STATE_SELL = "S";
+
+    public static final String NUM_MOTHER = "母";
+
+    public static final String TYPE_CD_COMMON = "1";
+    public static final String TYPE_CD_SON_MOTHER = "2";
 
     private String area;
     private String typeCd;
     private String typeCdName;
     private String num;
+    private String[] nums;
     private String psId;
     private String paId;
     private String remark;
@@ -35,8 +42,11 @@ public class ParkingSpaceDto extends PageDto implements Serializable {
     private String ownerName;
     private String idCard;
     private String link;
+    private String parkingType;
+    private String parkingTypeName;
 
     private String[] psIds;
+    private String[] paIds;
 
     private String[] states;
 
@@ -44,7 +54,7 @@ public class ParkingSpaceDto extends PageDto implements Serializable {
     private Date createTime;
 
     private String statusCd = "0";
-    private boolean withOwnerCar =false;
+    private boolean withOwnerCar = false;
 
 
     public String getArea() {
@@ -223,5 +233,37 @@ public class ParkingSpaceDto extends PageDto implements Serializable {
 
     public void setWithOwnerCar(boolean withOwnerCar) {
         this.withOwnerCar = withOwnerCar;
+    }
+
+    public String getParkingType() {
+        return parkingType;
+    }
+
+    public void setParkingType(String parkingType) {
+        this.parkingType = parkingType;
+    }
+
+    public String getParkingTypeName() {
+        return parkingTypeName;
+    }
+
+    public void setParkingTypeName(String parkingTypeName) {
+        this.parkingTypeName = parkingTypeName;
+    }
+
+    public String[] getPaIds() {
+        return paIds;
+    }
+
+    public void setPaIds(String[] paIds) {
+        this.paIds = paIds;
+    }
+
+    public String[] getNums() {
+        return nums;
+    }
+
+    public void setNums(String[] nums) {
+        this.nums = nums;
     }
 }

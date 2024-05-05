@@ -16,10 +16,13 @@ import java.util.List;
  **/
 public class CommunityDto extends PageDto implements Serializable {
 
+    public static final String STATE_NORMAL = "1100";
+
     private String address;
     private String nearbyLandmarks;
     private String cityCode;
     private String name;
+    private String nameLike;
     private String communityId;
     private String[] notInCommunityId;
     private String mapY;
@@ -35,8 +38,20 @@ public class CommunityDto extends PageDto implements Serializable {
     private String provName;
     private String parentAreaCode;
     private String parentAreaName;
+    private String tel;
+    private String payFeeMonth;
+    private String feePrice;
+
+    private String startTime;
+    private String endTime;
 
     private String communityArea;
+
+    private String qrCode;
+
+    private String storeId;
+
+    private String storeName;
 
     private List<CommunityAttrDto> communityAttrDtos;
 
@@ -230,5 +245,77 @@ public class CommunityDto extends PageDto implements Serializable {
 
     public void setProvName(String provName) {
         this.provName = provName;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public String getNameLike() {
+        return nameLike;
+    }
+
+    public void setNameLike(String nameLike) {
+        this.nameLike = nameLike;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getPayFeeMonth() {
+        return payFeeMonth;
+    }
+
+    public void setPayFeeMonth(String payFeeMonth) {
+        this.payFeeMonth = payFeeMonth;
+    }
+
+    public String getFeePrice() {
+        return feePrice;
+    }
+
+    public void setFeePrice(String feePrice) {
+        this.feePrice = feePrice;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }

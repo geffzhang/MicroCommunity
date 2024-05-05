@@ -2,10 +2,10 @@ package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.feeDiscount.FeeDiscountDto;
-import com.java110.dto.feeDiscountRule.FeeDiscountRuleDto;
-import com.java110.dto.feeDiscountRuleSpec.FeeDiscountRuleSpecDto;
-import com.java110.dto.payFeeDetailDiscount.PayFeeDetailDiscountDto;
+import com.java110.dto.fee.FeeDiscountDto;
+import com.java110.dto.fee.FeeDiscountRuleDto;
+import com.java110.dto.fee.FeeDiscountRuleSpecDto;
+import com.java110.dto.payFee.PayFeeDetailDiscountDto;
 import com.java110.fee.bmo.feeDiscount.IDeleteFeeDiscountBMO;
 import com.java110.fee.bmo.feeDiscount.IGetFeeDiscountBMO;
 import com.java110.fee.bmo.feeDiscount.ISaveFeeDiscountBMO;
@@ -13,7 +13,7 @@ import com.java110.fee.bmo.feeDiscount.IUpdateFeeDiscountBMO;
 import com.java110.fee.bmo.feeDiscountRule.IGetFeeDiscountRuleBMO;
 import com.java110.fee.bmo.feeDiscountRuleSpec.IComputeFeeDiscountBMO;
 import com.java110.fee.bmo.feeDiscountRuleSpec.IGetFeeDiscountRuleSpecBMO;
-import com.java110.po.feeDiscount.FeeDiscountPo;
+import com.java110.po.fee.FeeDiscountPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
 
 
 @RestController
@@ -119,6 +121,9 @@ public class FeeDiscountApi {
     @RequestMapping(value = "/queryFeeDiscount", method = RequestMethod.GET)
     public ResponseEntity<String> queryFeeDiscount(@RequestParam(value = "communityId") String communityId,
                                                    @RequestParam(value = "discountType", required = false) String discountType,
+                                                   @RequestParam(value = "discountName", required = false) String discountName,
+                                                   @RequestParam(value = "discountId", required = false) String discountId,
+                                                   @RequestParam(value = "ruleName", required = false) String ruleName,
                                                    @RequestParam(value = "page") int page,
                                                    @RequestParam(value = "row") int row) {
         FeeDiscountDto feeDiscountDto = new FeeDiscountDto();
@@ -126,6 +131,9 @@ public class FeeDiscountApi {
         feeDiscountDto.setRow(row);
         feeDiscountDto.setCommunityId(communityId);
         feeDiscountDto.setDiscountType(discountType);
+        feeDiscountDto.setDiscountName(discountName);
+        feeDiscountDto.setRuleName(ruleName);
+        feeDiscountDto.setDiscountId(discountId);
         return getFeeDiscountBMOImpl.get(feeDiscountDto);
     }
 
@@ -179,9 +187,12 @@ public class FeeDiscountApi {
     public ResponseEntity<String> computeFeeDiscount(@RequestParam(value = "feeId") String feeId,
                                                      @RequestParam(value = "communityId") String communityId,
                                                      @RequestParam(value = "cycles") double cycles,
+                                                     @RequestParam(value = "payerObjId") String payerObjId,
+                                                     @RequestParam(value = "payerObjType") String payerObjType,
+                                                     @RequestParam(value = "endTime") String endTime,
                                                      @RequestParam(value = "page") int page,
-                                                     @RequestParam(value = "row") int row) {
-        return computeFeeDiscountBMOImpl.compute(feeId, communityId, cycles, page, row);
+                                                     @RequestParam(value = "row") int row) throws ParseException {
+        return computeFeeDiscountBMOImpl.compute(feeId, communityId, cycles, payerObjId, payerObjType, endTime, page, row);
     }
 
 

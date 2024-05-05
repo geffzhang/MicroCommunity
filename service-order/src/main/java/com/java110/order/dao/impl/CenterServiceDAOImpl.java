@@ -2,15 +2,15 @@ package com.java110.order.dao.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java110.core.base.dao.BaseServiceDao;
-import com.java110.dto.basePrivilege.BasePrivilegeDto;
-import com.java110.dto.businessDatabus.BusinessDatabusDto;
-import com.java110.entity.mapping.Mapping;
+import com.java110.dto.privilege.BasePrivilegeDto;
+import com.java110.dto.system.BusinessDatabusDto;
+import com.java110.dto.mapping.Mapping;
 import com.java110.order.dao.ICenterServiceDAO;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.StringUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +53,9 @@ public class CenterServiceDAOImpl extends BaseServiceDao implements ICenterServi
             throw new DAOException(ResponseConstant.RESULT_CODE_INNER_ERROR, "保存订单项信息失败：" + JSONObject.toJSONString(orderItem));
         }
 
+
+
+
         if (!orderItem.containsKey("logText") || StringUtil.isEmpty(orderItem.get("logText") + "")) {
             return;
         }
@@ -69,9 +72,9 @@ public class CenterServiceDAOImpl extends BaseServiceDao implements ICenterServi
     @Override
     public void updateOrderItem(Map orderItem) throws DAOException {
         int saveFlag = sqlSessionTemplate.update("centerServiceDAOImpl.updateOrderItem", orderItem);
-        if (saveFlag < 1) {
-            throw new DAOException(ResponseConstant.RESULT_CODE_INNER_ERROR, "修改订单项失败：" + JSONObject.toJSONString(orderItem));
-        }
+//        if (saveFlag < 1) {
+//            throw new DAOException(ResponseConstant.RESULT_CODE_INNER_ERROR, "修改订单项失败：" + JSONObject.toJSONString(orderItem));
+//        }
     }
 
     @Override
@@ -196,10 +199,10 @@ public class CenterServiceDAOImpl extends BaseServiceDao implements ICenterServi
     public void updateBusiness(Map order) throws DAOException {
         logger.debug("----【CenterServiceDAOImpl.updateBusiness】保存数据入参 : " + JSONObject.toJSONString(order));
 
-        int saveFlag = sqlSessionTemplate.update("centerServiceDAOImpl.updateBusiness", order);
-        if (saveFlag < 1) {
-            throw new DAOException(ResponseConstant.RESULT_CODE_INNER_ERROR, "更新订单项信息失败：" + JSONObject.toJSONString(order));
-        }
+         sqlSessionTemplate.update("centerServiceDAOImpl.updateBusiness", order);
+//        if (saveFlag < 1) {
+//            throw new DAOException(ResponseConstant.RESULT_CODE_INNER_ERROR, "更新订单项信息失败：" + JSONObject.toJSONString(order));
+//        }
     }
 
     /**

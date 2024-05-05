@@ -3,23 +3,27 @@ package com.java110.fee.bmo.importFee.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.core.annotation.Java110Transactional;
 import com.java110.core.factory.GenerateCodeFactory;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.community.CommunityDto;
 import com.java110.dto.fee.FeeAttrDto;
 import com.java110.dto.fee.FeeConfigDto;
 import com.java110.dto.fee.FeeDto;
-import com.java110.dto.feeFormula.FeeFormulaDto;
+import com.java110.dto.fee.FeeFormulaDto;
 import com.java110.dto.owner.OwnerDto;
+import com.java110.dto.payFee.PayFeeBatchDto;
+import com.java110.dto.user.UserDto;
 import com.java110.fee.bmo.importFee.IFeeSharingBMO;
 import com.java110.intf.community.ICommunityInnerServiceSMO;
 import com.java110.intf.community.IRoomInnerServiceSMO;
 import com.java110.intf.fee.*;
 import com.java110.intf.user.IOwnerInnerServiceSMO;
+import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.po.fee.FeeAttrPo;
 import com.java110.po.fee.PayFeeConfigPo;
 import com.java110.po.fee.PayFeePo;
 import com.java110.po.importFee.ImportFeePo;
-import com.java110.po.importFeeDetail.ImportFeeDetailPo;
+import com.java110.po.importFee.ImportFeeDetailPo;
+import com.java110.po.payFee.PayFeeBatchPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
@@ -69,6 +73,12 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
     @Autowired
     private IOwnerInnerServiceSMO ownerInnerServiceSMOImpl;
 
+    @Autowired
+    private IPayFeeBatchV1InnerServiceSMO payFeeBatchV1InnerServiceSMOImpl;
+
+    @Autowired
+    private IUserInnerServiceSMO userInnerServiceSMOImpl;
+
     /**
      * 添加小区信息
      *
@@ -85,16 +95,24 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
 
         Assert.listOnlyOne(communityDtos, "未找到小区信息");
 
+        //生成批次
+        generatorBatch(reqJson);
+
         String scope = reqJson.getString("scope");
         RoomDto roomDto = new RoomDto();
+        String[] states = null;
         if (reqJson.containsKey("roomState") && reqJson.getString("roomState").split(",").length > 0) {
-            String[] states = reqJson.getString("roomState").split(",");
+            states = reqJson.getString("roomState").split(",");
             roomDto.setStates(states);
         } else {
             roomDto.setStates(new String[]{RoomDto.STATE_SELL, RoomDto.STATE_SHOP_SELL}); // 已经入住
         }
         if (reqJson.containsKey("roomType")) {
             roomDto.setRoomType(reqJson.getString("roomType"));
+        }
+        if (reqJson.containsKey("feeLayer") && !"全部".equals(reqJson.getString("feeLayer"))) {
+            String[] layers = reqJson.getString("feeLayer").split("#");
+            roomDto.setLayers(layers);
         }
         List<RoomDto> roomDtos = null;
         if ("1001".equals(scope)) {//小区
@@ -111,7 +129,7 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
         }
 
         if (roomDtos == null || roomDtos.size() < 1) {
-            throw new IllegalArgumentException("未找到相应房屋公摊费用");
+            throw new IllegalArgumentException("未找到相应房屋");
         }
 
         //房屋刷入业主信息
@@ -158,7 +176,7 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
         String formulaValue = deakFormula(feeFormulaDtos.get(0));
 
         //公摊费用到房屋
-        sharingFeeToRoom(formulaValue, Double.parseDouble(feeFormulaDtos.get(0).getPrice()), roomDtos, reqJson, feeConfigDto, communityDtos.get(0));
+        sharingFeeToRoom(formulaValue, Double.parseDouble(feeFormulaDtos.get(0).getPrice()), roomDtos, reqJson, feeConfigDto, communityDtos.get(0),states);
 
 
         return ResultVo.success();
@@ -171,7 +189,7 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
      * @param roomDtos
      */
     private void sharingFeeToRoom(String formulaValue, double price, List<RoomDto> roomDtos,
-                                  JSONObject reqJson, FeeConfigDto feeConfigDto, CommunityDto communityDto) {
+                                  JSONObject reqJson, FeeConfigDto feeConfigDto, CommunityDto communityDto,String[] states) {
 
 
         List<PayFeePo> payFeePos = new ArrayList<>();
@@ -182,7 +200,7 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
         Map<String, Integer> unitRooms = new HashMap();
         for (RoomDto roomDto : roomDtos) {
             doSharingFeeToRoom(formulaValue, price, roomDto, reqJson, payFeePos, feeConfigDto, feeAttrPos,
-                    importFeeId, importFeeDetailPos, floorRooms, unitRooms, communityDto);
+                    importFeeId, importFeeDetailPos, floorRooms, unitRooms, communityDto,states);
         }
 
         feeInnerServiceSMOImpl.saveFee(payFeePos);
@@ -230,22 +248,23 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
                                     List<ImportFeeDetailPo> importFeeDetailPos,
                                     Map<String, Integer> floorRooms,
                                     Map<String, Integer> unitRooms,
-                                    CommunityDto communityDto) {
+                                    CommunityDto communityDto,
+                                    String[] states) {
 
         if (!floorRooms.containsKey(roomDto.getFloorId())) {
             RoomDto tmpRoomDto = new RoomDto();
-            tmpRoomDto.setCommunityId(roomDto.getCommunityId());
+            tmpRoomDto.setCommunityId(communityDto.getCommunityId());
             tmpRoomDto.setFloorId(roomDto.getFloorId());
-            tmpRoomDto.setState(RoomDto.STATE_SELL);
+            tmpRoomDto.setStates(states);
             int roomCount = roomInnerServiceSMOImpl.queryRoomsCount(tmpRoomDto);
             floorRooms.put(roomDto.getFloorId(), roomCount);
         }
 
         if (!unitRooms.containsKey(roomDto.getUnitId())) {
             RoomDto tmpRoomDto = new RoomDto();
-            tmpRoomDto.setCommunityId(roomDto.getCommunityId());
+            tmpRoomDto.setCommunityId(communityDto.getCommunityId());
             tmpRoomDto.setUnitId(roomDto.getUnitId());
-            tmpRoomDto.setState(RoomDto.STATE_SELL);
+            tmpRoomDto.setStates(states);
             int roomCount = roomInnerServiceSMOImpl.queryRoomsCount(tmpRoomDto);
             unitRooms.put(roomDto.getUnitId(), roomCount);
         }
@@ -255,14 +274,14 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
 
 
         String orgFormulaValue = formulaValue;
-        formulaValue = formulaValue.replace("T", reqJson.getString("totalDegrees"))
-                .replace("F", roomDto.getFloorArea())
-                .replace("U", roomDto.getUnitArea())
-                .replace("R", roomDto.getBuiltUpArea())
-                .replace("X", roomDto.getFeeCoefficient())
-                .replace("L", floorRoomCount + "")
-                .replace("D", unitRoomCount + "")
-                .replace("C", communityDto.getCommunityArea());
+        formulaValue = formulaValue.replaceAll("T", reqJson.getString("totalDegrees"))
+                .replaceAll("F", roomDto.getFloorArea())
+                .replaceAll("U", roomDto.getUnitArea())
+                .replaceAll("R", roomDto.getBuiltUpArea())
+                .replaceAll("X", roomDto.getFeeCoefficient())
+                .replaceAll("L", floorRoomCount + "")
+                .replaceAll("D", unitRoomCount + "")
+                .replaceAll("C", communityDto.getCommunityArea());
 
 
         ScriptEngineManager manager = new ScriptEngineManager();
@@ -275,6 +294,7 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
             BigDecimal priceObj = new BigDecimal(price);
             priceObj = valueObj.multiply(priceObj).setScale(2, BigDecimal.ROUND_HALF_EVEN);
             amount = priceObj.doubleValue();
+            value = valueObj.setScale(2, BigDecimal.ROUND_HALF_EVEN).doubleValue() + "";
         } catch (Exception e) {
             throw new IllegalArgumentException("公式计算异常，公式为【" + orgFormulaValue + "】,计算 【" + formulaValue + "】异常");
         }
@@ -292,6 +312,7 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
         payFeePo.setFeeTypeCd(reqJson.getString("feeTypeCd"));
         payFeePo.setFeeFlag(FeeDto.FEE_FLAG_ONCE);
         payFeePo.setAmount(amount + "");
+        payFeePo.setBatchId(reqJson.getString("batchId"));
         //payFeePo.setStartTime(importRoomFee.getStartTime());
         payFeePo.setStartTime(DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
 
@@ -321,6 +342,15 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
         feeAttrPo.setAttrId(GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_attrId));
         feeAttrPo.setSpecCd(FeeAttrDto.SPEC_CD_TOTAL_DEGREES);
         feeAttrPo.setValue(reqJson.getString("totalDegrees"));
+        feeAttrPo.setFeeId(payFeePo.getFeeId());
+        feeAttrPos.add(feeAttrPo);
+
+
+        feeAttrPo = new FeeAttrPo();
+        feeAttrPo.setCommunityId(reqJson.getString("communityId"));
+        feeAttrPo.setAttrId(GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_attrId));
+        feeAttrPo.setSpecCd(FeeAttrDto.SPEC_CD_ONCE_FEE_DEADLINE_TIME);
+        feeAttrPo.setValue(reqJson.getString("endTime"));
         feeAttrPo.setFeeId(payFeePo.getFeeId());
         feeAttrPos.add(feeAttrPo);
 
@@ -419,11 +449,43 @@ public class FeeSharingBMOImpl implements IFeeSharingBMO {
         payFeeConfigPo.setSquarePrice("0");
         payFeeConfigPo.setPaymentCycle("1");
         payFeeConfigPo.setStartTime(DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
+        payFeeConfigPo.setDeductFrom(FeeConfigDto.DEDUCT_FROM_N);
+        payFeeConfigPo.setDecimalPlace("2");
+        payFeeConfigPo.setScale("1");
+        payFeeConfigPo.setUnits("元");
+        payFeeConfigPo.setPayOnline("Y");
         int saveFlag = feeConfigInnerServiceSMOImpl.saveFeeConfig(payFeeConfigPo);
 
         if (saveFlag < 1) {
             throw new IllegalArgumentException("创建导入费用失败");
         }
+    }
+
+    /**
+     * 生成批次号
+     *
+     * @param reqJson
+     */
+    private void generatorBatch(JSONObject reqJson) {
+        PayFeeBatchPo payFeeBatchPo = new PayFeeBatchPo();
+        payFeeBatchPo.setBatchId(GenerateCodeFactory.getGeneratorId("12"));
+        payFeeBatchPo.setCommunityId(reqJson.getString("communityId"));
+        payFeeBatchPo.setCreateUserId(reqJson.getString("userId"));
+        UserDto userDto = new UserDto();
+        userDto.setUserId(reqJson.getString("userId"));
+        List<UserDto> userDtos = userInnerServiceSMOImpl.getUsers(userDto);
+
+        Assert.listOnlyOne(userDtos, "用户不存在");
+        payFeeBatchPo.setCreateUserName(userDtos.get(0).getUserName());
+        payFeeBatchPo.setState(PayFeeBatchDto.STATE_NORMAL);
+        payFeeBatchPo.setMsg("正常");
+        int flag = payFeeBatchV1InnerServiceSMOImpl.savePayFeeBatch(payFeeBatchPo);
+
+        if (flag < 1) {
+            throw new IllegalArgumentException("生成批次失败");
+        }
+
+        reqJson.put("batchId", payFeeBatchPo.getBatchId());
     }
 
 }

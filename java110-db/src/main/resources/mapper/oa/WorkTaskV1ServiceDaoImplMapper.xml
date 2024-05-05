@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="workTaskV1ServiceDaoImpl">
+
+
+    <!-- 保存工作单任务信息 add by wuxw 2018-07-03 -->
+    <insert id="saveWorkTaskInfo" parameterType="Map">
+        insert into work_task(
+        staff_name,start_time,state,end_time,community_id,store_id,task_id,work_id,staff_id,org_staff_id,org_staff_name
+        ) values (
+        #{staffName},#{startTime},#{state},#{endTime},#{communityId},#{storeId},#{taskId},#{workId},#{staffId},#{orgStaffId},#{orgStaffName}
+        )
+    </insert>
+
+
+    <!-- 查询工作单任务信息 add by wuxw 2018-07-03 -->
+    <select id="getWorkTaskInfo" parameterType="Map" resultType="Map">
+        select t.staff_name,t.staff_name staffName,t.start_time,t.start_time startTime,t.status_cd,t.status_cd
+        statusCd,t.state,t.end_time,t.end_time endTime,t.community_id,t.community_id communityId,t.store_id,t.store_id
+        storeId,t.task_id,t.task_id taskId,t.work_id,t.work_id workId,t.staff_id,t.staff_id staffId,t.create_time
+        createTime,
+        td.`name` stateName,
+        wp.work_cycle workCycle,wp.create_user_id
+        createUserId,wp.create_user_name createUserName,wp.work_name workName,wp.wt_id wtId,wp.create_user_tel createUserTel,
+        wt.type_name typeName,t.finish_time finishTime,t.task_timeout taskTimeout,t.org_staff_id orgStaffId,t.org_staff_name orgStaffName
+        from work_task t
+        left join t_dict td on t.state = td.status_cd and td.table_name = 'work_pool' and td.table_columns = 'state'
+        left join work_pool wp on t.work_id = wp.work_id and wp.status_cd = '0'
+        left join work_type wt on wp.wt_id = wt.wt_id
+        where 1=1
+        and wp.status_cd = '0'
+        <if test="createUserNameLike !=null and createUserNameLike != ''">
+            and wp.create_user_name like concat('%', #{createUserNameLike},'%')
+        </if>
+        <if test="workNameLike !=null and workNameLike != ''">
+            and wp.work_name like concat('%', #{workNameLike},'%')
+        </if>
+        <if test="staffName !=null and staffName != ''">
+            and t.staff_name= #{staffName}
+        </if>
+        <if test="staffNameLike !=null and staffNameLike != ''">
+            and t.staff_name like concat('%', #{staffNameLike},'%')
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="taskInsTime !=null and taskInsTime != ''">
+            and DATE_FORMAT(t.start_time,'%Y-%m-%d')= #{taskInsTime}
+        </if>
+
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="taskId !=null and taskId != ''">
+            and t.task_id= #{taskId}
+        </if>
+        <if test="workId !=null and workId != ''">
+            and t.work_id= #{workId}
+        </if>
+        <if test="workIds !=null ">
+            and t.work_id in
+            <foreach collection="workIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="staffId !=null and staffId != ''">
+            and t.staff_id= #{staffId}
+        </if>
+        <if test="orgStaffId !=null and orgStaffId != ''">
+            and t.org_staff_id= #{orgStaffId}
+        </if>
+
+        <if test="taskTimeout !=null and taskTimeout != ''">
+            and t.task_timeout= #{taskTimeout}
+        </if>
+        <if test="queryStartTime !=null and queryStartTime != ''">
+            and t.create_time &gt; #{queryStartTime}
+        </if>
+        <if test="queryEndTime !=null and queryEndTime != ''">
+            and t.create_time &lt; #{queryEndTime}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+
+    <!-- 修改工作单任务信息 add by wuxw 2018-07-03 -->
+    <update id="updateWorkTaskInfo" parameterType="Map">
+        update work_task t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="staffName !=null and staffName != ''">
+            , t.staff_name= #{staffName}
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            , t.start_time= #{startTime}
+        </if>
+        <if test="state !=null and state != ''">
+            , t.state= #{state}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            , t.end_time= #{endTime}
+        </if>
+        <if test="finishTime !=null and finishTime != ''">
+            , t.finish_time = #{finishTime}
+        </if>
+        <if test="taskTimeout !=null and taskTimeout != ''">
+            , t.task_timeout= #{taskTimeout}
+        </if>
+
+        <if test="staffId !=null and staffId != ''">
+            , t.staff_id= #{staffId}
+        </if>
+        where 1=1
+        <if test="taskId !=null and taskId != ''">
+            and t.task_id= #{taskId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="workId !=null and workId != ''">
+            and t.work_id= #{workId}
+        </if>
+
+    </update>
+
+    <!-- 查询工作单任务数量 add by wuxw 2018-07-03 -->
+    <select id="queryWorkTasksCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from work_task t
+        left join t_dict td on t.state = td.status_cd and td.table_name = 'work_pool' and td.table_columns = 'state'
+        left join work_pool wp on t.work_id = wp.work_id and wp.status_cd = '0'
+        left join work_type wt on wp.wt_id = wt.wt_id
+        where 1=1
+        and wp.status_cd = '0'
+        <if test="createUserNameLike !=null and createUserNameLike != ''">
+            and wp.create_user_name like concat('%', #{createUserNameLike},'%')
+        </if>
+        <if test="workNameLike !=null and workNameLike != ''">
+            and wp.work_name like concat('%', #{workNameLike},'%')
+        </if>
+        <if test="staffName !=null and staffName != ''">
+            and t.staff_name= #{staffName}
+        </if>
+
+        <if test="staffNameLike !=null and staffNameLike != ''">
+            and t.staff_name like concat('%', #{staffNameLike},'%')
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="taskId !=null and taskId != ''">
+            and t.task_id= #{taskId}
+        </if>
+        <if test="workId !=null and workId != ''">
+            and t.work_id= #{workId}
+        </if>
+        <if test="workIds !=null ">
+            and t.work_id in
+            <foreach collection="workIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="staffId !=null and staffId != ''">
+            and t.staff_id= #{staffId}
+        </if>
+        <if test="orgStaffId !=null and orgStaffId != ''">
+            and t.org_staff_id= #{orgStaffId}
+        </if>
+        <if test="taskTimeout !=null and taskTimeout != ''">
+            and t.task_timeout= #{taskTimeout}
+        </if>
+        <if test="queryStartTime !=null and queryStartTime != ''">
+            and t.create_time &gt; #{queryStartTime}
+        </if>
+        <if test="queryEndTime !=null and queryEndTime != ''">
+            and t.create_time &lt; #{queryEndTime}
+        </if>
+
+
+    </select>
+
+</mapper>

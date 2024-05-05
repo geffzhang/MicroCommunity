@@ -4,6 +4,7 @@ import com.java110.dto.report.ReportCarDto;
 import com.java110.dto.report.ReportRoomDto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName ICommunityServiceDao
@@ -45,4 +46,69 @@ public interface IReportCommunityServiceDao {
      * @return
      */
     List<ReportCarDto> getCarParkingSpace(ReportCarDto reportCarDto);
+
+    /**
+     * 查询 房屋 楼栋 单元 和 业主 信息
+     *
+     * @return
+     */
+    List<Map> getCommunitys(Map communityDto);
+
+    /**
+     * 查询房屋结构化数据
+     *
+     * @param info
+     * @return
+     */
+    List<Map> queryRoomStructures(Map info);
+
+    /**
+     * 查询车位 结构化数据
+     *
+     * @param info
+     * @return
+     */
+    List<Map> queryCarStructures(Map info);
+
+    int deleteInvalidFee(Map info);
+
+    /**
+     * 查询无效的数据
+     * @param reportFeeDto
+     * @return
+     */
+    List<Map> queryInvalidFeeMonthStatistics(Map reportFeeDto);
+
+
+    List<Map>  queryRoomsTree(Map info);
+
+    /**
+     * 查询车辆变更记录
+     * @param info
+     * @return
+     */
+    int queryHisOwnerCarCount(Map info);
+
+    /**
+     * 车辆变更记录
+     * @param info
+     * @return
+     */
+    List<Map> queryHisOwnerCars(Map info);
+
+    int queryHisOwnerCount(Map info);
+
+    List<Map> queryHisOwners(Map info);
+
+    int queryHisFeeCount(Map info);
+
+    List<Map> queryHisFees(Map info);
+
+    int queryHisFeeConfigCount(Map info);
+
+    List<Map> queryHisFeeConfigs(Map info);
+
+    int queryHisRoomCount(Map info);
+
+    List<Map> queryHisRooms(Map info);
 }

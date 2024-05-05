@@ -3,9 +3,9 @@ package com.java110.store.smo.impl;
 
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.contractAttr.ContractAttrDto;
+import com.java110.dto.contract.ContractAttrDto;
 import com.java110.intf.store.IContractAttrInnerServiceSMO;
-import com.java110.po.contractAttr.ContractAttrPo;
+import com.java110.po.contract.ContractAttrPo;
 import com.java110.store.dao.IContractAttrServiceDao;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;

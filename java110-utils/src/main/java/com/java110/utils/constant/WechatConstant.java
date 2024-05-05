@@ -13,6 +13,10 @@ public class WechatConstant {
     //微信域
     public static final String WECHAT_DOMAIN = "WECHAT";
 
+    public static final String GET_USER_URL = "GET_USER_URL";
+    public static final String SEND_TEMPLATE_URL = "SEND_TEMPLATE_URL";
+    public static final String GET_ACCESS_TOKEN_URL = "GET_ACCESS_TOKEN_URL";
+
     //微信ID
     public static final String PAGE_WECHAT_APP_ID = "wId";//微信id 一般是appId
 
@@ -29,6 +33,8 @@ public class WechatConstant {
     public static final String NO_BIND_OWNER_RESPONSE_MESSAGE = "亲，您还没有绑定业主请先<a href=\"https://owner.demo.winqi.cn/#/pages/login/login\">绑定</a>";
 
     public static final String OWE_FEE_PAGE = "OWE_FEE_PAGE";
+
+    public static final String OWE_CAR_FEE_PAGE = "OWE_CAR_FEE_PAGE";
 
 
     public static final String MSG_TYPE_TEXT = "text";
@@ -54,6 +60,21 @@ public class WechatConstant {
 
     //支付适配器
     public static final String PAY_ADAPT = "PAY_ADAPT";
+    public static final String PAYMENT_ADAPT = "PAYMENT_ADAPT";
+
+    // native 支付
+    public static final String NATIVE_QRCODE_PAYMENT_ADAPT = "NATIVE_QRCODE_PAYMENT_ADAPT";
+
+
+    public static final String PAY_QR_ADAPT = "PAY_QR_ADAPT";
     //支付通知适配器
     public static final String PAY_NOTIFY_ADAPT = "PAY_NOTIFY_ADAPT";
+    public static final String PAYMENT_NOTIFY_ADAPT = "PAYMENT_NOTIFY_ADAPT";
+
+    public static final String PAY_OWE_FEE_NOTIFY_ADAPT = "PAY_OWE_FEE_NOTIFY_ADAPT";
+
+    public static final String wxMicropayUnifiedOrder="https://api.mch.weixin.qq.com/pay/micropay";
+    public static final String wxOrderQuery="https://api.mch.weixin.qq.com/pay/orderquery";
+
+
 }

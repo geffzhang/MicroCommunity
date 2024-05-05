@@ -7,7 +7,7 @@ import com.java110.intf.common.IMachineTranslateInnerServiceSMO;
 import com.java110.intf.order.IOrderInnerServiceSMO;
 import com.java110.intf.community.IRoomInnerServiceSMO;
 import com.java110.intf.community.IVisitInnerServiceSMO;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.machine.MachineDto;
 import com.java110.dto.machine.MachineTranslateDto;
 import com.java110.dto.order.OrderDto;
@@ -16,7 +16,7 @@ import com.java110.dto.visit.VisitDto;
 import com.java110.job.quartz.TaskSystemQuartz;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

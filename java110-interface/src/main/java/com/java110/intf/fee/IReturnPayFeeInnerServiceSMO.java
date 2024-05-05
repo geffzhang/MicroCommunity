@@ -1,7 +1,7 @@
 package com.java110.intf.fee;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.returnPayFee.ReturnPayFeeDto;
+import com.java110.dto.payFee.ReturnPayFeeDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +30,24 @@ public interface IReturnPayFeeInnerServiceSMO {
      */
     @RequestMapping(value = "/queryReturnPayFees", method = RequestMethod.POST)
     List<ReturnPayFeeDto> queryReturnPayFees(@RequestBody ReturnPayFeeDto returnPayFeeDto);
+
+    /**
+     * <p>查询小区楼信息</p>
+     *
+     * @param returnPayFeeDto 数据对象分享
+     * @return ReturnPayFeeDto 对象数据
+     */
+    @RequestMapping(value = "/queryRoomReturnPayFees", method = RequestMethod.POST)
+    List<ReturnPayFeeDto> queryRoomReturnPayFees(@RequestBody ReturnPayFeeDto returnPayFeeDto);
+
+    /**
+     * <p>查询小区楼信息</p>
+     *
+     * @param returnPayFeeDto 数据对象分享
+     * @return ReturnPayFeeDto 对象数据
+     */
+    @RequestMapping(value = "/queryCarReturnPayFees", method = RequestMethod.POST)
+    List<ReturnPayFeeDto> queryCarReturnPayFees(@RequestBody ReturnPayFeeDto returnPayFeeDto);
 
     /**
      * 查询<p>小区楼</p>总记录数

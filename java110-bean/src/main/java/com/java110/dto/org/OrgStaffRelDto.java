@@ -15,17 +15,28 @@ import java.util.Date;
  **/
 public class OrgStaffRelDto extends PageDto implements Serializable {
 
+    //600311000001
+    //600311000002
+    public static final String REL_CD_ADMIN="600311000001";//管理员
+    public static final String REL_CD_PUBLIC="600311000002";//管理员
+
     private String relId;
     private String storeId;
     private String orgId;
+    private String orgName;
     private String staffId;
+    private String staffName;
     private String[] staffIds;
     private String relCd;
+    private String relCdName;
     private String departmentId;
     private String departmentName;
     private String companyId;
     private String companyName;
     private String parentOrgId;
+    private String parentOrgName;
+
+    private String orgLevel;
 
 
     private Date createTime;
@@ -136,5 +147,45 @@ public class OrgStaffRelDto extends PageDto implements Serializable {
 
     public void setParentOrgId(String parentOrgId) {
         this.parentOrgId = parentOrgId;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public String getRelCdName() {
+        return relCdName;
+    }
+
+    public void setRelCdName(String relCdName) {
+        this.relCdName = relCdName;
+    }
+
+    public String getParentOrgName() {
+        return parentOrgName;
+    }
+
+    public void setParentOrgName(String parentOrgName) {
+        this.parentOrgName = parentOrgName;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getOrgLevel() {
+        return orgLevel;
+    }
+
+    public void setOrgLevel(String orgLevel) {
+        this.orgLevel = orgLevel;
     }
 }

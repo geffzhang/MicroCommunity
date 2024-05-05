@@ -3,8 +3,8 @@ package com.java110.store.smo.impl;
 
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.purchaseApply.PurchaseApplyDetailDto;
-import com.java110.dto.purchaseApply.PurchaseApplyDto;
+import com.java110.dto.purchase.PurchaseApplyDetailDto;
+import com.java110.dto.purchase.PurchaseApplyDto;
 import com.java110.dto.user.UserDto;
 import com.java110.intf.store.IPurchaseApplyInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
@@ -103,7 +103,7 @@ public class PurchaseApplyInnerServiceSMOImpl extends BaseServiceSMO implements 
         if (purchaseApplys == null || purchaseApplys.size() == 0) {
             return purchaseApplys;
         }
-
+        //刷入采购详情
         freshPurchaseApplyDetail(purchaseApplys);
 
         String[] userIds = getUserIds(purchaseApplys);
@@ -188,6 +188,40 @@ public class PurchaseApplyInnerServiceSMOImpl extends BaseServiceSMO implements 
     public List<PurchaseApplyDetailDto> queryPurchaseApplyDetails(PurchaseApplyDetailDto purchaseApplyDetailDto) {
         List<PurchaseApplyDetailDto> purchaseApplyDetails = BeanConvertUtil.covertBeanList(purchaseApplyServiceDaoImpl.getPurchaseApplyDetailInfo(BeanConvertUtil.beanCovertMap(purchaseApplyDetailDto)), PurchaseApplyDetailDto.class);
         return purchaseApplyDetails;
+    }
+
+    @Override
+    public void updatePurchaseApply(@RequestBody PurchaseApplyPo purchaseApplyPo) {
+        purchaseApplyServiceDaoImpl.updatePurchaseApplyInfoInstance(BeanConvertUtil.beanCovertMap(purchaseApplyPo));
+    }
+
+    /**
+     * 获取下级处理人id
+     *
+     * @param purchaseApplyDto
+     * @return
+     */
+    @Override
+    public List<PurchaseApplyDto> getActRuTaskUserId(@RequestBody PurchaseApplyDto purchaseApplyDto) {
+        List<PurchaseApplyDto> purchaseApplys = BeanConvertUtil.covertBeanList(purchaseApplyServiceDaoImpl.getActRuTaskUserId(BeanConvertUtil.beanCovertMap(purchaseApplyDto)), PurchaseApplyDto.class);
+        return purchaseApplys;
+    }
+
+    /**
+     * 获取流程任务id
+     *
+     * @param purchaseApplyDto
+     * @return
+     */
+    @Override
+    public List<PurchaseApplyDto> getActRuTaskId(@RequestBody PurchaseApplyDto purchaseApplyDto) {
+        List<PurchaseApplyDto> purchaseApplys = BeanConvertUtil.covertBeanList(purchaseApplyServiceDaoImpl.getActRuTaskId(BeanConvertUtil.beanCovertMap(purchaseApplyDto)), PurchaseApplyDto.class);
+        return purchaseApplys;
+    }
+
+    @Override
+    public void updateActRuTaskById(@RequestBody PurchaseApplyDto purchaseApplyDto) {
+        purchaseApplyServiceDaoImpl.updateActRuTaskById(BeanConvertUtil.beanCovertMap(purchaseApplyDto));
     }
 
 

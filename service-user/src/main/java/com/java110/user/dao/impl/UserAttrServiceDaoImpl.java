@@ -7,7 +7,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.core.base.dao.BaseServiceDao;
 import com.java110.user.dao.IUserAttrServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,7 +99,7 @@ public class UserAttrServiceDaoImpl extends BaseServiceDao implements IUserAttrS
      * @throws DAOException DAO异常
      */
     @Override
-    public void updateUserAttrInfoInstance(Map info) throws DAOException {
+    public int updateUserAttrInfoInstance(Map info) throws DAOException {
         logger.debug("修改用户属性信息Instance 入参 info : {}",info);
 
         int saveFlag = sqlSessionTemplate.update("userAttrServiceDaoImpl.updateUserAttrInfoInstance",info);
@@ -107,6 +107,7 @@ public class UserAttrServiceDaoImpl extends BaseServiceDao implements IUserAttrS
         if(saveFlag < 1){
             throw new DAOException(ResponseConstant.RESULT_PARAM_ERROR,"修改用户属性信息Instance数据失败："+ JSONObject.toJSONString(info));
         }
+        return saveFlag;
     }
 
      /**
@@ -124,6 +125,17 @@ public class UserAttrServiceDaoImpl extends BaseServiceDao implements IUserAttrS
         }
 
         return Integer.parseInt(businessUserAttrInfos.get(0).get("count").toString());
+    }
+
+    /**
+     * 保存用户属性
+     * @param info
+     * @return
+     */
+    @Override
+    public int saveUserAttr(Map info) {
+        int saveFlag = sqlSessionTemplate.insert("userAttrServiceDaoImpl.saveUserAttr",info);
+        return saveFlag;
     }
 
 

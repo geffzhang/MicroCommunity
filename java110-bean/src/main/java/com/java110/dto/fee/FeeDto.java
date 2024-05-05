@@ -1,8 +1,6 @@
 package com.java110.dto.fee;
 
 import com.java110.dto.PageDto;
-import com.java110.dto.RoomDto;
-import com.java110.dto.owner.OwnerCarDto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,11 +21,16 @@ public class FeeDto extends PageDto implements Serializable {
 
     public static final String PAYER_OBJ_TYPE_ROOM = "3333"; //房屋 6666 是车位
     public static final String PAYER_OBJ_TYPE_PARKING_SPACE = "6666";//是车位
+    public static final String PAYER_OBJ_TYPE_CONTRACT = "7777";//是合同
     public static final String PAYER_OBJ_TYPE_CAR = "6666";//是车位
     public static final String PAYER_OBJ_TYPE_RENTING = "9999";//房源ID
 
-    public static final String FEE_FLAG_ONCE = "2006012";
+    public static final String FEE_FLAG_ONCE = "2006012";//一次性费用
+    public static final String FEE_FLAG_CYCLE = "1003006";//周期性费用
+    public static final String FEE_FLAG_CYCLE_ONCE = "4012024";//间接性费用
     public static final String REDIS_PAY_OWE_FEE = "PAY_OWE_FEE_";
+    public static final String REDIS_PAY_TEMP_CAR_FEE = "PAY_TEMP_CAR_FEE_";
+    public static final String REDIS_PAY_TEMP_CAR_FEE_COMMUNITY = "REDIS_PAY_TEMP_CAR_FEE_COMMUNITY_";
 
     private String amount;
     private String incomeObjId;
@@ -43,6 +46,7 @@ public class FeeDto extends PageDto implements Serializable {
     private String[] payerObjIds;
     private String[] feeTypeCds;
     private String configId;
+    private String[] configIds;
 
     //映射关系开关值
     private String val;
@@ -51,6 +55,7 @@ public class FeeDto extends PageDto implements Serializable {
     private String receivedAmountSwitch;
 
     private String squarePrice;
+    private String mwPrice;
     private String additionalAmount;
     private String state;
     private String stateName;
@@ -65,6 +70,7 @@ public class FeeDto extends PageDto implements Serializable {
     private double feePrice;
     private String payerObjType;
     private String computingFormula;
+    private String computingFormulaText;
     private String isDefault;
     private double oweFee; // 欠费金额
     private String billType;
@@ -105,6 +111,8 @@ public class FeeDto extends PageDto implements Serializable {
 
     private Date deadlineTime;
 
+    private Date maxEndTime;
+
     private Date importFeeEndTime;
 
 
@@ -116,8 +124,57 @@ public class FeeDto extends PageDto implements Serializable {
 
     private List<FeeAttrDto> feeAttrDtos;
 
+    //当前时间
+    private Date nowDate;
+
+    //查询出的数量
+    private int count;
+
+    private String carTypeCd;
+    private String cycle;
+    private double feeTotalPrice;
+    private String batchId;
+    private String custEndTime;
+
+    private String offlinePayFeeSwitch;
+
+    private String deductFrom;
+
+    private String rateCycle;
+
+    private String rate;
+
+    private String rateStartTime;
+
+    private String payOnline;
+    private String scale;
+    private String decimalPlace;
+    private String units;
+
+    private String operate;
+
+    private String userName;
+
+    private String customStartTime;
+    private String customEndTime;
+
+    private String deleteFlag;
+
+    private String prepaymentPeriod;
 
 
+    private String feeNameLike;
+
+    private String staffNameLike;
+
+    private String logStartTime;
+    private String logEndTime;
+
+    private String ruleId;
+
+    private String monthCycle;
+
+    private String curYear;
 
     public String getAmount() {
         return amount;
@@ -175,7 +232,6 @@ public class FeeDto extends PageDto implements Serializable {
         this.payerObjId = payerObjId;
     }
 
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -207,7 +263,6 @@ public class FeeDto extends PageDto implements Serializable {
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
-
 
     public Date getArrearsEndTime() {
         return arrearsEndTime;
@@ -553,5 +608,262 @@ public class FeeDto extends PageDto implements Serializable {
         this.ownerId = ownerId;
     }
 
+    public Date getNowDate() {
+        return nowDate;
+    }
 
+    public void setNowDate(Date nowDate) {
+        this.nowDate = nowDate;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public String getComputingFormulaText() {
+        return computingFormulaText;
+    }
+
+    public void setComputingFormulaText(String computingFormulaText) {
+        this.computingFormulaText = computingFormulaText;
+    }
+
+    public String getMwPrice() {
+        return mwPrice;
+    }
+
+    public void setMwPrice(String mwPrice) {
+        this.mwPrice = mwPrice;
+    }
+
+    public String getCarTypeCd() {
+        return carTypeCd;
+    }
+
+    public void setCarTypeCd(String carTypeCd) {
+        this.carTypeCd = carTypeCd;
+    }
+
+    public String getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(String cycle) {
+        this.cycle = cycle;
+    }
+
+    public double getFeeTotalPrice() {
+        return feeTotalPrice;
+    }
+
+    public void setFeeTotalPrice(double feeTotalPrice) {
+        this.feeTotalPrice = feeTotalPrice;
+    }
+
+    public String getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
+    }
+
+    public String getOfflinePayFeeSwitch() {
+        return offlinePayFeeSwitch;
+    }
+
+    public void setOfflinePayFeeSwitch(String offlinePayFeeSwitch) {
+        this.offlinePayFeeSwitch = offlinePayFeeSwitch;
+    }
+
+    public String getDeductFrom() { return deductFrom; }
+
+    public void setDeductFrom(String deductFrom) { this.deductFrom = deductFrom; }
+    public String getCustEndTime() {
+        return custEndTime;
+    }
+
+    public void setCustEndTime(String custEndTime) {
+        this.custEndTime = custEndTime;
+    }
+
+    public String getRateCycle() {
+        return rateCycle;
+    }
+
+    public void setRateCycle(String rateCycle) {
+        this.rateCycle = rateCycle;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getRateStartTime() {
+        return rateStartTime;
+    }
+
+    public void setRateStartTime(String rateStartTime) {
+        this.rateStartTime = rateStartTime;
+    }
+
+    public Date getMaxEndTime() {
+        return maxEndTime;
+    }
+
+    public void setMaxEndTime(Date maxEndTime) {
+        this.maxEndTime = maxEndTime;
+    }
+
+    public String getPayOnline() {
+        return payOnline;
+    }
+
+    public void setPayOnline(String payOnline) {
+        this.payOnline = payOnline;
+    }
+
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setDecimalPlace(String decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+    public String getOperate() {
+        return operate;
+    }
+
+    public void setOperate(String operate) {
+        this.operate = operate;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCustomStartTime() {
+        return customStartTime;
+    }
+
+    public void setCustomStartTime(String customStartTime) {
+        this.customStartTime = customStartTime;
+    }
+
+    public String getCustomEndTime() {
+        return customEndTime;
+    }
+
+    public void setCustomEndTime(String customEndTime) {
+        this.customEndTime = customEndTime;
+    }
+
+    public String getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(String deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+
+    public String getPrepaymentPeriod() {
+        return prepaymentPeriod;
+    }
+
+    public void setPrepaymentPeriod(String prepaymentPeriod) {
+        this.prepaymentPeriod = prepaymentPeriod;
+    }
+
+    public String getFeeNameLike() {
+        return feeNameLike;
+    }
+
+    public void setFeeNameLike(String feeNameLike) {
+        this.feeNameLike = feeNameLike;
+    }
+
+    public String getStaffNameLike() {
+        return staffNameLike;
+    }
+
+    public void setStaffNameLike(String staffNameLike) {
+        this.staffNameLike = staffNameLike;
+    }
+
+    public String getLogStartTime() {
+        return logStartTime;
+    }
+
+    public void setLogStartTime(String logStartTime) {
+        this.logStartTime = logStartTime;
+    }
+
+    public String getLogEndTime() {
+        return logEndTime;
+    }
+
+    public void setLogEndTime(String logEndTime) {
+        this.logEndTime = logEndTime;
+    }
+
+    public String[] getConfigIds() {
+        return configIds;
+    }
+
+    public void setConfigIds(String[] configIds) {
+        this.configIds = configIds;
+    }
+
+    public String getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(String ruleId) {
+        this.ruleId = ruleId;
+    }
+
+    public String getMonthCycle() {
+        return monthCycle;
+    }
+
+    public void setMonthCycle(String monthCycle) {
+        this.monthCycle = monthCycle;
+    }
+
+    public String getCurYear() {
+        return curYear;
+    }
+
+    public void setCurYear(String curYear) {
+        this.curYear = curYear;
+    }
 }

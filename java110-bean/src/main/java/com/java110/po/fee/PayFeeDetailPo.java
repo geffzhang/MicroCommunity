@@ -18,13 +18,28 @@ public class PayFeeDetailPo implements Serializable {
     private String cycles;
     private String receivableAmount;
     private String receivedAmount;
+    private String payableAmount;
     private String primeRate;
     private String remark;
     private String startTime;
     private String endTime;
     private String createTime;
+    private String bId;
+    private String statusCd = "0";
 
     private String state;
+
+    private String payOrderId;
+
+    /**
+     * 收银员
+     */
+    private String cashierId;
+    private String cashierName;
+
+    private String openInvoice; // todo 默认 未开票
+
+
 
     public String getDetailId() {
         return detailId;
@@ -122,5 +137,59 @@ public class PayFeeDetailPo implements Serializable {
         this.createTime = createTime;
     }
 
+    public String getStatusCd() {
+        return statusCd;
+    }
 
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getPayableAmount() {
+        return payableAmount;
+    }
+
+    public void setPayableAmount(String payableAmount) {
+        this.payableAmount = payableAmount;
+    }
+
+    public String getPayOrderId() {
+        return payOrderId;
+    }
+
+    public void setPayOrderId(String payOrderId) {
+        this.payOrderId = payOrderId;
+    }
+
+    public String getCashierId() {
+        return cashierId;
+    }
+
+    public void setCashierId(String cashierId) {
+        this.cashierId = cashierId;
+    }
+
+    public String getCashierName() {
+        return cashierName;
+    }
+
+    public void setCashierName(String cashierName) {
+        this.cashierName = cashierName;
+    }
+
+    public String getOpenInvoice() {
+        return openInvoice;
+    }
+
+    public void setOpenInvoice(String openInvoice) {
+        this.openInvoice = openInvoice;
+    }
 }

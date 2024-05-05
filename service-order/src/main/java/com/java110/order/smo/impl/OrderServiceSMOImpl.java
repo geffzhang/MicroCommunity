@@ -8,10 +8,10 @@ import com.java110.core.event.center.DataFlowEventPublishing;
 import com.java110.core.factory.AuthenticationFactory;
 import com.java110.core.factory.OrderDataFlowContextFactory;
 import com.java110.core.log.LogAgent;
-import com.java110.entity.center.AppService;
-import com.java110.entity.center.DataFlowLinksCost;
-import com.java110.entity.order.Business;
-import com.java110.entity.order.ServiceBusiness;
+import com.java110.dto.system.AppService;
+import com.java110.dto.system.DataFlowLinksCost;
+import com.java110.dto.system.Business;
+import com.java110.dto.system.ServiceBusiness;
 import com.java110.order.dao.ICenterServiceDAO;
 import com.java110.order.smo.IOrderServiceSMO;
 import com.java110.service.init.ServiceInfoListener;
@@ -28,7 +28,7 @@ import com.java110.utils.util.StringUtil;
 import com.java110.utils.util.WebServiceAxisClient;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -120,12 +120,10 @@ public class OrderServiceSMOImpl extends AbstractOrderServiceSMOImpl implements 
 //                        LogAgent.createLogMessage(dataFlow.getResponseHeaders(),responseEntity.getBody()),endDate.getTime()-dataFlow.getStartDate().getTime());
 //                DataFlowEventPublishing.dataResponse(dataFlow,reqJson,headers);
             }
-
-
             //这里保存耗时，以及日志
-            return responseEntity;
 
         }
+        return responseEntity;
     }
 
 
@@ -686,7 +684,7 @@ public class OrderServiceSMOImpl extends AbstractOrderServiceSMOImpl implements 
     private void saveLogMessage(String requestJson, String responseJson) {
 
         try {
-            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_LOG_ON_OFF))) {
+            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_LOG_ON_OFF))) {
                 JSONObject log = new JSONObject();
                 log.put("request", requestJson);
                 log.put("response", responseJson);
@@ -704,7 +702,7 @@ public class OrderServiceSMOImpl extends AbstractOrderServiceSMOImpl implements 
      */
     private void saveCostTimeLogMessage(DataFlow dataFlow) {
         try {
-            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_COST_TIME_ON_OFF))) {
+            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_COST_TIME_ON_OFF))) {
                 List<DataFlowLinksCost> dataFlowLinksCosts = dataFlow.getLinksCostDates();
                 JSONObject costDate = new JSONObject();
                 JSONArray costDates = new JSONArray();

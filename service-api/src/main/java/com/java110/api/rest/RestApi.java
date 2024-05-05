@@ -3,14 +3,15 @@ package com.java110.api.rest;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.api.smo.IApiServiceSMO;
 import com.java110.core.base.controller.BaseController;
+import com.java110.core.log.LoggerFactory;
+import com.java110.doc.annotation.Java110ApiDoc;
+import com.java110.doc.annotation.Java110RequestMappingDoc;
+import com.java110.doc.annotation.Java110RequestMappingsDoc;
 import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.utils.constant.CommonConstant;
 import com.java110.vo.ResultVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,24 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/api")
 @Api(value = "对外统一提供服务接口服务")
+@Java110ApiDoc(
+        title = "HC小区管理系统api接口文档",
+        description = "HC小区管理系统api接口文档",
+        company="Java110工作室",
+        version = "v1.4"
+)
+
+@Java110RequestMappingsDoc(
+        mappingsDocs = {
+                @Java110RequestMappingDoc(name="用户中心",resource = "userDoc",url="http://user-service",seq = 1),
+                @Java110RequestMappingDoc(name="资产中心",resource = "communityDoc",url="http://community-service",seq = 2),
+                @Java110RequestMappingDoc(name="商户中心",resource = "storeDoc",url="http://store-service",seq = 3),
+                @Java110RequestMappingDoc(name="账户中心",resource = "acctDoc",url="http://acct-service",seq = 4),
+                @Java110RequestMappingDoc(name="通用中心",resource = "commonDoc",url="http://common-service",seq = 5),
+                @Java110RequestMappingDoc(name="费用中心",resource = "feeDoc",url="http://fee-service",seq = 6),
+                @Java110RequestMappingDoc(name="报表中心",resource = "reportDoc",url="http://report-service",seq = 7),
+        }
+)
 public class RestApi extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(RestApi.class);
@@ -41,6 +60,7 @@ public class RestApi extends BaseController {
 
     @Autowired
     private IUserInnerServiceSMO userInnerServiceSMOImpl;
+
 
 
     /**
@@ -123,7 +143,7 @@ public class RestApi extends BaseController {
             this.getRequestInfo(request, headers);
             headers.put(CommonConstant.HTTP_SERVICE, service);
             headers.put(CommonConstant.HTTP_METHOD, CommonConstant.HTTP_METHOD_GET);
-            logger.debug("api：{} 请求报文为：{},header信息为：{}", "", headers);
+            logger.debug("api：{} 请求报文为：{},header信息为：{}", service, headers);
             responseEntity = apiServiceSMOImpl.service(JSONObject.toJSONString(getParameterStringMap(request)), headers);
         } catch (Throwable e) {
             logger.error("请求get 方法[" + service + "]失败：", e);
@@ -321,6 +341,9 @@ public class RestApi extends BaseController {
 
         return responseEntity;
     }
+
+
+
 
 
     public IApiServiceSMO getApiServiceSMOImpl() {

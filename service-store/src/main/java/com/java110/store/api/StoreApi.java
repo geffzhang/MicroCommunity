@@ -23,13 +23,14 @@ import com.java110.po.store.StorePo;
 import com.java110.store.bmo.store.IUpdateStoreStateBMO;
 import com.java110.store.smo.IStoreServiceSMO;
 import com.java110.utils.cache.MappingCache;
+import com.java110.utils.constant.MappingConstant;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.InitConfigDataException;
 import com.java110.utils.exception.InitDataFlowContextException;
 import com.java110.utils.util.Assert;
 import com.java110.vo.ResultVo;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -91,8 +92,9 @@ public class StoreApi extends BaseController {
                     null);
         } finally {
             logger.debug("storeApi 请求报文{},返回报文：{}", orderInfo, responseJson.toJSONString());
-            return responseJson.toJSONString();
         }
+        
+        return responseJson.toJSONString();
     }
 
     /**
@@ -140,7 +142,7 @@ public class StoreApi extends BaseController {
     @RequestMapping(value = "/storeApi/updateStoreState", method = RequestMethod.POST)
     public ResponseEntity<String> updateStoreState(@RequestBody JSONObject reqJson) {
 
-        String env = MappingCache.getValue("HC_ENV");
+        String env = MappingCache.getValue(MappingConstant.ENV_DOMAIN,"HC_ENV");
 
         if (!"PROD".equals(env)) {
             return ResultVo.error("演示环境，不允许操作");

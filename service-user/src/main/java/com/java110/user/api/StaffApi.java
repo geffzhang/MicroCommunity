@@ -2,19 +2,29 @@ package com.java110.user.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.java110.dto.app.AppDto;
-import com.java110.dto.staffAppAuth.StaffAppAuthDto;
-import com.java110.po.staffAppAuth.StaffAppAuthPo;
+import com.java110.dto.wechat.SmallWeChatDto;
+import com.java110.dto.user.StaffAppAuthDto;
+import com.java110.intf.store.ISmallWeChatInnerServiceSMO;
+import com.java110.po.user.StaffAppAuthPo;
 import com.java110.user.bmo.staffAppAuth.IDeleteStaffAppAuthBMO;
 import com.java110.user.bmo.staffAppAuth.IGetStaffAppAuthBMO;
 import com.java110.user.bmo.staffAppAuth.ISaveStaffAppAuthBMO;
 import com.java110.user.bmo.staffAppAuth.IUpdateStaffAppAuthBMO;
-import com.java110.utils.cache.MappingCache;
+import com.java110.utils.cache.UrlCache;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
+import com.java110.utils.util.StringUtil;
 import com.java110.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 @RestController
@@ -30,6 +40,9 @@ public class StaffApi {
 
     @Autowired
     private IGetStaffAppAuthBMO getStaffAppAuthBMOImpl;
+
+    @Autowired
+    private ISmallWeChatInnerServiceSMO smallWeChatInnerServiceSMOImpl;
 
     /**
      * 微信保存消息模板
@@ -102,13 +115,18 @@ public class StaffApi {
     @RequestMapping(value = "/queryStaffAppAuth", method = RequestMethod.GET)
     public ResponseEntity<String> queryStaffAppAuth(@RequestHeader(value = "store-id") String storeId,
                                                     @RequestHeader(value = "user-id") String userId,
+                                                    @RequestParam(value = "staffId",required = false) String staffId,
                                                     @RequestParam(value = "page") int page,
                                                     @RequestParam(value = "row") int row) {
         StaffAppAuthDto staffAppAuthDto = new StaffAppAuthDto();
         staffAppAuthDto.setPage(page);
         staffAppAuthDto.setRow(row);
         staffAppAuthDto.setStoreId(storeId);
+
         staffAppAuthDto.setStaffId(userId);
+        if(!StringUtil.isEmpty(staffId)){
+            staffAppAuthDto.setStaffId(staffId);
+        }
         return getStaffAppAuthBMOImpl.get(staffAppAuthDto);
     }
 
@@ -124,10 +142,18 @@ public class StaffApi {
     public ResponseEntity<String> generatorQrCode(@RequestHeader(value = "store-id") String storeId,
                                                   @RequestHeader(value = "user-id") String userId,
                                                   @RequestParam(value = "communityId") String communityId) {
-
-        String ownerUrl = MappingCache.getValue("OWNER_WECHAT_URL")
+        SmallWeChatDto smallWeChatDto = new SmallWeChatDto();
+        smallWeChatDto.setObjId(communityId);
+        smallWeChatDto.setObjType(SmallWeChatDto.OBJ_TYPE_COMMUNITY);
+        smallWeChatDto.setWechatType(SmallWeChatDto.WECHAT_TYPE_PUBLIC);
+        List<SmallWeChatDto> smallWeChatDtos = smallWeChatInnerServiceSMOImpl.querySmallWeChats(smallWeChatDto);
+        String ownerUrl = UrlCache.getOwnerUrl()
                 + "/app/staffAuth?storeId=" + storeId + "&staffId=" + userId
                 + "&communityId=" + communityId + "&appId=" + AppDto.WECHAT_OWNER_APP_ID;
+
+        if (smallWeChatDtos != null && smallWeChatDtos.size() > 0) {
+            ownerUrl += ("&wAppId=" + smallWeChatDtos.get(0).getAppId());
+        }
         return ResultVo.createResponseEntity(ownerUrl);
     }
 }

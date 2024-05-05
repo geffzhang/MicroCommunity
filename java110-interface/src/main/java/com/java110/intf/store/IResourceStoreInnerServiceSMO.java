@@ -1,7 +1,7 @@
 package com.java110.intf.store;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.resourceStore.ResourceStoreDto;
+import com.java110.dto.resource.ResourceStoreDto;
 import com.java110.po.purchase.ResourceStorePo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,4 +42,24 @@ public interface IResourceStoreInnerServiceSMO {
 
     @RequestMapping(value = "/updateResourceStore", method = RequestMethod.POST)
     int updateResourceStore(@RequestBody ResourceStorePo resourceStorePo);
+
+    /**
+     * 新增物品
+     *
+     * @param resourceStoreDto
+     */
+    @RequestMapping(value = "/saveResourceStore", method = RequestMethod.POST)
+    void saveResourceStore(@RequestBody ResourceStoreDto resourceStoreDto);
+
+    /**
+     * <p>查询物品总价</p>
+     *
+     * @param resourceResourceStoreDto 数据对象分享
+     * @return ResourceStoreDto 对象数据
+     */
+    @RequestMapping(value = "/queryResourceStoresTotalPrice", method = RequestMethod.POST)
+    String queryResourceStoresTotalPrice(@RequestBody ResourceStoreDto resourceResourceStoreDto);
+
+
+
 }

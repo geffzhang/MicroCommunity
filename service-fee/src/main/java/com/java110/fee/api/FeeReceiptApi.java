@@ -1,9 +1,9 @@
 package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.feeReceipt.FeeReceiptDto;
-import com.java110.dto.feeReceipt.FeeReceiptDtoNew;
-import com.java110.dto.feeReceiptDetail.FeeReceiptDetailDto;
+import com.java110.dto.fee.FeeReceiptDto;
+import com.java110.dto.fee.FeeReceiptDtoNew;
+import com.java110.dto.fee.FeeReceiptDetailDto;
 import com.java110.dto.store.StoreUserDto;
 import com.java110.fee.bmo.feeReceipt.IDeleteFeeReceiptBMO;
 import com.java110.fee.bmo.feeReceipt.IGetFeeReceiptBMO;
@@ -14,8 +14,8 @@ import com.java110.fee.bmo.feeReceiptDetail.IGetFeeReceiptDetailBMO;
 import com.java110.fee.bmo.feeReceiptDetail.ISaveFeeReceiptDetailBMO;
 import com.java110.fee.bmo.feeReceiptDetail.IUpdateFeeReceiptDetailBMO;
 import com.java110.intf.store.IStoreInnerServiceSMO;
-import com.java110.po.feeReceipt.FeeReceiptPo;
-import com.java110.po.feeReceiptDetail.FeeReceiptDetailPo;
+import com.java110.po.fee.FeeReceiptPo;
+import com.java110.po.fee.FeeReceiptDetailPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.StringUtil;
@@ -125,8 +125,14 @@ public class FeeReceiptApi {
                                                   @RequestParam(value = "objType", required = false) String objType,
                                                   @RequestParam(value = "objId", required = false) String objId,
                                                   @RequestParam(value = "roomId", required = false) String roomId,
+                                                  @RequestParam(value = "payObjId", required = false) String payObjId,
                                                   @RequestParam(value = "receiptId", required = false) String receiptId,
                                                   @RequestParam(value = "receiptIds", required = false) String receiptIds,
+                                                  @RequestParam(value = "detailIds", required = false) String detailIds,
+                                                  @RequestParam(value = "qstartTime", required = false) String qstartTime,
+                                                  @RequestParam(value = "qendTime", required = false) String qendTime,
+                                                  @RequestParam(value = "feeId", required = false) String feeId,
+                                                  @RequestParam(value = "receiptCode", required = false) String receiptCode,
                                                   @RequestParam(value = "page") int page,
                                                   @RequestParam(value = "row") int row,
                                                   @RequestHeader(value = "user_id") String userId) {
@@ -146,10 +152,22 @@ public class FeeReceiptApi {
         if (!StringUtil.isEmpty(receiptIds)) {
             feeReceiptDto.setReceiptIds(receiptIds.split(","));
         }
+        if (!StringUtil.isEmpty(detailIds)) {
+            feeReceiptDto.setDetailIds(detailIds.split(","));
+        }
         feeReceiptDto.setObjType(objType);
         feeReceiptDto.setObjName(roomId);
         feeReceiptDto.setObjId(objId);
         feeReceiptDto.setStoreName(storeName);
+        feeReceiptDto.setPayObjId(payObjId);
+        feeReceiptDto.setFeeId(feeId);
+        feeReceiptDto.setReceiptCode(receiptCode);
+        if (!StringUtil.isEmpty(qstartTime)) {
+            feeReceiptDto.setQstartTime(qstartTime + " 00:00:00");
+        }
+        if (!StringUtil.isEmpty(qendTime)) {
+            feeReceiptDto.setQendTime(qendTime + " 23:59:59");
+        }
         return getFeeReceiptBMOImpl.get(feeReceiptDto);
     }
 
@@ -159,8 +177,8 @@ public class FeeReceiptApi {
      *
      * @param communityId 小区ID
      * @return
-     * @serviceCode /feeReceipt/queryFeeReceipt
-     * @path /app/feeReceipt/queryFeeReceipt
+     * @serviceCode /feeReceipt/queryFeeReceiptNew
+     * @path /app/feeReceipt/queryFeeReceiptNew
      */
     @RequestMapping(value = "/queryFeeReceiptNew", method = RequestMethod.GET)
     public ResponseEntity<String> queryFeeReceiptNew(@RequestParam(value = "communityId") String communityId,
@@ -255,6 +273,8 @@ public class FeeReceiptApi {
     public ResponseEntity<String> queryFeeReceiptDetail(@RequestParam(value = "communityId") String communityId,
                                                         @RequestParam(value = "receiptId", required = false) String receiptId,
                                                         @RequestParam(value = "receiptIds", required = false) String receiptIds,
+                                                        @RequestParam(value = "detailIds", required = false) String detailIds,
+                                                        @RequestParam(value = "orderBy", required = false) String orderBy,
                                                         @RequestParam(value = "page") int page,
                                                         @RequestParam(value = "row") int row) {
         FeeReceiptDetailDto feeReceiptDetailDto = new FeeReceiptDetailDto();
@@ -262,8 +282,12 @@ public class FeeReceiptApi {
         feeReceiptDetailDto.setRow(row);
         feeReceiptDetailDto.setCommunityId(communityId);
         feeReceiptDetailDto.setReceiptId(receiptId);
+        feeReceiptDetailDto.setOrderBy(orderBy);
         if (!StringUtil.isEmpty(receiptIds)) {
             feeReceiptDetailDto.setReceiptIds(receiptIds.split(","));
+        }
+        if (!StringUtil.isEmpty(detailIds)) {
+            feeReceiptDetailDto.setDetailIds(detailIds.split(","));
         }
         return getFeeReceiptDetailBMOImpl.get(feeReceiptDetailDto);
     }

@@ -17,14 +17,14 @@ package com.java110.job.adapt.hcIot.machine;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.RoomDto;
-import com.java110.dto.communityLocation.CommunityLocationDto;
+import com.java110.dto.room.RoomDto;
+import com.java110.dto.community.CommunityLocationDto;
 import com.java110.dto.file.FileDto;
 import com.java110.dto.file.FileRelDto;
 import com.java110.dto.machine.MachineAttrDto;
 import com.java110.dto.machine.MachineDto;
 import com.java110.dto.owner.OwnerDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.Business;
 import com.java110.intf.common.IFileInnerServiceSMO;
 import com.java110.intf.common.IFileRelInnerServiceSMO;
 import com.java110.intf.common.IMachineAttrInnerServiceSMO;
@@ -56,6 +56,7 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
 
     @Autowired
     private IIotSendAsyn hcMachineAsynImpl;
+
     @Autowired
     IMachineInnerServiceSMO machineInnerServiceSMOImpl;
 
@@ -77,7 +78,6 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
     @Autowired
     private IFileInnerServiceSMO fileInnerServiceSMOImpl;
 
-
     /**
      * accessToken={access_token}
      * &extCommunityUuid=01000
@@ -93,66 +93,71 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray businessMachines = new JSONArray();
         if (data.containsKey(MachinePo.class.getSimpleName())) {
             Object bObj = data.get(MachinePo.class.getSimpleName());
-            JSONArray businessMachines = null;
             if (bObj instanceof JSONObject) {
-                businessMachines = new JSONArray();
                 businessMachines.add(bObj);
             } else if (bObj instanceof List) {
                 businessMachines = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessMachines = (JSONArray) bObj;
             }
-            //JSONObject businessMachine = data.getJSONObject("businessMachine");
-            for (int bMachineIndex = 0; bMachineIndex < businessMachines.size(); bMachineIndex++) {
-                JSONObject businessMachine = businessMachines.getJSONObject(bMachineIndex);
-                doSendMachine(business, businessMachine);
+        } else {
+            if (data instanceof JSONObject) {
+                businessMachines.add(data);
             }
+        }
+        //JSONObject businessMachine = data.getJSONObject("businessMachine");
+        for (int bMachineIndex = 0; bMachineIndex < businessMachines.size(); bMachineIndex++) {
+            JSONObject businessMachine = businessMachines.getJSONObject(bMachineIndex);
+            doSendMachine(business, businessMachine);
         }
     }
 
     private void doSendMachine(Business business, JSONObject businessMachine) {
-
         MachinePo machinePo = BeanConvertUtil.covertBean(businessMachine, MachinePo.class);
-
         MachineDto machineDto = new MachineDto();
         machineDto.setMachineCode(machinePo.getMachineCode());
         machineDto.setCommunityId(machinePo.getCommunityId());
         List<MachineDto> machineDtos = machineInnerServiceSMOImpl.queryMachines(machineDto);
-
         Assert.listOnlyOne(machineDtos, "未找到设备");
 
-        CommunityLocationDto communityLocationDto = new CommunityLocationDto();
-        communityLocationDto.setLocationId(machineDtos.get(0).getLocationTypeCd());
-        communityLocationDto.setCommunityId(machineDtos.get(0).getCommunityId());
-        List<CommunityLocationDto> communityLocationDtos = communityLocationInnerServiceSMOImpl.queryCommunityLocations(communityLocationDto);
+        String locationType = "";
 
-        Assert.listOnlyOne(communityLocationDtos, "设备位置不存在");
-
-        String hmId = getHmId(machineDtos.get(0));
-
-        List<JSONObject> ownerDtos = null;
-        if (MachineDto.MACHINE_TYPE_ACCESS_CONTROL.equals(machineDtos.get(0).getMachineTypeCd())) {
-            ownerDtos = getOwners(machinePo);
+        if (MachineDto.MACHINE_TYPE_ATTENDANCE.equals(machineDtos.get(0).getMachineTypeCd())) {
+            locationType = "5000";
         } else {
-            ownerDtos = new ArrayList<>();
+            CommunityLocationDto communityLocationDto = new CommunityLocationDto();
+            communityLocationDto.setLocationId(machineDtos.get(0).getLocationTypeCd());
+            communityLocationDto.setCommunityId(machineDtos.get(0).getCommunityId());
+            List<CommunityLocationDto> communityLocationDtos = communityLocationInnerServiceSMOImpl.queryCommunityLocations(communityLocationDto);
+            Assert.listOnlyOne(communityLocationDtos, "设备位置不存在");
+
+            locationType = communityLocationDtos.get(0).getLocationType();
         }
 
+        String hmId = getHmId(machineDtos.get(0));
         JSONObject postParameters = new JSONObject();
-
         postParameters.put("machineCode", machinePo.getMachineCode());
         postParameters.put("machineName", machinePo.getMachineName());
         postParameters.put("machineVersion", machinePo.getMachineVersion());
         postParameters.put("machineTypeCd", machinePo.getMachineTypeCd());
-        postParameters.put("locationType", communityLocationDtos.get(0).getLocationType());
+        postParameters.put("locationType", locationType);
         postParameters.put("locationObjId", machineDtos.get(0).getLocationObjId());
         postParameters.put("extMachineId", machineDtos.get(0).getMachineId());
         postParameters.put("extCommunityId", machinePo.getCommunityId());
         postParameters.put("machineIp", machinePo.getMachineIp());
         postParameters.put("machineMac", machinePo.getMachineMac());
+        postParameters.put("direction", machinePo.getDirection());
         postParameters.put("hmId", hmId);
-        hcMachineAsynImpl.addMachine(postParameters, ownerDtos);
+        hcMachineAsynImpl.addMachine(postParameters, null);
+
+        if (MachineDto.MACHINE_TYPE_ACCESS_CONTROL.equals(machineDtos.get(0).getMachineTypeCd())) {
+            sendOwners(machinePo);
+        }
+
+
     }
 
     private String getHmId(MachineDto machineDto) {
@@ -160,7 +165,6 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
         machineAttrDto.setCommunityId(machineDto.getCommunityId());
         machineAttrDto.setMachineId(machineDto.getMachineId());
         List<MachineAttrDto> machineAttrDtos = machineAttrInnerServiceSMOImpl.queryMachineAttrs(machineAttrDto);
-
         for (MachineAttrDto tmpMachineAttrDto : machineAttrDtos) {
             if (MachineAttrDto.SPEC_HM.equals(tmpMachineAttrDto.getSpecCd())) {
                 return tmpMachineAttrDto.getValue();
@@ -169,10 +173,9 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
         return "";
     }
 
-    private List<JSONObject> getOwners(MachinePo machinePo) {
+    private void sendOwners(MachinePo machinePo) {
         //拿到小区ID
         String communityId = machinePo.getCommunityId();
-
         List<JSONObject> ownerDtos = new ArrayList<>();
 
         List<OwnerDto> owners = null;
@@ -184,12 +187,10 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
         communityLocationDto.setLocationId(locationTypeCd);
         communityLocationDto.setCommunityId(machinePo.getCommunityId());
         List<CommunityLocationDto> communityLocationDtos = communityLocationInnerServiceSMOImpl.queryCommunityLocations(communityLocationDto);
-
         if (communityLocationDtos == null || communityLocationDtos.size() < 1) {
-            return ownerDtos;
+            return;
         }
         communityLocationDto = communityLocationDtos.get(0);
-
         if ("1000".contains(communityLocationDto.getLocationType())) {//查询整个小区的业主
             owners = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
         } else if ("2000".equals(communityLocationDto.getLocationType())) {//2000 单元门 ，则这个单元下的业主同步
@@ -199,18 +200,28 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
             roomDto.setCommunityId(machinePo.getCommunityId());
             List<RoomDto> roomDtos = roomInnerServiceSMOImpl.queryRooms(roomDto);
             if (roomDtos == null || roomDtos.size() == 0) { // 单元下没有房屋
-                return ownerDtos;
+                return;
             }
             ownerDto.setRoomIds(getRoomIds(roomDtos));
             owners = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
         } else if ("3000".equals(communityLocationDto.getLocationType())) {// 3000 房屋门
             ownerDto.setRoomId(machinePo.getLocationObjId());
             owners = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
+        } else if ("6000".equals(communityLocationDto.getLocationType())) {// 3000 房屋门
+            //先根据单元门ID 查询 房屋
+            RoomDto roomDto = new RoomDto();
+            roomDto.setFloorId(machinePo.getLocationObjId());
+            roomDto.setCommunityId(machinePo.getCommunityId());
+            List<RoomDto> roomDtos = roomInnerServiceSMOImpl.queryRooms(roomDto);
+            if (roomDtos == null || roomDtos.size() == 0) { // 楼栋下没有房屋
+                return;
+            }
+            ownerDto.setRoomIds(getRoomIds(roomDtos));
+            owners = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
         }
         if (owners == null) {
-            return ownerDtos;
+            return;
         }
-
         for (OwnerDto tOwnerDto : owners) {
             FileRelDto fileRelDto = new FileRelDto();
             fileRelDto.setObjId(tOwnerDto.getMemberId());
@@ -237,10 +248,10 @@ public class AddMachineToIotAdapt extends DatabusAdaptImpl {
             postParameters.put("machineCode", machinePo.getMachineCode());
             postParameters.put("extMachineId", machinePo.getMachineId());
             postParameters.put("extCommunityId", machinePo.getCommunityId());
-            ownerDtos.add(postParameters);
+            postParameters.put("attrs", tOwnerDto.getOwnerAttrDtos());
+            hcMachineAsynImpl.addOwner(postParameters);
         }
 
-        return ownerDtos;
     }
 
     private String[] getRoomIds(List<RoomDto> roomDtos) {

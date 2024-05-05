@@ -13,6 +13,14 @@
         )
     </insert>
 
+    <insert id="saveOwnerAttr" parameterType="Map">
+        insert into building_owner_attr(
+        attr_id,spec_cd,b_id,community_id,value,member_id
+        ) values (
+        #{attrId},#{specCd},'-1',#{communityId},#{value},#{memberId}
+        )
+    </insert>
+
 
     <!-- 查询业主属性信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessOwnerAttrInfo" parameterType="Map" resultType="Map">
@@ -89,8 +97,8 @@
         v.value_name valueName,
         s.list_show listShow
         from building_owner_attr t
-        left join attr_spec s on t.spec_cd = s.spec_cd and s.status_cd = '0' and s.table_name = 'building_owner_attr'
-        left join attr_value v on t.`value` = v.`value` and t.spec_cd = v.spec_cd and v.status_cd = '0'
+        left join attr_spec s on t.spec_cd = s.spec_cd and s.status_cd = '0' and t.spec_cd = s.spec_cd and s.table_name = 'building_owner_attr'
+        left join attr_value v on t.`value` = v.`value` and s.spec_id = v.spec_id and v.status_cd = '0'
         where 1 =1
         <if test="attrId !=null and attrId != ''">
             and t.attr_id= #{attrId}
@@ -143,9 +151,7 @@
         <if test="communityId !=null and communityId != ''">
             , t.community_id= #{communityId}
         </if>
-        <if test="value !=null and value != ''">
             , t.value= #{value}
-        </if>
         <if test="memberId !=null and memberId != ''">
             , t.member_id= #{memberId}
         </if>

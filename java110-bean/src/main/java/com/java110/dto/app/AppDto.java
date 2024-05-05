@@ -19,17 +19,22 @@ public class AppDto extends PageDto implements Serializable {
     public static final String WEB_APP_ID = "8000418004";
     public static final String WECHAT_OWNER_APP_ID = "992020061452450002"; //业主公众号
     public static final String WECHAT_MINA_OWNER_APP_ID = "992019111758490006";
+    public static final String WECHAT_MALL_APP_ID = "992021030901240071";
     public static final String OWNER_WECHAT_PAY = "992020011134400001"; // 微信支付
-    public static final String OWNER_APP_PAY = "992020061440050003"; // app微信支付
+    public static final String OWNER_APP_APP_ID = "992020061440050003"; // app微信支付
+    public static final String JOB_APP_ID = "992021061746360004"; // 定时任务应用
 
 
     private String appId;
+    private String[] appIds;
     private String blackListIp;
     private String name;
     private String securityCode;
     private String remark;
     private String userId;
     private String whileListIp;
+
+    private long serviceCount;
 
 
     private Date createTime;
@@ -108,5 +113,21 @@ public class AppDto extends PageDto implements Serializable {
 
     public void setStatusCd(String statusCd) {
         this.statusCd = statusCd;
+    }
+
+    public String[] getAppIds() {
+        return appIds;
+    }
+
+    public void setAppIds(String[] appIds) {
+        this.appIds = appIds;
+    }
+
+    public long getServiceCount() {
+        return serviceCount;
+    }
+
+    public void setServiceCount(long serviceCount) {
+        this.serviceCount = serviceCount;
     }
 }

@@ -25,7 +25,6 @@ public class RepairDto extends PageDto implements Serializable {
     public static final String STATE_BACK = "1200";
     //转单
     public static final String STATE_TRANSFER = "1300";
-
     //申请支付
     public static final String STATE_PAY = "1400";
     //支付失败
@@ -38,12 +37,22 @@ public class RepairDto extends PageDto implements Serializable {
     public static final String STATE_COMPLATE = "1900";
     //未处理主动结单
     public static final String STATE_UNPROCESSED = "2000";
+    //暂停报修单
+    public static final String STATE_STOP = "2001";
 
     public static final String REPAIR_WAY_GRABBING = "100"; //抢单模式
-    public static final String REPAIR_WAY_TRAINING = "300"; //抢单模式
+    public static final String REPAIR_WAY_ASSIGN = "200"; //指派模式
+    public static final String REPAIR_WAY_TRAINING = "300"; //轮训模式
 
+    //报修渠道  D员工代客报修  T电话报修 Z业主自主保修
+    public static final String REPAIR_CHANNEL_STAFF = "D"; //D员工代客报修
+    public static final String REPAIR_CHANNEL_TEL = "T"; //T电话报修
+    public static final String REPAIR_CHANNEL_OWNER = "Z"; //Z业主自主保修
 
     private String repairName;
+
+    private String repairNameLike;
+
     private String appointmentTime;
     private String repairType;
     private String context;
@@ -58,6 +67,7 @@ public class RepairDto extends PageDto implements Serializable {
     private String[] roomIds;
     private String repairTypeName;
     private String repairWay;
+    private String bId;
 
     private String staffId;
 
@@ -78,6 +88,46 @@ public class RepairDto extends PageDto implements Serializable {
     private List<PhotoVo> photos;
 
     private String returnVisitFlag;
+    private String startRuId;
+    private String preRuId;
+    private String ruId;
+
+    private String returnVisitFlagName;
+    private String publicArea;
+    private String repairChannel;
+    private String maintenanceType;
+    private String reqSource;
+    private String visitType;
+    private String visitContext;
+    private List<String> repairChannels;
+    private String payType;
+
+    //业主上传维修图片
+    private List<PhotoVo> repairPhotos;
+    //维修前图片
+    private List<PhotoVo> beforePhotos;
+    //维修后图片
+    private List<PhotoVo> afterPhotos;
+
+    //所需物料
+    private String repairMaterials;
+
+    //费用明细
+    private String repairFee;
+
+    //综合评价得分
+    private String appraiseScore;
+    //上门速度评分
+    private String doorSpeedScore;
+    //维修员服务评分
+    private String repairmanServiceScore;
+    //平均分
+    private String average;
+    private String repairSettingType;
+    private String repairSettingTypeName;
+
+    private String startTime;
+    private String endTime;
 
 
     public String getRepairName() {
@@ -184,7 +234,6 @@ public class RepairDto extends PageDto implements Serializable {
     public void setRepairTypeName(String repairTypeName) {
         this.repairTypeName = repairTypeName;
     }
-
 
     public String getStaffId() {
         return staffId;
@@ -304,5 +353,221 @@ public class RepairDto extends PageDto implements Serializable {
 
     public void setReturnVisitFlag(String returnVisitFlag) {
         this.returnVisitFlag = returnVisitFlag;
+    }
+
+    public String getStartRuId() {
+        return startRuId;
+    }
+
+    public void setStartRuId(String startRuId) {
+        this.startRuId = startRuId;
+    }
+
+    public String getPreRuId() {
+        return preRuId;
+    }
+
+    public void setPreRuId(String preRuId) {
+        this.preRuId = preRuId;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getRuId() {
+        return ruId;
+    }
+
+    public void setRuId(String ruId) {
+        this.ruId = ruId;
+    }
+
+    public List<PhotoVo> getRepairPhotos() {
+        return repairPhotos;
+    }
+
+    public void setRepairPhotos(List<PhotoVo> repairPhotos) {
+        this.repairPhotos = repairPhotos;
+    }
+
+    public List<PhotoVo> getBeforePhotos() {
+        return beforePhotos;
+    }
+
+    public void setBeforePhotos(List<PhotoVo> beforePhotos) {
+        this.beforePhotos = beforePhotos;
+    }
+
+    public List<PhotoVo> getAfterPhotos() {
+        return afterPhotos;
+    }
+
+    public void setAfterPhotos(List<PhotoVo> afterPhotos) {
+        this.afterPhotos = afterPhotos;
+    }
+
+    public String getReturnVisitFlagName() {
+        return returnVisitFlagName;
+    }
+
+    public void setReturnVisitFlagName(String returnVisitFlagName) {
+        this.returnVisitFlagName = returnVisitFlagName;
+    }
+
+    public String getPublicArea() {
+        return publicArea;
+    }
+
+    public void setPublicArea(String publicArea) {
+        this.publicArea = publicArea;
+    }
+
+    public String getRepairChannel() {
+        return repairChannel;
+    }
+
+    public void setRepairChannel(String repairChannel) {
+        this.repairChannel = repairChannel;
+    }
+
+    public String getMaintenanceType() {
+        return maintenanceType;
+    }
+
+    public void setMaintenanceType(String maintenanceType) {
+        this.maintenanceType = maintenanceType;
+    }
+
+    public String getReqSource() {
+        return reqSource;
+    }
+
+    public void setReqSource(String reqSource) {
+        this.reqSource = reqSource;
+    }
+
+    public List<String> getRepairChannels() {
+        return repairChannels;
+    }
+
+    public void setRepairChannels(List<String> repairChannels) {
+        this.repairChannels = repairChannels;
+    }
+
+    public String getVisitType() {
+        return visitType;
+    }
+
+    public void setVisitType(String visitType) {
+        this.visitType = visitType;
+    }
+
+    public String getVisitContext() {
+        return visitContext;
+    }
+
+    public void setVisitContext(String visitContext) {
+        this.visitContext = visitContext;
+    }
+
+    public String getRepairMaterials() {
+        return repairMaterials;
+    }
+
+    public void setRepairMaterials(String repairMaterials) {
+        this.repairMaterials = repairMaterials;
+    }
+
+    public String getRepairFee() {
+        return repairFee;
+    }
+
+    public void setRepairFee(String repairFee) {
+        this.repairFee = repairFee;
+    }
+
+    public String getAppraiseScore() {
+        return appraiseScore;
+    }
+
+    public void setAppraiseScore(String appraiseScore) {
+        this.appraiseScore = appraiseScore;
+    }
+
+    public String getDoorSpeedScore() {
+        return doorSpeedScore;
+    }
+
+    public void setDoorSpeedScore(String doorSpeedScore) {
+        this.doorSpeedScore = doorSpeedScore;
+    }
+
+    public String getRepairmanServiceScore() {
+        return repairmanServiceScore;
+    }
+
+    public void setRepairmanServiceScore(String repairmanServiceScore) {
+        this.repairmanServiceScore = repairmanServiceScore;
+    }
+
+    public String getAverage() {
+        return average;
+    }
+
+    public void setAverage(String average) {
+        this.average = average;
+    }
+
+    public String getPayType() {
+        return payType;
+    }
+
+    public void setPayType(String payType) {
+        this.payType = payType;
+    }
+
+    public String getRepairSettingType() {
+        return repairSettingType;
+    }
+
+    public void setRepairSettingType(String repairSettingType) {
+        this.repairSettingType = repairSettingType;
+    }
+
+    public String getRepairSettingTypeName() {
+        return repairSettingTypeName;
+    }
+
+    public void setRepairSettingTypeName(String repairSettingTypeName) {
+        this.repairSettingTypeName = repairSettingTypeName;
+    }
+
+    public String getRepairNameLike() {
+        return repairNameLike;
+    }
+
+    public void setRepairNameLike(String repairNameLike) {
+        this.repairNameLike = repairNameLike;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

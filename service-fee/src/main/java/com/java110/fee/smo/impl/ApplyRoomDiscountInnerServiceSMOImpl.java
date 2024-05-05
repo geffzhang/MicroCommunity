@@ -3,10 +3,10 @@ package com.java110.fee.smo.impl;
 
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.applyRoomDiscount.ApplyRoomDiscountDto;
+import com.java110.dto.room.ApplyRoomDiscountDto;
 import com.java110.fee.dao.IApplyRoomDiscountServiceDao;
 import com.java110.intf.fee.IApplyRoomDiscountInnerServiceSMO;
-import com.java110.po.applyRoomDiscount.ApplyRoomDiscountPo;
+import com.java110.po.room.ApplyRoomDiscountPo;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +64,12 @@ public class ApplyRoomDiscountInnerServiceSMOImpl extends BaseServiceSMO impleme
 
         List<ApplyRoomDiscountDto> applyRoomDiscounts = BeanConvertUtil.covertBeanList(applyRoomDiscountServiceDaoImpl.getApplyRoomDiscountInfo(BeanConvertUtil.beanCovertMap(applyRoomDiscountDto)), ApplyRoomDiscountDto.class);
 
+        return applyRoomDiscounts;
+    }
+
+    @Override
+    public List<ApplyRoomDiscountDto> queryFirstApplyRoomDiscounts(ApplyRoomDiscountDto applyRoomDiscountDto) {
+        List<ApplyRoomDiscountDto> applyRoomDiscounts = BeanConvertUtil.covertBeanList(applyRoomDiscountServiceDaoImpl.queryFirstApplyRoomDiscounts(BeanConvertUtil.beanCovertMap(applyRoomDiscountDto)), ApplyRoomDiscountDto.class);
         return applyRoomDiscounts;
     }
 

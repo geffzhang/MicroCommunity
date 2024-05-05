@@ -6,6 +6,7 @@ public class ApiInspectionPointDataVo implements Serializable {
 
     private String inspectionRouteId;
     private String inspectionId;
+    private String irpRelId;
     private String inspectionName;
     private String remark;
     private String machineCode;
@@ -15,11 +16,19 @@ public class ApiInspectionPointDataVo implements Serializable {
     private String locationObjId;
     private String locationObjName;
     private String pointObjType;
+    private String pointTypeName;
     private String pointObjId;
     private String pointObjName;
     private String machineId;
     private String communityId;
+    private String pointStartTime;
+    private String pointEndTime;
+    private String sortNumber;
+    private String itemId;
+    private String itemName;
+    private String nfcCode;
 
+    private String url;
 
     public String getInspectionId() {
         return inspectionId;
@@ -139,5 +148,77 @@ public class ApiInspectionPointDataVo implements Serializable {
 
     public void setPointObjName(String pointObjName) {
         this.pointObjName = pointObjName;
+    }
+
+    public String getPointTypeName() {
+        return pointTypeName;
+    }
+
+    public void setPointTypeName(String pointTypeName) {
+        this.pointTypeName = pointTypeName;
+    }
+
+    public String getPointStartTime() {
+        return pointStartTime;
+    }
+
+    public void setPointStartTime(String pointStartTime) {
+        this.pointStartTime = pointStartTime;
+    }
+
+    public String getPointEndTime() {
+        return pointEndTime;
+    }
+
+    public void setPointEndTime(String pointEndTime) {
+        this.pointEndTime = pointEndTime;
+    }
+
+    public String getSortNumber() {
+        return sortNumber;
+    }
+
+    public void setSortNumber(String sortNumber) {
+        this.sortNumber = sortNumber;
+    }
+
+    public String getIrpRelId() {
+        return irpRelId;
+    }
+
+    public void setIrpRelId(String irpRelId) {
+        this.irpRelId = irpRelId;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getNfcCode() {
+        return nfcCode;
+    }
+
+    public void setNfcCode(String nfcCode) {
+        this.nfcCode = nfcCode;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

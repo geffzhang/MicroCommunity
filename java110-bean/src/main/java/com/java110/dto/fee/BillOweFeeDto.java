@@ -16,6 +16,7 @@ public class BillOweFeeDto extends PageDto implements Serializable {
 
     public static final String STATE_FINISH_FEE = "2000";//已缴费
     public static final String STATE_WILL_FEE = "1000";//未缴费
+    public static final String STATE_SEND_OWNER = "3000";//已催缴
 
     private String oweId;
     private String billId;
@@ -30,6 +31,7 @@ public class BillOweFeeDto extends PageDto implements Serializable {
     private String payerObjType;
     private String communityId;
     private String state;
+    private String stateName;
     private String createTime;
     private String[] ownerIds;
     private String deadlineTime;
@@ -196,5 +198,13 @@ public class BillOweFeeDto extends PageDto implements Serializable {
 
     public void setFeeTypeName(String feeTypeName) {
         this.feeTypeName = feeTypeName;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 }

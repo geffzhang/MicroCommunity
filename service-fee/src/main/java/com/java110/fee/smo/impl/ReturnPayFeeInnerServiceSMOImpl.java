@@ -1,7 +1,7 @@
 package com.java110.fee.smo.impl;
 
 
-import com.java110.dto.returnPayFee.ReturnPayFeeDto;
+import com.java110.dto.payFee.ReturnPayFeeDto;
 import com.java110.fee.dao.IReturnPayFeeServiceDao;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.core.base.smo.BaseServiceSMO;
@@ -55,6 +55,44 @@ public class ReturnPayFeeInnerServiceSMOImpl extends BaseServiceSMO implements I
 //        for (ReturnPayFeeDto returnPayFee : returnPayFees) {
 //            refreshReturnPayFee(returnPayFee, users);
 //        }
+        return returnPayFees;
+    }
+
+    @Override
+    public List<ReturnPayFeeDto> queryRoomReturnPayFees(@RequestBody ReturnPayFeeDto returnPayFeeDto) {
+
+        //校验是否传了 分页信息
+
+        int page = returnPayFeeDto.getPage();
+
+        if (page != PageDto.DEFAULT_PAGE) {
+            returnPayFeeDto.setPage((page - 1) * returnPayFeeDto.getRow());
+        }
+
+        List<ReturnPayFeeDto> returnPayFees = BeanConvertUtil.covertBeanList(returnPayFeeServiceDaoImpl.getRoomReturnPayFeeInfo(BeanConvertUtil.beanCovertMap(returnPayFeeDto)), ReturnPayFeeDto.class);
+
+        if (returnPayFees == null || returnPayFees.size() == 0) {
+            return returnPayFees;
+        }
+        return returnPayFees;
+    }
+
+    @Override
+    public List<ReturnPayFeeDto> queryCarReturnPayFees(@RequestBody ReturnPayFeeDto returnPayFeeDto) {
+
+        //校验是否传了 分页信息
+
+        int page = returnPayFeeDto.getPage();
+
+        if (page != PageDto.DEFAULT_PAGE) {
+            returnPayFeeDto.setPage((page - 1) * returnPayFeeDto.getRow());
+        }
+
+        List<ReturnPayFeeDto> returnPayFees = BeanConvertUtil.covertBeanList(returnPayFeeServiceDaoImpl.getCarReturnPayFeeInfo(BeanConvertUtil.beanCovertMap(returnPayFeeDto)), ReturnPayFeeDto.class);
+
+        if (returnPayFees == null || returnPayFees.size() == 0) {
+            return returnPayFees;
+        }
         return returnPayFees;
     }
 

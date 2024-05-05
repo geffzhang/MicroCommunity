@@ -11,6 +11,7 @@ public class ApiFeeConfigDataVo implements Serializable {
     private String startTime;
     private String endTime;
     private String computingFormula;
+    private String computingFormulaName;
     private String squarePrice;
     private String additionalAmount;
     private String feeTypeCdName;
@@ -24,7 +25,15 @@ public class ApiFeeConfigDataVo implements Serializable {
     private String paymentCd;
 
     private String paymentCycle;
+    private String computingFormulaText;
 
+    private String deductFrom;
+
+    private String payOnline;
+    private String scale;
+    private String decimalPlace;
+    private String units;
+    private String prepaymentPeriod;
 
     public String getConfigId() {
         return configId;
@@ -82,22 +91,6 @@ public class ApiFeeConfigDataVo implements Serializable {
         this.computingFormula = computingFormula;
     }
 
-    public String getSquarePrice() {
-        return squarePrice;
-    }
-
-    public void setSquarePrice(String squarePrice) {
-        this.squarePrice = squarePrice;
-    }
-
-    public String getAdditionalAmount() {
-        return additionalAmount;
-    }
-
-    public void setAdditionalAmount(String additionalAmount) {
-        this.additionalAmount = additionalAmount;
-    }
-
     public String getFeeTypeCdName() {
         return feeTypeCdName;
     }
@@ -152,5 +145,85 @@ public class ApiFeeConfigDataVo implements Serializable {
 
     public void setPaymentCycle(String paymentCycle) {
         this.paymentCycle = paymentCycle;
+    }
+
+    public String getComputingFormulaText() {
+        return computingFormulaText;
+    }
+
+    public void setComputingFormulaText(String computingFormulaText) {
+        this.computingFormulaText = computingFormulaText;
+    }
+
+    public String getDeductFrom() {
+        return deductFrom;
+    }
+
+    public void setDeductFrom(String deductFrom) {
+        this.deductFrom = deductFrom;
+    }
+
+    public String getComputingFormulaName() {
+        return computingFormulaName;
+    }
+
+    public void setComputingFormulaName(String computingFormulaName) {
+        this.computingFormulaName = computingFormulaName;
+    }
+
+    public String getPayOnline() {
+        return payOnline;
+    }
+
+    public void setPayOnline(String payOnline) {
+        this.payOnline = payOnline;
+    }
+
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setDecimalPlace(String decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+    public String getSquarePrice() {
+        return squarePrice;
+    }
+
+    public void setSquarePrice(String squarePrice) {
+        this.squarePrice = squarePrice;
+    }
+
+    public String getAdditionalAmount() {
+        return additionalAmount;
+    }
+
+    public void setAdditionalAmount(String additionalAmount) {
+        this.additionalAmount = additionalAmount;
+    }
+
+    public String getPrepaymentPeriod() {
+        return prepaymentPeriod;
+    }
+
+    public void setPrepaymentPeriod(String prepaymentPeriod) {
+        this.prepaymentPeriod = prepaymentPeriod;
     }
 }

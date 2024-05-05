@@ -1,25 +1,15 @@
 package com.java110.core.base.controller;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.java110.core.base.AppBase;
 import com.java110.core.context.BusinessServiceDataFlow;
-import com.java110.core.context.IPageData;
 import com.java110.core.context.PageData;
 import com.java110.core.factory.DataFlowFactory;
-import com.java110.core.smo.IGetCommunityStoreInfoSMO;
-import com.java110.dto.basePrivilege.BasePrivilegeDto;
-import com.java110.utils.cache.PrivilegeCache;
 import com.java110.utils.constant.CommonConstant;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.NoAuthorityException;
 import com.java110.utils.util.StringUtil;
-import com.java110.vo.ResultVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -31,8 +21,7 @@ import java.util.*;
  */
 public class BaseController extends AppBase {
 
-    @Autowired
-    private IGetCommunityStoreInfoSMO getCommunityStoreInfoSMOImpl;
+
 
 
     /**
@@ -67,21 +56,22 @@ public class BaseController extends AppBase {
                 String[] value = (String[]) readOnlyMap.get(key);
 //                String[] value = (String[]) readOnlyMap.get(key);
                 if (value.length > 1) {
-                    headers.put(key, value[0]);
                     for (int j = 0; j < value.length; j++) {
                         queryString.append(key);
                         queryString.append("=");
                         queryString.append(value[j]);
                         queryString.append("&");
                     }
-
                 } else {
-                    headers.put(key, value[0]);
                     queryString.append(key);
                     queryString.append("=");
                     queryString.append(value[0]);
                     queryString.append("&");
                 }
+                if(!hasValidHeader(key.toLowerCase())){
+                    continue;
+                }
+                headers.put(key, value[0]);
             }
         }
 
@@ -93,6 +83,33 @@ public class BaseController extends AppBase {
         }
 
     }
+
+    private boolean hasValidHeader(String key) {
+        if("app-id".equals(key) || "app_id".equals(key)){
+            return true;
+        }
+        if("transaction-id".equals(key) || "transaction_id".equals(key)){
+            return true;
+        }
+        if("req-time".equals(key) || "req_time".equals(key)){
+            return true;
+        }
+        if("sign".equals(key)){
+            return true;
+        }
+        if("user-id".equals(key) || "user_id".equals(key)){
+            return true;
+        }
+        if("java110-lang".equals(key)){
+            return true;
+        }
+        if("store-id".equals(key)){
+            return true;
+        }
+
+        return false;
+    }
+
 
     public static Map<String, String> getParameterStringMap(HttpServletRequest request) {
         Map<String, String[]> properties = request.getParameterMap();//把请求参数封装到Map<String, String[]>中
@@ -118,6 +135,19 @@ public class BaseController extends AppBase {
         return returnMap;
     }
 
+    // 获取HttpServletRequest里面的参数
+    public static Map<String, String> getRequestParams(HttpServletRequest request) {
+        Map<String, String[]> params = request.getParameterMap();
+        Map<String, String> params2 = new HashMap<>();
+        for (String key : params.keySet()) {
+            String[] values = params.get(key);
+            if (values.length > 0) {
+                params2.put(key, request.getParameter(key));
+            }
+        }
+        return params2;
+    }
+
     protected void initHeadParam(HttpServletRequest request, Map headers) {
 
         Enumeration reqHeaderEnum = request.getHeaderNames();
@@ -129,7 +159,8 @@ public class BaseController extends AppBase {
 
         headers.put("IP", getIpAddr(request));
 
-        headers.put("hostName", request.getLocalName());
+        //headers.put("hostName", request.getLocalName()); 这里导致部分主机 速度比较慢
+        headers.put("hostName", "localhost");
         headers.put("port", request.getLocalPort() + "");
 
         //处理app-id
@@ -148,7 +179,7 @@ public class BaseController extends AppBase {
         }
 
         //处理req-time
-        if (headers.containsKey("user-id")) {
+        if (headers.containsKey("user-id") && !"-1".equals(headers.get("user-id"))) {
             headers.put("user_id", headers.get("user-id"));
         }
 
@@ -279,54 +310,7 @@ public class BaseController extends AppBase {
         return businessServiceDataFlow;
     }
 
-    protected void hasPrivilege(RestTemplate restTemplate, IPageData pd, String resource) {
-        ResponseEntity<String> responseEntity = null;
-        //没有用户的情况下不做权限判断
-        if (StringUtil.isEmpty(pd.getUserId())) {
-            return;
-        }
-        JSONObject paramIn = new JSONObject();
-        //paramIn.put("resource", resource);
-        paramIn.put("userId", pd.getUserId());
 
-        //校验资源路劲是否定义权限
-        List<BasePrivilegeDto> basePrivilegeDtos = PrivilegeCache.getPrivileges();
-        if (basePrivilegeDtos == null || basePrivilegeDtos.size() < 1) {
-            return;
-        }
-        String tmpResource = null;
-        boolean hasPrivilege = false;
-        for (BasePrivilegeDto privilegeDto : basePrivilegeDtos) {
-            if (resource.equals(privilegeDto.getResource())) {
-                hasPrivilege = true;
-            }
-        }
-        if (!hasPrivilege) { //权限没有配置，直接跳过
-            return;
-        }
-
-        ResultVo resultVo = getCommunityStoreInfoSMOImpl.checkUserHasResourceListener(restTemplate, pd, paramIn, pd.getUserId());
-        if (resultVo == null || resultVo.getCode() != ResultVo.CODE_OK) {
-            throw new UnsupportedOperationException("用户没有权限操作");
-        }
-        JSONArray privileges = JSONArray.parseArray(resultVo.getMsg());
-
-        hasPrivilege = false;
-        if (privileges == null || privileges.size() < 1) {
-            throw new UnsupportedOperationException("用户没有权限操作");
-        }
-        for (int privilegeIndex = 0; privilegeIndex < privileges.size(); privilegeIndex++) {
-            tmpResource = privileges.getJSONObject(privilegeIndex).getString("resource");
-            if (resource.equals(tmpResource)) {
-                hasPrivilege = true;
-                break;
-            }
-        }
-        if (!hasPrivilege) {
-            throw new UnsupportedOperationException("用户没有权限操作");
-        }
-
-    }
 
 
 }

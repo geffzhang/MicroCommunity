@@ -1,7 +1,6 @@
 package com.java110.dto.task;
 
 import com.java110.dto.PageDto;
-import com.java110.dto.taskAttr.TaskAttrDto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -33,6 +32,8 @@ public class TaskDto extends PageDto implements Serializable {
     private Date createTime;
 
     private String statusCd = "0";
+
+    private String classBean;
 
 
     public String getTaskCron() {
@@ -123,5 +124,13 @@ public class TaskDto extends PageDto implements Serializable {
 
     public void setTaskTemplateDto(TaskTemplateDto taskTemplateDto) {
         this.taskTemplateDto = taskTemplateDto;
+    }
+
+    public String getClassBean() {
+        return classBean;
+    }
+
+    public void setClassBean(String classBean) {
+        this.classBean = classBean;
     }
 }

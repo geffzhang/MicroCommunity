@@ -6,9 +6,9 @@ import com.java110.core.annotation.Java110Transactional;
 import com.java110.core.factory.GenerateCodeFactory;
 import com.java110.core.smo.IComputeFeeSMO;
 import com.java110.dto.fee.*;
+import com.java110.dto.owner.OwnerDto;
 import com.java110.dto.repair.RepairDto;
 import com.java110.fee.bmo.IPayOweFee;
-import com.java110.fee.listener.fee.UpdateFeeInfoListener;
 import com.java110.intf.fee.IFeeReceiptDetailInnerServiceSMO;
 import com.java110.intf.community.IParkingSpaceInnerServiceSMO;
 import com.java110.intf.community.IRepairInnerServiceSMO;
@@ -17,8 +17,8 @@ import com.java110.intf.fee.*;
 import com.java110.intf.user.IOwnerCarInnerServiceSMO;
 import com.java110.po.fee.PayFeeDetailPo;
 import com.java110.po.fee.PayFeePo;
-import com.java110.po.feeReceipt.FeeReceiptPo;
-import com.java110.po.feeReceiptDetail.FeeReceiptDetailPo;
+import com.java110.po.fee.FeeReceiptPo;
+import com.java110.po.fee.FeeReceiptDetailPo;
 import com.java110.po.owner.RepairPoolPo;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.ListenerExecuteException;
@@ -28,7 +28,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.utils.util.StringUtil;
 import com.java110.vo.ResultVo;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 欠费缴费实现类
@@ -44,7 +45,7 @@ import java.util.List;
 @Service
 public class PayOweFeeImpl implements IPayOweFee {
 
-    private static Logger logger = LoggerFactory.getLogger(UpdateFeeInfoListener.class);
+    private static Logger logger = LoggerFactory.getLogger(PayOweFeeImpl.class);
 
 
     @Autowired
@@ -99,6 +100,10 @@ public class PayOweFeeImpl implements IPayOweFee {
         FeeReceiptPo feeReceiptPo = new FeeReceiptPo();
         feeReceiptPo.setReceiptId(GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_receiptId));
         feeReceiptPo.setAmount("0.0");
+
+        feeReceiptPo.setPayObjId("-1");
+        feeReceiptPo.setPayObjName("未知");
+
         for (int feeIndex = 0; feeIndex < fees.size(); feeIndex++) {
             feeObj = fees.getJSONObject(feeIndex);
             Assert.hasKeyAndValue(feeObj, "feeId", "未包含费用项ID");
@@ -225,7 +230,8 @@ public class PayOweFeeImpl implements IPayOweFee {
         feeDto = feeDtos.get(0);
         paramInJson.put("feeInfo", feeDto);
         payFeeDetailPo.setStartTime(DateUtil.getFormatTimeString(feeDto.getEndTime(), DateUtil.DATE_FORMATE_STRING_A));
-        BigDecimal feePrice = new BigDecimal(computeFeeSMOImpl.getFeePrice(feeDto));
+        Map feePriceAll=computeFeeSMOImpl.getFeePrice(feeDto);
+        BigDecimal feePrice = new BigDecimal(feePriceAll.get("feePrice").toString());
 
         BigDecimal receivedAmount = new BigDecimal(Double.parseDouble(paramInJson.getString("feePrice")));
         BigDecimal cycles = receivedAmount.divide(feePrice, 2, BigDecimal.ROUND_HALF_EVEN);
@@ -264,5 +270,8 @@ public class PayOweFeeImpl implements IPayOweFee {
         if (StringUtil.isEmpty(feeReceiptPo.getObjName())) {
             feeReceiptPo.setObjName(computeFeeSMOImpl.getFeeObjName(feeDto));
         }
+        OwnerDto ownerDto = computeFeeSMOImpl.getFeeOwnerDto(feeDto);
+        feeReceiptPo.setPayObjId(ownerDto.getOwnerId());
+        feeReceiptPo.setPayObjName(ownerDto.getName());
     }
 }

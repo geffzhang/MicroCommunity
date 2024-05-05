@@ -1,11 +1,14 @@
 package com.java110.fee;
 
+import com.java110.core.annotation.Java110CmdDiscovery;
 import com.java110.core.annotation.Java110ListenerDiscovery;
+import com.java110.core.trace.Java110RestTemplateInterceptor;
 import com.java110.core.client.RestTemplate;
+import com.java110.core.event.cmd.ServiceCmdEventPublishing;
 import com.java110.core.event.service.BusinessServiceDataFlowEventPublishing;
 import com.java110.service.init.ServiceStartInit;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -16,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
+import javax.annotation.Resource;
 import java.nio.charset.Charset;
 
 
@@ -29,16 +33,26 @@ import java.nio.charset.Charset;
  * @tag
  */
 @SpringBootApplication(scanBasePackages = {"com.java110.service", "com.java110.fee",
-        "com.java110.core", "com.java110.config.properties.code", "com.java110.db"})
+        "com.java110.core", "com.java110.config.properties.code", "com.java110.db","com.java110.doc"})
 @EnableDiscoveryClient
 @Java110ListenerDiscovery(listenerPublishClass = BusinessServiceDataFlowEventPublishing.class,
         basePackages = {"com.java110.fee.listener"})
-@EnableFeignClients(basePackages = {"com.java110.intf.user", "com.java110.intf.order", "com.java110.intf.community","com.java110.intf.store"})
+@Java110CmdDiscovery(cmdPublishClass = ServiceCmdEventPublishing.class,
+        basePackages = {"com.java110.fee.cmd"})
+@EnableFeignClients(basePackages = {"com.java110.intf.user",
+        "com.java110.intf.order",
+        "com.java110.intf.community",
+        "com.java110.intf.job",
+        "com.java110.intf.acct",
+        "com.java110.intf.common",
+        "com.java110.intf.report",
+        "com.java110.intf.store"})
 public class FeeServiceApplicationStart {
 
     private static Logger logger = LoggerFactory.getLogger(FeeServiceApplicationStart.class);
 
-
+    @Resource
+    private Java110RestTemplateInterceptor java110RestTemplateInterceptor;
     /**
      * 实例化RestTemplate，通过@LoadBalanced注解开启均衡负载能力.
      *
@@ -49,13 +63,18 @@ public class FeeServiceApplicationStart {
     public RestTemplate restTemplate() {
         StringHttpMessageConverter m = new StringHttpMessageConverter(Charset.forName("UTF-8"));
         RestTemplate restTemplate = new RestTemplateBuilder().additionalMessageConverters(m).build(RestTemplate.class);
+        restTemplate.getInterceptors().add(java110RestTemplateInterceptor);
         return restTemplate;
     }
 
     public static void main(String[] args) throws Exception {
         try {
+            ServiceStartInit.preInitSystemConfig();
             ApplicationContext context = SpringApplication.run(FeeServiceApplicationStart.class, args);
             ServiceStartInit.initSystemConfig(context);
+
+            //服务启动完成
+            ServiceStartInit.printStartSuccessInfo();
         } catch (Throwable e) {
             logger.error("系统启动失败", e);
         }

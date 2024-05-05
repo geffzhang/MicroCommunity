@@ -18,8 +18,7 @@ package com.java110.job.adapt.hcIot.car;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.dto.machine.CarBlackWhiteDto;
-import com.java110.dto.parking.ParkingSpaceDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.Business;
 import com.java110.intf.common.ICarBlackWhiteInnerServiceSMO;
 import com.java110.intf.community.IParkingSpaceInnerServiceSMO;
 import com.java110.job.adapt.DatabusAdaptImpl;
@@ -28,7 +27,6 @@ import com.java110.po.car.CarBlackWhitePo;
 import com.java110.utils.constant.StatusConstant;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
-import com.java110.utils.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,22 +63,26 @@ public class DeleteCarBlackWhiteToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray businessCarBlackWhites = new JSONArray();
         if (data.containsKey(CarBlackWhitePo.class.getSimpleName())) {
             Object bObj = data.get(CarBlackWhitePo.class.getSimpleName());
-            JSONArray businessCarBlackWhites = null;
             if (bObj instanceof JSONObject) {
-                businessCarBlackWhites = new JSONArray();
                 businessCarBlackWhites.add(bObj);
             } else if (bObj instanceof List) {
                 businessCarBlackWhites = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessCarBlackWhites = (JSONArray) bObj;
             }
-            //JSONObject businessCarBlackWhite = data.getJSONObject("businessCarBlackWhite");
-            for (int bCarBlackWhiteIndex = 0; bCarBlackWhiteIndex < businessCarBlackWhites.size(); bCarBlackWhiteIndex++) {
-                JSONObject businessCarBlackWhite = businessCarBlackWhites.getJSONObject(bCarBlackWhiteIndex);
-                doSendCarBlackWhite(business, businessCarBlackWhite);
+        } else {
+            if (data instanceof JSONObject) {
+                businessCarBlackWhites.add(data);
             }
+        }
+
+        //JSONObject businessCarBlackWhite = data.getJSONObject("businessCarBlackWhite");
+        for (int bCarBlackWhiteIndex = 0; bCarBlackWhiteIndex < businessCarBlackWhites.size(); bCarBlackWhiteIndex++) {
+            JSONObject businessCarBlackWhite = businessCarBlackWhites.getJSONObject(bCarBlackWhiteIndex);
+            doSendCarBlackWhite(business, businessCarBlackWhite);
         }
     }
 
@@ -97,6 +99,9 @@ public class DeleteCarBlackWhiteToIotAdapt extends DatabusAdaptImpl {
         postParameters.put("carNum", carBlackWhiteDtos.get(0).getCarNum());
         postParameters.put("extPaId", carBlackWhiteDtos.get(0).getPaId());
         postParameters.put("extCommunityId", carBlackWhiteDtos.get(0).getCommunityId());
+        postParameters.put("startTime", carBlackWhiteDtos.get(0).getStartTime());
+        postParameters.put("endTime", carBlackWhiteDtos.get(0).getEndTime());
+        postParameters.put("blackWhite", carBlackWhiteDtos.get(0).getBlackWhite());
         hcCarBlackWhiteAsynImpl.deleteCarBlackWhite(postParameters);
     }
 }

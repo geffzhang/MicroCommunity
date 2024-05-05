@@ -24,6 +24,7 @@ public class ApiFeeDataVo implements Serializable {
     private String feeId;
     private String userId;
     private String payerObjId;
+    private String payerObjName;
     private String payerObjType;
     private String configId;
 
@@ -38,6 +39,7 @@ public class ApiFeeDataVo implements Serializable {
     private String additionalAmount;
 
     private String feePrice;
+    private String feeTotalPrice;
     private String isDefault;
 
     private String paymentCd;
@@ -52,7 +54,46 @@ public class ApiFeeDataVo implements Serializable {
 
     private String preReadingTime;
     private String curReadingTime;
+    private String mwPrice;
+
+    private String carTypeCd;
+
+    private String batchId;
+
+    //映射关系开关值
+    private String val;
+
+    private String offlinePayFeeSwitch;
+
+    //实收金额映射开关值
+    private String receivedAmountSwitch;
+
+    private String deductFrom;
+
     private List<FeeAttrDto> feeAttrs;
+
+    private String rateCycle;
+
+    private String rate;
+
+    private String rateStartTime;
+
+
+
+    private String maxEndTime;
+
+    private String payOnline;
+    private String scale;
+    private String decimalPlace;
+    private String units;
+
+    public String getMaxEndTime() {
+        return maxEndTime;
+    }
+
+    public void setMaxEndTime(String maxEndTime) {
+        this.maxEndTime = maxEndTime;
+    }
 
     public String getAmount() {
         return amount;
@@ -300,5 +341,130 @@ public class ApiFeeDataVo implements Serializable {
 
     public void setFeeAttrs(List<FeeAttrDto> feeAttrs) {
         this.feeAttrs = feeAttrs;
+    }
+
+    public String getMwPrice() {
+        return mwPrice;
+    }
+
+    public void setMwPrice(String mwPrice) {
+        this.mwPrice = mwPrice;
+    }
+
+    public String getCarTypeCd() {
+        return carTypeCd;
+    }
+
+    public void setCarTypeCd(String carTypeCd) {
+        this.carTypeCd = carTypeCd;
+    }
+
+
+    public String getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
+    }
+
+    public String getFeeTotalPrice() {
+        return feeTotalPrice;
+    }
+
+    public void setFeeTotalPrice(String feeTotalPrice) {
+        this.feeTotalPrice = feeTotalPrice;
+    }
+
+    public String getVal() {
+        return val;
+    }
+
+    public void setVal(String val) {
+        this.val = val;
+    }
+
+    public String getOfflinePayFeeSwitch() {
+        return offlinePayFeeSwitch;
+    }
+
+    public void setOfflinePayFeeSwitch(String offlinePayFeeSwitch) {
+        this.offlinePayFeeSwitch = offlinePayFeeSwitch;
+    }
+
+    public String getReceivedAmountSwitch() {
+        return receivedAmountSwitch;
+    }
+
+    public void setReceivedAmountSwitch(String receivedAmountSwitch) {
+        this.receivedAmountSwitch = receivedAmountSwitch;
+    }
+
+    public String getPayerObjName() {
+        return payerObjName;
+    }
+
+    public void setPayerObjName(String payerObjName) {
+        this.payerObjName = payerObjName;
+    }
+
+    public String getDeductFrom() { return deductFrom; }
+
+    public void setDeductFrom(String deductFrom) { this.deductFrom = deductFrom; }
+
+    public String getRateCycle() {
+        return rateCycle;
+    }
+
+    public void setRateCycle(String rateCycle) {
+        this.rateCycle = rateCycle;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getRateStartTime() {
+        return rateStartTime;
+    }
+
+    public void setRateStartTime(String rateStartTime) {
+        this.rateStartTime = rateStartTime;
+    }
+
+    public String getPayOnline() {
+        return payOnline;
+    }
+
+    public void setPayOnline(String payOnline) {
+        this.payOnline = payOnline;
+    }
+
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setDecimalPlace(String decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
     }
 }

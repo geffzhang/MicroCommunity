@@ -9,7 +9,7 @@ import com.java110.core.base.controller.BaseController;
 import com.java110.core.context.BusinessServiceDataFlow;
 import com.java110.core.factory.DataTransactionFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,8 +66,8 @@ public class CommonApi extends BaseController {
                     null);
         } finally {
             logger.debug("common服务请求报文：" + orderInfo + " 返回报文：" + responseJson.toJSONString());
-            return responseJson.toJSONString();
         }
+        return responseJson.toJSONString();
     }
 
     /**

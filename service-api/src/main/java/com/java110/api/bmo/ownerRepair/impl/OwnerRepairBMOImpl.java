@@ -16,7 +16,7 @@ import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -103,18 +103,13 @@ public class OwnerRepairBMOImpl extends ApiBaseBMO implements IOwnerRepairBMO {
         super.insert(dataFlowContext, repairUserPo, BusinessTypeConstant.BUSINESS_TYPE_SAVE_REPAIR_USER);
     }
 
-    public void modifyBusinessRepairDispatch(JSONObject paramInJson, DataFlowContext dataFlowContext,String state) {
+    public void modifyBusinessRepairDispatch(JSONObject paramInJson, DataFlowContext dataFlowContext, String state) {
         //查询报修单
         RepairDto repairDto = new RepairDto();
         repairDto.setRepairId(paramInJson.getString("repairId"));
-
         List<RepairDto> repairDtos = repairInnerServiceSMOImpl.queryRepairs(repairDto);
-
         Assert.isOne(repairDtos, "查询到多条数据，repairId=" + repairDto.getRepairId());
-
         logger.debug("查询报修单结果：" + JSONObject.toJSONString(repairDtos.get(0)));
-
-
         JSONObject businessOwnerRepair = new JSONObject();
         businessOwnerRepair.putAll(BeanConvertUtil.beanCovertMap(repairDtos.get(0)));
         businessOwnerRepair.put("state", state);

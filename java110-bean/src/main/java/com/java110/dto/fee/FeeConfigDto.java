@@ -26,21 +26,36 @@ public class FeeConfigDto extends PageDto implements Serializable {
 
     public static final String FEE_TYPE_CD_WATER = "888800010016";//电费
     public static final String FEE_TYPE_CD_METER = "888800010015";//水费
+    public static final String FEE_TYPE_CD_GAS = "888800010009";//煤气
     public static final String FEE_TYPE_CD_SYSTEM = "888800010000";//系统
-
+    public static final String FEE_TYPE_CD_PARKING = "888800010008";//系统
+    public static final String FEE_TYPE_CD_RENT = "888800010018";// 租金
     public static final String CONFIG_ID_RENTING = "920000000000000000";//租赁费用项
     public static final String CONFIG_ID_GOODS = "930000000000000000";//商品费用项
 
+    public static final String COMPUTING_FORMULA_TEMP_CAR = "9999";
+    public static final String COMPUTING_FORMULA_RANT_RATE = "1102"; // 租金递增
+    public static final String COMPUTING_FORMULA_DYNAMIC = "4004"; // 租金递增
+
+    public static final String PAYMENT_CD_PRE = "1200";
+    public static final String PAYMENT_CD_AFTER = "2100";
+
+    public static final String DEDUCT_FROM_N = "N";
 
 
     private String feeTypeCd;
     private String computingFormula;
+    private String computingFormulaName;
     private String additionalAmount;
     private String squarePrice;
     private String isDefault;
     private String configId;
+    private String[] configIds;
     private String feeFlag;
     private String feeName;
+
+    private String feeNameLike;
+    private String feeNameEq;
     private String startTime;
     private String endTime;
     private String curTime;
@@ -58,10 +73,37 @@ public class FeeConfigDto extends PageDto implements Serializable {
 
     private String valid;
 
-
     private Date createTime;
 
     private String statusCd = "0";
+    private String computingFormulaText;
+
+    private String deductFrom;
+
+    private double amount;
+
+    private String payOnline;
+    private String scale;
+    private String decimalPlace;
+    private String units;
+
+    private String bId;
+    private String operate;
+
+    private String userName;
+
+    private String payerObjType;
+
+
+    private String deleteFlag;
+
+
+    private String prepaymentPeriod;
+
+    private String staffNameLike;
+
+    private String logStartTime;
+    private String logEndTime;
 
 
     public String getFeeTypeCd() {
@@ -232,5 +274,166 @@ public class FeeConfigDto extends PageDto implements Serializable {
 
     public void setValid(String valid) {
         this.valid = valid;
+    }
+
+    public String getComputingFormulaText() {
+        return computingFormulaText;
+    }
+
+    public void setComputingFormulaText(String computingFormulaText) {
+        this.computingFormulaText = computingFormulaText;
+    }
+
+    public String[] getConfigIds() {
+        return configIds;
+    }
+
+    public void setConfigIds(String[] configIds) {
+        this.configIds = configIds;
+    }
+
+    public String getFeeNameEq() {
+        return feeNameEq;
+    }
+
+    public void setFeeNameEq(String feeNameEq) {
+        this.feeNameEq = feeNameEq;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getDeductFrom() {
+        return deductFrom;
+    }
+
+    public void setDeductFrom(String deductFrom) {
+        this.deductFrom = deductFrom;
+    }
+
+    public String getComputingFormulaName() {
+        return computingFormulaName;
+    }
+
+    public void setComputingFormulaName(String computingFormulaName) {
+        this.computingFormulaName = computingFormulaName;
+    }
+
+    public String getPayOnline() {
+        return payOnline;
+    }
+
+    public void setPayOnline(String payOnline) {
+        this.payOnline = payOnline;
+    }
+
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setDecimalPlace(String decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getOperate() {
+        return operate;
+    }
+
+    public void setOperate(String operate) {
+        this.operate = operate;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPayerObjType() {
+        return payerObjType;
+    }
+
+    public void setPayerObjType(String payerObjType) {
+        this.payerObjType = payerObjType;
+    }
+
+
+    public String getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(String deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
+    public String getPrepaymentPeriod() {
+        return prepaymentPeriod;
+    }
+
+    public void setPrepaymentPeriod(String prepaymentPeriod) {
+        this.prepaymentPeriod = prepaymentPeriod;
+
+    }
+
+    public String getStaffNameLike() {
+        return staffNameLike;
+    }
+
+    public void setStaffNameLike(String staffNameLike) {
+        this.staffNameLike = staffNameLike;
+    }
+
+    public String getFeeNameLike() {
+        return feeNameLike;
+    }
+
+    public void setFeeNameLike(String feeNameLike) {
+        this.feeNameLike = feeNameLike;
+    }
+
+    public String getLogStartTime() {
+        return logStartTime;
+    }
+
+    public void setLogStartTime(String logStartTime) {
+        this.logStartTime = logStartTime;
+    }
+
+    public String getLogEndTime() {
+        return logEndTime;
+    }
+
+    public void setLogEndTime(String logEndTime) {
+        this.logEndTime = logEndTime;
     }
 }

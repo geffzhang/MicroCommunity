@@ -16,7 +16,6 @@
 package com.java110.common.bmo.machine;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.attrValue.AttrValueDto;
 import org.springframework.http.ResponseEntity;
 
 public interface IMachineOpenDoorBMO {
@@ -28,6 +27,13 @@ public interface IMachineOpenDoorBMO {
      * @return
      */
     ResponseEntity<String> openDoor(JSONObject reqJson);
+    /**
+     * 开门接口类
+     *
+     * @param reqJson 请求报文信息
+     * @return
+     */
+    ResponseEntity<String> closeDoor(JSONObject reqJson);
 
     /**
      * 开门接口类
@@ -44,4 +50,19 @@ public interface IMachineOpenDoorBMO {
      * @return
      */
     ResponseEntity<String> resendIot(JSONObject reqJson);
+
+
+    /**
+     * 手工进出场
+     * @param reqJson
+     * @return
+     */
+    ResponseEntity<String> customCarInOut(JSONObject reqJson);
+
+    /**
+     * 查询手工开闸记录
+     * @param reqJson
+     * @return
+     */
+    ResponseEntity<String> getManualOpenDoorLogs(JSONObject reqJson);
 }

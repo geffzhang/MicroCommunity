@@ -2,10 +2,6 @@ package com.java110.fee.dao;
 
 
 import com.java110.utils.exception.DAOException;
-import com.java110.entity.merchant.BoMerchant;
-import com.java110.entity.merchant.BoMerchantAttr;
-import com.java110.entity.merchant.Merchant;
-import com.java110.entity.merchant.MerchantAttr;
 
 
 import java.util.List;
@@ -78,4 +74,10 @@ public interface IPayFeeDetailDiscountServiceDao {
      */
     int queryPayFeeDetailDiscountsCount(Map info);
 
+    /**
+     * 计算 优惠金额
+     * @param info
+     * @return
+     */
+    List<Map> computeDiscountFee(Map info);
 }

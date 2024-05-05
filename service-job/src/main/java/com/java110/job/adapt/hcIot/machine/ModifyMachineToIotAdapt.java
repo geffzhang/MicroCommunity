@@ -17,10 +17,10 @@ package com.java110.job.adapt.hcIot.machine;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.communityLocation.CommunityLocationDto;
+import com.java110.dto.community.CommunityLocationDto;
 import com.java110.dto.machine.MachineAttrDto;
 import com.java110.dto.machine.MachineDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.Business;
 import com.java110.intf.common.IMachineAttrInnerServiceSMO;
 import com.java110.intf.common.IMachineInnerServiceSMO;
 import com.java110.intf.community.ICommunityLocationInnerServiceSMO;
@@ -31,8 +31,6 @@ import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
@@ -72,22 +70,26 @@ public class ModifyMachineToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray businessMachines = new JSONArray();
         if (data.containsKey(MachinePo.class.getSimpleName())) {
             Object bObj = data.get(MachinePo.class.getSimpleName());
-            JSONArray businessMachines = null;
             if (bObj instanceof JSONObject) {
-                businessMachines = new JSONArray();
                 businessMachines.add(bObj);
             } else if (bObj instanceof List) {
                 businessMachines = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessMachines = (JSONArray) bObj;
             }
-            //JSONObject businessMachine = data.getJSONObject("businessMachine");
-            for (int bMachineIndex = 0; bMachineIndex < businessMachines.size(); bMachineIndex++) {
-                JSONObject businessMachine = businessMachines.getJSONObject(bMachineIndex);
-                doSendMachine(business, businessMachine);
+
+        }else {
+            if (data instanceof JSONObject) {
+                businessMachines.add(data);
             }
+        }
+        //JSONObject businessMachine = data.getJSONObject("businessMachine");
+        for (int bMachineIndex = 0; bMachineIndex < businessMachines.size(); bMachineIndex++) {
+            JSONObject businessMachine = businessMachines.getJSONObject(bMachineIndex);
+            doSendMachine(business, businessMachine);
         }
     }
 
@@ -99,13 +101,21 @@ public class ModifyMachineToIotAdapt extends DatabusAdaptImpl {
         List<MachineDto> machineDtos = machineInnerServiceSMOImpl.queryMachines(machineDto);
 
         Assert.listOnlyOne(machineDtos, "未找到设备");
+        String locationType = "";
 
-        CommunityLocationDto communityLocationDto = new CommunityLocationDto();
-        communityLocationDto.setLocationId(machineDtos.get(0).getLocationTypeCd());
-        communityLocationDto.setCommunityId(machineDtos.get(0).getCommunityId());
-        List<CommunityLocationDto> communityLocationDtos = communityLocationInnerServiceSMOImpl.queryCommunityLocations(communityLocationDto);
+        if(MachineDto.MACHINE_TYPE_ATTENDANCE.equals(machineDtos.get(0).getMachineTypeCd())){
+            locationType = "5000";
+        }else {
+            CommunityLocationDto communityLocationDto = new CommunityLocationDto();
+            communityLocationDto.setLocationId(machineDtos.get(0).getLocationTypeCd());
+            communityLocationDto.setCommunityId(machineDtos.get(0).getCommunityId());
+            List<CommunityLocationDto> communityLocationDtos = communityLocationInnerServiceSMOImpl.queryCommunityLocations(communityLocationDto);
 
-        Assert.listOnlyOne(communityLocationDtos, "设备位置不存在");
+            Assert.listOnlyOne(communityLocationDtos, "设备位置不存在");
+
+            locationType = communityLocationDtos.get(0).getLocationType();
+        }
+
 
         String hmId = getHmId(machineDtos.get(0));
         JSONObject postParameters = new JSONObject();
@@ -114,12 +124,13 @@ public class ModifyMachineToIotAdapt extends DatabusAdaptImpl {
         postParameters.put("machineName", machinePo.getMachineName());
         postParameters.put("machineVersion", machinePo.getMachineVersion());
         postParameters.put("machineTypeCd", machinePo.getMachineTypeCd());
-        postParameters.put("locationType", communityLocationDtos.get(0).getLocationType());
+        postParameters.put("locationType", locationType);
         postParameters.put("locationObjId", machineDtos.get(0).getLocationObjId());
         postParameters.put("extMachineId", machineDtos.get(0).getMachineId());
         postParameters.put("extCommunityId", machinePo.getCommunityId());
         postParameters.put("machineIp", machinePo.getMachineIp());
         postParameters.put("machineMac", machinePo.getMachineMac());
+        postParameters.put("direction", machinePo.getDirection());
         postParameters.put("hmId", hmId);
         hcMachineAsynImpl.updateMachine(postParameters);
     }

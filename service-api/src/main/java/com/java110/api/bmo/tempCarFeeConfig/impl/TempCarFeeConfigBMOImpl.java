@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.java110.api.bmo.ApiBaseBMO;
 import com.java110.api.bmo.tempCarFeeConfig.ITempCarFeeConfigBMO;
 import com.java110.core.context.DataFlowContext;
+import com.java110.core.factory.GenerateCodeFactory;
 import com.java110.intf.fee.ITempCarFeeConfigInnerServiceSMO;
-import com.java110.po.tempCarFeeConfig.TempCarFeeConfigPo;
+import com.java110.po.tempCarFee.TempCarFeeConfigPo;
 import com.java110.utils.constant.BusinessTypeConstant;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class TempCarFeeConfigBMOImpl extends ApiBaseBMO implements ITempCarFeeCo
      */
     public void addTempCarFeeConfig(JSONObject paramInJson, DataFlowContext dataFlowContext) {
 
-        paramInJson.put("configId", "-1");
+        paramInJson.put("configId", GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_configId));
         TempCarFeeConfigPo tempCarFeeConfigPo = BeanConvertUtil.covertBean(paramInJson, TempCarFeeConfigPo.class);
         super.insert(dataFlowContext, tempCarFeeConfigPo, BusinessTypeConstant.BUSINESS_TYPE_SAVE_TEMP_CAR_FEE_CONFIG_INFO);
     }

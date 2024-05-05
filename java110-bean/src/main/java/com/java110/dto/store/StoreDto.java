@@ -15,16 +15,22 @@ import java.util.Date;
  **/
 public class StoreDto extends PageDto implements Serializable {
 
-
-    //运营团队
-    //400000000000000002
+    //运营团队store_id
     public static final String STORE_ADMIN = "400000000000000001";
 
-    //开发
+    //开发store_id
     public static final String STORE_DEV = "400000000000000002";
-
+    //运营
     public static final String STORE_TYPE_ADMIN = "800900000001";
+    //开发
+    public static final String STORE_TYPE_DEV = "800900000000";
+    //物业商户
     public static final String STORE_TYPE_PROPERTY = "800900000003";
+    //商家
+    public static final String STORE_TYPE_MALL = "800900000005";
+
+    public static final String STATE_NORMAL = "48001";
+    public static final String STATE_LOGIN_FAIL = "48001";
 
     private String storeId;
     private String[] storeIds;
@@ -38,7 +44,9 @@ public class StoreDto extends PageDto implements Serializable {
     private String mapY;
     private String storeName;
     private String storeTypeName;
-
+    private String corporation;
+    private String foundingTime;
+    private String state;
 
     private Date createTime;
 
@@ -154,5 +162,29 @@ public class StoreDto extends PageDto implements Serializable {
 
     public void setStoreIds(String[] storeIds) {
         this.storeIds = storeIds;
+    }
+
+    public String getCorporation() {
+        return corporation;
+    }
+
+    public void setCorporation(String corporation) {
+        this.corporation = corporation;
+    }
+
+    public String getFoundingTime() {
+        return foundingTime;
+    }
+
+    public void setFoundingTime(String foundingTime) {
+        this.foundingTime = foundingTime;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

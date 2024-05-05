@@ -9,10 +9,12 @@ import com.java110.common.bmo.machineTranslateError.IGetMachineTranslateErrorBMO
 import com.java110.dto.machine.MachineDto;
 import com.java110.dto.machine.MachineRecordDto;
 import com.java110.dto.machine.MachineTranslateDto;
-import com.java110.dto.machineTranslateError.MachineTranslateErrorDto;
+import com.java110.dto.machine.MachineTranslateErrorDto;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
+import org.slf4j.Logger;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/machine")
 public class MachineApi {
 
+    private static Logger logger = LoggerFactory.getLogger(MachineApi.class);
+
     private static final String USER_ROLE_OWNER = "owner";
+
     @Autowired
     private IMachineOpenDoorBMO machineOpenDoorBMOImpl;
 
@@ -59,9 +64,33 @@ public class MachineApi {
         if (!USER_ROLE_OWNER.equals(reqJson.getString("userRole"))) { //这种为 员工的情况呢
             reqJson.put("userId", userId);
         }
-        Assert.hasKeyAndValue(reqJson, "userId", "请求报文中未包含设备信息");
+        Assert.hasKeyAndValue(reqJson, "userId", "请求报文中未包含用户信息");
         return machineOpenDoorBMOImpl.openDoor(reqJson);
     }
+
+    /**
+     * 设备开门功能
+     *
+     * @param reqJson
+     * @return
+     * @serviceCode /machine/closeDoor
+     * @path /app/machine/closeDoor
+     */
+    @RequestMapping(value = "/closeDoor", method = RequestMethod.POST)
+    public ResponseEntity<String> closeDoor(@RequestBody JSONObject reqJson,
+                                           @RequestHeader(value = "user-id", required = false) String userId) {
+        Assert.hasKeyAndValue(reqJson, "communityId", "请求报文中未包含小区信息");
+        Assert.hasKeyAndValue(reqJson, "machineCode", "请求报文中未包含设备信息");
+        Assert.hasKeyAndValue(reqJson, "userRole", "请求报文中未包含用户角色");
+        if (!USER_ROLE_OWNER.equals(reqJson.getString("userRole"))) { //这种为 员工的情况呢
+            reqJson.put("userId", userId);
+        }
+        Assert.hasKeyAndValue(reqJson, "userId", "请求报文中未包含用户信息");
+        return machineOpenDoorBMOImpl.closeDoor(reqJson);
+    }
+
+
+
 
     /**
      * 设备开门功能
@@ -128,7 +157,7 @@ public class MachineApi {
         Assert.hasKeyAndValue(reqJson, "machineCode", "未包含设备编码");
         Assert.hasKeyAndValue(reqJson, "openTypeCd", "未包含开门方式");
         Assert.hasKeyAndValue(reqJson, "similar", "未包含开门相似度");
-        Assert.hasKeyAndValue(reqJson, "photo", "未包含抓拍照片");
+        //Assert.hasKeyAndValue(reqJson, "photo", "未包含抓拍照片");
         Assert.hasKeyAndValue(reqJson, "dateTime", "未包含开门时间");
         Assert.hasKeyAndValue(reqJson, "extCommunityId", "未包含小区信息");
         Assert.hasKeyAndValue(reqJson, "recordTypeCd", "未包含记录类型");

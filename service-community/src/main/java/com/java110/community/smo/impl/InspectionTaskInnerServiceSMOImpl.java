@@ -6,8 +6,8 @@ import com.java110.community.dao.IInspectionTaskServiceDao;
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.core.factory.GenerateCodeFactory;
 import com.java110.dto.PageDto;
-import com.java110.dto.inspectionPoint.InspectionDto;
-import com.java110.dto.inspectionTask.InspectionTaskDto;
+import com.java110.dto.inspection.InspectionDto;
+import com.java110.dto.inspection.InspectionTaskDto;
 import com.java110.intf.community.IInspectionInnerServiceSMO;
 import com.java110.intf.community.IInspectionTaskInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
@@ -184,6 +184,11 @@ public class InspectionTaskInnerServiceSMOImpl extends BaseServiceSMO implements
         }
         task.put("tasks", list);
         return inspectionTaskServiceDaoImpl.insertInspectionTaskDetail(task);
+    }
+
+    @Override
+    public void updateInspectionTask(@RequestBody InspectionTaskDto inspectionTaskDto) {
+        inspectionTaskServiceDaoImpl.updateInspectionTaskInfoInstance(BeanConvertUtil.beanCovertMap(inspectionTaskDto));
     }
 
     public IInspectionTaskServiceDao getInspectionTaskServiceDaoImpl() {

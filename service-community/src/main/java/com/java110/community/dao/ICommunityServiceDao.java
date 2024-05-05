@@ -265,4 +265,13 @@ public interface ICommunityServiceDao {
 
 
     List<Map> getStoreCommunitys(Map beanCovertMap);
+
+
+    /**
+     * 添加属性
+     *
+     * @param info
+     * @return
+     */
+    int saveCommunityAttr(Map info);
 }

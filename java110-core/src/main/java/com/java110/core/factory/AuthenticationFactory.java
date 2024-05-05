@@ -11,44 +11,49 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java110.core.context.ApiDataFlow;
 import com.java110.core.context.DataFlow;
+import com.java110.core.log.LoggerFactory;
+import com.java110.dto.reportData.ReportDataDto;
+import com.java110.dto.reportData.ReportDataHeaderDto;
+import com.java110.dto.system.AppRoute;
+import com.java110.utils.cache.AppRouteCache;
+import com.java110.utils.cache.CommonCache;
 import com.java110.utils.cache.JWTCache;
 import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.CommonConstant;
 import com.java110.utils.constant.MappingConstant;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.NoAuthorityException;
+import com.java110.utils.util.Base64Convert;
+import com.java110.utils.util.ListUtil;
 import com.java110.utils.util.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidParameterException;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 鉴权工厂类
  * Created by wuxw on 2018/4/23.
  */
 public class AuthenticationFactory {
+    private static Logger logger = LoggerFactory.getLogger(AuthenticationFactory.class);
 
-    private final static String PASSWD_SALT = "hc@java110";
+    public final static String PASSWD_SALT = "hc@java110";
+
+    public final static String AES_KEY = "whoisyourdaddy!!";
     /**
      * 偏移变量，固定占8位字节
      */
@@ -65,6 +70,66 @@ public class AuthenticationFactory {
      * 默认编码
      */
     private static final String CHARSET = "utf-8";
+
+    private static final String USER_ERROR_COUNT = "USER_ERROR_COUNT_";// 用户登录错误次数，防止暴力破解
+
+
+    // 加密
+    public static String AesEncrypt(String sSrc, String sKey) {
+        try {
+            if (sKey == null) {
+                System.out.print("Key为空null");
+                return null;
+            }
+            // 判断Key是否为16位
+//            if (sKey.length() != 16) {
+//                System.out.print("Key长度不是16位");
+//                return null;
+//            }
+            byte[] raw = sKey.getBytes("utf-8");
+            SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");//"算法/模式/补码方式"
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+            byte[] encrypted = cipher.doFinal(sSrc.getBytes("utf-8"));
+
+            return Base64Convert.byteToBase64(encrypted);//此处使用BASE64做转码功能，同时能起到2次加密的作用。
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    // 解密
+    public static String AesDecrypt(String sSrc, String sKey) {
+        try {
+            // 判断Key是否正确
+            if (sKey == null) {
+                System.out.print("Key为空null");
+                return null;
+            }
+            // 判断Key是否为16位
+//            if (sKey.length() != 16) {
+//                System.out.print("Key长度不是16位");
+//                return null;
+//            }
+            byte[] raw = sKey.getBytes("utf-8");
+            SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+            byte[] encrypted1 = Base64Convert.base64ToByte(sSrc);//先用base64解密
+            try {
+                byte[] original = cipher.doFinal(encrypted1);
+                String originalString = new String(original, "utf-8");
+                return originalString;
+            } catch (Exception e) {
+                System.out.println(e.toString());
+                return null;
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+            return null;
+        }
+    }
 
 
     /**
@@ -174,6 +239,7 @@ public class AuthenticationFactory {
         reqInfo += ((dataFlow.getReqBusiness() == null || dataFlow.getReqBusiness().size() == 0)
                 ? dataFlow.getReqData() : dataFlow.getReqBusiness().toJSONString());
         reqInfo += dataFlow.getAppRoutes().get(0).getSecurityCode();
+        logger.debug("加密字符串={}", reqInfo);
         return md5(reqInfo);
     }
 
@@ -220,7 +286,94 @@ public class AuthenticationFactory {
         reqInfo += "GET".equals(dataFlow.getRequestHeaders().get(CommonConstant.HTTP_METHOD)) ?
                 param : dataFlow.getReqData();
         reqInfo += dataFlow.getAppRoutes().get(0).getSecurityCode();
+        logger.debug("加密字符串={}", reqInfo);
+
         return md5(reqInfo);
+    }
+
+    /**
+     * 创建 签名
+     * @param headers
+     * @param httpMethod
+     * @param url
+     * @param param
+     */
+    public static void createSign(HttpHeaders headers, HttpMethod httpMethod, String url, String param) {
+
+
+
+        String appId = headers.getFirst(CommonConstant.HTTP_APP_ID);
+        if (StringUtil.isEmpty(appId)) {
+            appId = headers.getFirst(CommonConstant.APP_ID);
+        }
+        String transactionId = headers.getFirst(CommonConstant.HTTP_TRANSACTION_ID);
+        if (StringUtil.isEmpty(transactionId)) {
+            transactionId = headers.getFirst(CommonConstant.TRANSACTION_ID);
+        }
+        String requestTime = headers.getFirst(CommonConstant.HTTP_REQ_TIME);
+        if (StringUtil.isEmpty(requestTime)) {
+            requestTime = headers.getFirst(CommonConstant.REQUEST_TIME);
+        }
+
+        List<AppRoute> appRoutes = AppRouteCache.getAppRoute(appId);
+        if (ListUtil.isNull(appRoutes)) {
+            return;
+        }
+        if (StringUtil.isEmpty(appRoutes.get(0).getSecurityCode())) {
+            return;
+        }
+        String paramStr = "";
+        if (HttpMethod.GET == httpMethod) {
+            paramStr = url.substring(url.indexOf("?"));
+        } else {
+            paramStr = param;
+        }
+        String sign = transactionId + requestTime + appId + paramStr + appRoutes.get(0).getSecurityCode();
+        logger.debug("鉴权前createSign:{}",sign);
+
+        headers.remove("sign");
+        headers.add("sign", md5(sign));
+    }
+
+
+    /**
+     * 创建 签名
+     * @param headers
+     * @param httpMethod
+     * @param url
+     * @param param
+     */
+    public static void createSign(Map<String, String> headers, HttpMethod httpMethod, String url, String param) {
+        String appId = headers.get(CommonConstant.APP_ID);
+        if (StringUtil.isEmpty(appId)) {
+            appId = headers.get(CommonConstant.HTTP_APP_ID);
+        }
+        String transactionId = headers.get(CommonConstant.TRANSACTION_ID);
+        if (StringUtil.isEmpty(transactionId)) {
+            transactionId = headers.get(CommonConstant.HTTP_TRANSACTION_ID);
+        }
+        String requestTime = headers.get(CommonConstant.REQUEST_TIME);
+        if (StringUtil.isEmpty(requestTime)) {
+            requestTime = headers.get(CommonConstant.HTTP_REQ_TIME);
+        }
+
+        List<AppRoute> appRoutes = AppRouteCache.getAppRoute(appId);
+        if (ListUtil.isNull(appRoutes)) {
+            return;
+        }
+        if (StringUtil.isEmpty(appRoutes.get(0).getSecurityCode())) {
+            return;
+        }
+        String paramStr = "";
+        if (HttpMethod.GET == httpMethod) {
+            paramStr = url.substring(url.indexOf("?"));
+        } else {
+            paramStr = param;
+        }
+        String sign = transactionId + requestTime + appId + paramStr + appRoutes.get(0).getSecurityCode();
+        logger.debug("鉴权前createSign:{}",sign);
+
+        headers.put("sign", md5(sign));
     }
 
     /**
@@ -380,6 +533,32 @@ public class AuthenticationFactory {
     }
 
     /**
+     * md5签名
+     *
+     * @param reportDataDto
+     * @return
+     */
+    public static void authReportDataSign(ReportDataDto reportDataDto, String code) throws NoAuthorityException {
+        ReportDataHeaderDto reportDataHeaderDto = reportDataDto.getReportDataHeaderDto();
+        if (reportDataHeaderDto == null) {
+            throw new IllegalArgumentException("参数错误");
+        }
+        String newSign = md5(reportDataHeaderDto.getTranId() + reportDataHeaderDto.getReqTime() + reportDataDto.getReportDataBodyDto().toJSONString() + code).toLowerCase();
+        if (!newSign.equals(reportDataHeaderDto.getSign())) {
+            throw new IllegalArgumentException("签名失败");
+        }
+    }
+
+    public static void generatorReportDataSign(ReportDataDto reportDataDto, String code) {
+        ReportDataHeaderDto reportDataHeaderDto = reportDataDto.getReportDataHeaderDto();
+        if (reportDataHeaderDto == null) {
+            throw new IllegalArgumentException("参数错误");
+        }
+        String newSign = md5(reportDataHeaderDto.getTranId() + reportDataHeaderDto.getReqTime() + reportDataDto.getReportDataBodyDto().toJSONString() + code).toLowerCase();
+        reportDataHeaderDto.setSign(newSign);
+    }
+
+    /**
      * 加载公钥
      *
      * @param publicPemData
@@ -521,6 +700,42 @@ public class AuthenticationFactory {
     }
 
 
+    /**
+     * 登陆密码错误时 记录，连续输入错误7次后账号锁定 2小时
+     *
+     * @param userName
+     */
+    public static void userLoginError(String userName) {
+        String count = CommonCache.getValue(USER_ERROR_COUNT + userName);
+        int countNum = 0;
+        if (!StringUtil.isEmpty(count)) {
+            countNum = Integer.parseInt(count);
+        }
+
+        countNum += 1;
+
+        CommonCache.setValue(USER_ERROR_COUNT + userName, countNum + "", CommonCache.TOKEN_EXPIRE_TIME);
+
+    }
+
+    /**
+     * 校验 登录次数
+     *
+     * @param userName 登录账号
+     */
+    public static void checkLoginErrorCount(String userName) {
+        String count = CommonCache.getValue(USER_ERROR_COUNT + userName);
+        int countNum = 0;
+        if (!StringUtil.isEmpty(count)) {
+            countNum = Integer.parseInt(count);
+        }
+
+        if (countNum >= 5) {
+            throw new IllegalArgumentException("登陆错误次数过多，请休息一会再试");
+        }
+
+    }
+
     /***********************************JWT start***************************************/
 
 
@@ -536,7 +751,8 @@ public class AuthenticationFactory {
 //        PrivateKey privateKey = keyPair.getPrivate();
 //        System.out.println("私钥：" + new String(Base64.getEncoder().encode(privateKey.getEncoded())));
 
-        System.out.printf("passwdMd5 " + passwdMd5("wuxw2015"));
+        System.out.printf("passwdMd5 " + passwdMd5("V1TAj91GZXNNMlAR"));
+        System.out.printf("passwdMd5 " + md5("5616d148-c941-4873-9c1f-b59a08b4068320240108140611992020061452450002page=1&row=1123"));
 
     }
 

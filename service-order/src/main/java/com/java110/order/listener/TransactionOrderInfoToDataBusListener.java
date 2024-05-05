@@ -15,19 +15,22 @@
  */
 package com.java110.order.listener;
 
+import com.java110.config.properties.code.Java110Properties;
 import com.java110.core.annotation.Java110Listener;
+import com.java110.core.context.Environment;
 import com.java110.core.context.IOrderDataFlowContext;
+import com.java110.core.context.SecureInvocation;
 import com.java110.core.event.app.order.Ordered;
 import com.java110.core.event.center.event.InvokeFinishBusinessSystemEvent;
 import com.java110.core.event.center.listener.DataFlowListener;
-import com.java110.dto.businessDatabus.BusinessDatabusDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.BusinessDatabusDto;
+import com.java110.dto.system.Business;
 import com.java110.intf.job.IDataBusInnerServiceSMO;
 import com.java110.utils.cache.DatabusCache;
 import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.DomainContant;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -49,10 +52,18 @@ public class TransactionOrderInfoToDataBusListener implements DataFlowListener<I
     @Autowired
     private IDataBusInnerServiceSMO dataBusInnerServiceSMOImpl;
 
+    @Autowired
+    private Java110Properties java110Properties;
+
     @Override
     public void soService(InvokeFinishBusinessSystemEvent event) {
+
         IOrderDataFlowContext dataFlow = event.getDataFlow();
-        if (dataFlow == null || dataFlow.getBusinessList() == null || dataFlow.getBusinessList().size() == 0) {
+        if (!SecureInvocation.secure(this.getClass())
+                || Environment.isOwnerPhone(java110Properties)
+                || dataFlow == null
+                || dataFlow.getBusinessList() == null
+                || dataFlow.getBusinessList().size() == 0) {
             return;
         }
 

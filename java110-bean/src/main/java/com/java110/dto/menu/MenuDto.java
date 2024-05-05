@@ -15,17 +15,20 @@ public class MenuDto extends PageDto implements Serializable {
     private String description;
     private String statusCd;
     private String gId;
+    private String gName;
     private String pId;
     private String pName;
     private String isShowName;
     private String domain;
     private String uName;
+    private String menuGroupName;
+    private String storeTypeName;
 
-    public String getMId() {
+    public String getmId() {
         return mId;
     }
 
-    public void setMId(String mId) {
+    public void setmId(String mId) {
         this.mId = mId;
     }
 
@@ -67,14 +70,6 @@ public class MenuDto extends PageDto implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getmId() {
-        return mId;
-    }
-
-    public void setmId(String mId) {
-        this.mId = mId;
     }
 
     public String getStatusCd() {
@@ -139,5 +134,29 @@ public class MenuDto extends PageDto implements Serializable {
 
     public void setmName(String mName) {
         this.mName = mName;
+    }
+
+    public String getMenuGroupName() {
+        return menuGroupName;
+    }
+
+    public void setMenuGroupName(String menuGroupName) {
+        this.menuGroupName = menuGroupName;
+    }
+
+    public String getStoreTypeName() {
+        return storeTypeName;
+    }
+
+    public void setStoreTypeName(String storeTypeName) {
+        this.storeTypeName = storeTypeName;
+    }
+
+    public String getgName() {
+        return gName;
+    }
+
+    public void setgName(String gName) {
+        this.gName = gName;
     }
 }

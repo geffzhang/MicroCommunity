@@ -1,20 +1,20 @@
 package com.java110.job.task.groupBuy;
 
 import com.java110.core.factory.GenerateCodeFactory;
-import com.java110.dto.groupBuySetting.GroupBuySettingDto;
+import com.java110.dto.shop.GroupBuySettingDto;
 import com.java110.dto.store.StoreDto;
 import com.java110.dto.task.TaskDto;
 import com.java110.intf.goods.IGroupBuyBatchInnerServiceSMO;
 import com.java110.intf.goods.IGroupBuyProductInnerServiceSMO;
 import com.java110.intf.goods.IGroupBuySettingInnerServiceSMO;
 import com.java110.job.quartz.TaskSystemQuartz;
-import com.java110.po.groupBuyBatch.GroupBuyBatchPo;
-import com.java110.po.groupBuyProduct.GroupBuyProductPo;
-import com.java110.po.groupBuySetting.GroupBuySettingPo;
+import com.java110.po.shop.GroupBuyBatchPo;
+import com.java110.po.shop.GroupBuyProductPo;
+import com.java110.po.shop.GroupBuySettingPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,13 +35,13 @@ public class GeneratorGroupBuyBatchTemplate extends TaskSystemQuartz {
 
     private static final int EXPIRE_IN = 7200;
 
-    @Autowired
+    @Autowired(required = false)
     private IGroupBuySettingInnerServiceSMO groupBuySettingInnerServiceSMOImpl;
 
-    @Autowired
+    @Autowired(required = false)
     private IGroupBuyBatchInnerServiceSMO groupBuyBatchInnerServiceSMOImpl;
 
-    @Autowired
+    @Autowired(required = false)
     private IGroupBuyProductInnerServiceSMO groupBuyProductInnerServiceSMOImpl;
 
 

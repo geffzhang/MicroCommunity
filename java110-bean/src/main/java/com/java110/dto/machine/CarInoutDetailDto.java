@@ -1,7 +1,5 @@
 package com.java110.dto.machine;
 
-import com.java110.dto.PageDto;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,8 +11,12 @@ import java.util.Date;
  * @Version 1.0
  * add by wuxw 2019/4/24
  **/
-public class CarInoutDetailDto extends PageDto implements Serializable {
+public class CarInoutDetailDto extends CarInoutDto implements Serializable {
 
+    public static final String CAR_INOUT_IN = "3306";
+    public static final String CAR_INOUT_OUT = "3307";
+    public static final String CAR_TYPE_TEMP = "1003";
+    public static final String CAR_TYPE_MONTH = "1001";
     private String inoutId;
     private String machineId;
     private String machineCode;
@@ -28,6 +30,18 @@ public class CarInoutDetailDto extends PageDto implements Serializable {
 
     private String statusCd = "0";
 
+    private String remark;
+    private String state;
+    private String inState;
+
+    private String carType;
+    private String carTypeName;
+
+    private String configId;
+
+    private String photoJpg;
+
+    private String feeName;
 
     public String getInoutId() {
         return inoutId;
@@ -100,5 +114,76 @@ public class CarInoutDetailDto extends PageDto implements Serializable {
 
     public void setStatusCd(String statusCd) {
         this.statusCd = statusCd;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String getState() {
+        return state;
+    }
+
+    @Override
+    public void setState(String state) {
+        this.state = state;
+    }
+
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public String getConfigId() {
+        return configId;
+    }
+
+    public void setConfigId(String configId) {
+        this.configId = configId;
+    }
+
+    @Override
+    public String getCarTypeName() {
+        return carTypeName;
+    }
+
+    @Override
+    public void setCarTypeName(String carTypeName) {
+        this.carTypeName = carTypeName;
+    }
+
+    public String getInState() {
+        return inState;
+    }
+
+    public void setInState(String inState) {
+        this.inState = inState;
+    }
+
+    public String getPhotoJpg() {
+        return photoJpg;
+    }
+
+    public void setPhotoJpg(String photoJpg) {
+        this.photoJpg = photoJpg;
+    }
+
+    @Override
+    public String getFeeName() {
+        return feeName;
+    }
+
+    @Override
+    public void setFeeName(String feeName) {
+        this.feeName = feeName;
     }
 }

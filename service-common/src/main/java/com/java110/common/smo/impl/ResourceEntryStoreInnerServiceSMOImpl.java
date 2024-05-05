@@ -3,10 +3,10 @@ package com.java110.common.smo.impl;
 
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.purchaseApply.PurchaseApplyDto;
-import com.java110.dto.resourceStore.ResourceOrderDto;
-import com.java110.dto.workflow.WorkflowDto;
-import com.java110.entity.audit.AuditUser;
+import com.java110.dto.purchase.PurchaseApplyDto;
+import com.java110.dto.resource.ResourceOrderDto;
+import com.java110.dto.oaWorkflow.WorkflowDto;
+import com.java110.dto.audit.AuditUser;
 import com.java110.intf.common.IResourceEntryStoreInnerServiceSMO;
 import com.java110.intf.common.IWorkflowInnerServiceSMO;
 import com.java110.intf.store.IPurchaseApplyInnerServiceSMO;
@@ -98,7 +98,7 @@ public class ResourceEntryStoreInnerServiceSMOImpl extends BaseServiceSMO implem
         query.orderByTaskCreateTime().desc();
         List<Task> list = null;
         if (user.getPage() >= 1) {
-            user.setPage(user.getPage() - 1);
+            user.setPage((user.getPage() - 1) * user.getRow());
         }
         if (user.getPage() != PageDto.DEFAULT_PAGE) {
             list = query.listPage(user.getPage(), user.getRow());
@@ -185,11 +185,11 @@ public class ResourceEntryStoreInnerServiceSMOImpl extends BaseServiceSMO implem
         workflowDto.setFlowType(WorkflowDto.FLOW_TYPE_PURCHASE);
         workflowDto.setStoreId(storeId);
         List<WorkflowDto> workflowDtos = workflowInnerServiceSMOImpl.queryWorkflows(workflowDto);
-        Assert.listOnlyOne(workflowDtos, "未找到 采购流程或找到多条");
+        Assert.listOnlyOne(workflowDtos, "未找到 采购入库流程或找到多条，请在物业账号系统管理下流程管理中配置流程");
 
         WorkflowDto tmpWorkflowDto = workflowDtos.get(0);
         if (StringUtil.isEmpty(tmpWorkflowDto.getProcessDefinitionKey())) {
-            throw new IllegalArgumentException("流程还未部署");
+            throw new IllegalArgumentException("采购入库流程还未部署");
         }
         return WorkflowDto.DEFAULT_PROCESS + tmpWorkflowDto.getFlowId();
     }
@@ -260,7 +260,6 @@ public class ResourceEntryStoreInnerServiceSMOImpl extends BaseServiceSMO implem
             taskBusinessKeyMap.put(business_key, task.getId());
         }
 
-        //查询 投诉信息
         PurchaseApplyDto purchaseApplyDto = new PurchaseApplyDto();
         purchaseApplyDto.setStoreId(user.getStoreId());
         purchaseApplyDto.setApplyOrderIds(applyOrderIds.toArray(new String[applyOrderIds.size()]));

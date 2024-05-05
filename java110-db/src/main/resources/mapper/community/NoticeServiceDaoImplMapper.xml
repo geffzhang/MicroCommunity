@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="noticeServiceDaoImpl">
 
@@ -13,7 +12,6 @@
         #{objType},#{objId},#{state}
         )
     </insert>
-
 
     <!-- 查询通知信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessNoticeInfo" parameterType="Map" resultType="Map">
@@ -32,10 +30,10 @@
             and t.context= #{context}
         </if>
         <if test="startTime !=null">
-            and t.start_time= #{startTime}
+            and t.start_time &lt;= #{startTime}
         </if>
         <if test="endTime !=null">
-            and t.end_time= #{endTime}
+            and t.end_time &gt;= #{endTime}
         </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
@@ -52,10 +50,7 @@
         <if test="noticeId !=null and noticeId != ''">
             and t.notice_id= #{noticeId}
         </if>
-
-
     </select>
-
 
     <!-- 保存通知信息至 instance表中 add by wuxw 2018-07-03 -->
     <insert id="saveNoticeInfoInstance" parameterType="Map">
@@ -93,9 +88,7 @@
         <if test="noticeId !=null and noticeId != ''">
             and t.notice_id= #{noticeId}
         </if>
-
     </insert>
-
 
     <!-- 查询通知信息 add by wuxw 2018-07-03 -->
     <select id="getNoticeInfo" parameterType="Map" resultType="Map">
@@ -111,14 +104,20 @@
         <if test="noticeTypeCd !=null and noticeTypeCd != ''">
             and t.notice_type_cd= #{noticeTypeCd}
         </if>
+        <if test="noticeTypeCds !=null">
+            and t.notice_type_cd in
+            <foreach collection="noticeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         <if test="context !=null and context != ''">
             and t.context= #{context}
         </if>
-        <if test="startTime !=null">
-            and t.start_time= #{startTime}
+        <if test="startTime !=null and startTime != ''">
+            and t.start_time &lt;= #{startTime}
         </if>
-        <if test="endTime !=null">
-            and t.end_time= #{endTime}
+        <if test="endTime !=null  and endTime != ''">
+            and t.end_time &gt;= #{endTime}
         </if>
         <if test="statusCd !=null and statusCd != ''">
             and t.status_cd= #{statusCd}
@@ -132,9 +131,6 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-        <if test="userId !=null and userId != ''">
-            and t.user_id= #{userId}
-        </if>
         <if test="state !=null and state != ''">
             and t.state= #{state}
         </if>
@@ -145,9 +141,7 @@
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
     </select>
-
 
     <!-- 修改通知信息 add by wuxw 2018-07-03 -->
     <update id="updateNoticeInfoInstance" parameterType="Map">
@@ -183,7 +177,6 @@
         <if test="noticeId !=null and noticeId != ''">
             and t.notice_id= #{noticeId}
         </if>
-
     </update>
 
     <!-- 查询通知数量 add by wuxw 2018-07-03 -->
@@ -194,14 +187,20 @@
         <if test="noticeTypeCd !=null and noticeTypeCd != ''">
             and t.notice_type_cd= #{noticeTypeCd}
         </if>
+        <if test="noticeTypeCds !=null">
+            and t.notice_type_cd in
+            <foreach collection="noticeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         <if test="context !=null and context != ''">
             and t.context= #{context}
         </if>
-        <if test="startTime !=null">
-            and t.start_time= #{startTime}
+        <if test="startTime !=null and startTime != ''">
+            and t.start_time &lt;= #{startTime}
         </if>
-        <if test="endTime !=null">
-            and t.end_time= #{endTime}
+        <if test="endTime !=null  and endTime != ''">
+            and t.end_time &gt;= #{endTime}
         </if>
         <if test="statusCd !=null and statusCd != ''">
             and t.status_cd= #{statusCd}
@@ -215,11 +214,11 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-        <if test="userId !=null and userId != ''">
-            and t.user_id= #{userId}
-        </if>
         <if test="noticeId !=null and noticeId != ''">
             and t.notice_id= #{noticeId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
         </if>
     </select>
 

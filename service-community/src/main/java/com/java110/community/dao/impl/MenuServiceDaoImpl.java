@@ -7,7 +7,7 @@ import com.java110.utils.exception.DAOException;
 import com.java110.community.dao.IMenuServiceDao;
 import com.java110.core.base.dao.BaseServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -285,6 +285,15 @@ public class MenuServiceDaoImpl extends BaseServiceDao implements IMenuServiceDa
         }
 
         return Integer.parseInt(businessMenuInfos.get(0).get("count").toString());
+    }
+
+    @Override
+    public List<Map> hasPrivilege(Map info) {
+        logger.debug("查询路由信息 入参 info : {}", info);
+
+        List<Map> businessMenuInfos = sqlSessionTemplate.selectList("menuServiceDaoImpl.hasPrivilege", info);
+
+        return businessMenuInfos;
     }
 
 

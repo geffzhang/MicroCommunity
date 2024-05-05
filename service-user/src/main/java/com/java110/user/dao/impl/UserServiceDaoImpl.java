@@ -5,13 +5,13 @@ import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.Assert;
 import com.java110.core.base.dao.BaseServiceDao;
-import com.java110.entity.user.BoCust;
-import com.java110.entity.user.BoCustAttr;
-import com.java110.entity.user.Cust;
-import com.java110.entity.user.CustAttr;
+import com.java110.dto.user.BoCust;
+import com.java110.dto.user.BoCustAttr;
+import com.java110.dto.user.Cust;
+import com.java110.dto.user.CustAttr;
 import com.java110.user.dao.IUserServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,9 +55,9 @@ public class UserServiceDaoImpl extends BaseServiceDao implements IUserServiceDa
             return saveFlag;
         } finally {
             logger.debug("----【userServiceDaoImpl.saveDataToBoCust】保存数据出参 : saveFlag:" + saveFlag);
-            return saveFlag;
         }
 
+        return saveFlag;
     }
 
     /**

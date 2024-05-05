@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="baseDataStatisticsServiceDaoImpl">
+
+    <!-- 查询房屋数 -->
+    <select id="getRoomCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from building_room t
+        inner join building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+        inner join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        inner join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        where 1=1
+        and t.status_cd = '0'
+        <if test="floorId != null and floorId != ''">
+            and f.floor_id = #{floorId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="roomNumLike !=null and roomNumLike != ''">
+            and t.room_num like concat('%',#{roomNumLike},'%')
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and bo.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and bo.`name` like concat('%',#{ownerName},'%')
+        </if>
+        <if test="link != null and link != ''">
+            and bo.link = #{link}
+        </if>
+    </select>
+
+    <!-- 查询单月欠费 -->
+    <select id="getRoomInfo" parameterType="Map" resultType="Map">
+        select t.fee_coefficient feeCoefficient,t.section,t.remark,t.user_id userId,
+        t.room_id roomId,t.layer,t.built_up_area,t.built_up_area
+        builtUpArea,t.room_num,t.room_num roomNum,t.unit_id,t.unit_id unitId,t.b_id,t.b_id
+        bId,t.apartment,t.state,t.community_id,t.community_id communityId,t.room_type,t.room_type roomType,
+        t.room_sub_type,t.room_rent,t.room_area,t.room_sub_type roomSubType,t.room_rent roomRent,t.room_area roomArea,
+        f.floor_num floorNum,bu.unit_num unitNum,bo.name ownerName,bo.owner_id ownerId,bo.link
+        from building_room t
+        inner join building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+        inner join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        inner join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        where 1=1
+        <if test="floorId != null and floorId != ''">
+            and f.floor_id = #{floorId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="roomNumLike !=null and roomNumLike != ''">
+            and t.room_num like concat('%',#{roomNumLike},'%')
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and bo.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and bo.`name` like concat('%',#{ownerName},'%')
+        </if>
+        <if test="link != null and link != ''">
+            and bo.link = #{link}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null">
+            limit #{page},#{row}
+        </if>
+    </select>
+
+    <select id="getReceivedRoomCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from
+        (select t.room_id
+        from building_room t
+        inner join building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+        inner join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        left join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        inner join pay_fee pf on t.room_id = pf.payer_obj_id and pf.payer_obj_type = '3333' and pf.status_cd = '0'
+        inner join pay_fee_detail pfd on pf.fee_id = pfd.fee_id and pfd.status_cd = '0'
+        where 1=1
+        <if test="startDate != null and startDate != ''">
+            and pfd.create_time &gt;= #{startDate}
+            and pfd.create_time &lt;= #{endDate}
+        </if>
+        and t.status_cd = '0'
+        <if test="floorId != null and floorId != ''">
+            and f.floor_id = #{floorId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="roomNumLike !=null and roomNumLike != ''">
+            and t.room_num like concat('%',#{roomNumLike},'%')
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and bo.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and bo.`name` like concat('%',#{ownerName},'%')
+        </if>
+        <if test="link != null and link != ''">
+            and bo.link = #{link}
+        </if>
+        group by t.room_id
+        ) a
+    </select>
+
+    <!-- 查询单月欠费 -->
+    <select id="getReceivedRoomInfo" parameterType="Map" resultType="Map">
+        select a.* from (
+        select t.fee_coefficient feeCoefficient,t.section,t.remark,t.user_id userId,
+        t.room_id roomId,t.layer,t.built_up_area,t.built_up_area
+        builtUpArea,t.room_num,t.room_num roomNum,t.unit_id,t.unit_id unitId,t.b_id,t.b_id
+        bId,t.apartment,t.state,t.community_id,t.community_id communityId,t.room_type,t.room_type roomType,
+        t.room_sub_type,t.room_rent,t.room_area,t.room_sub_type roomSubType,t.room_rent roomRent,t.room_area roomArea,
+        f.floor_num floorNum,bu.unit_num unitNum,bo.name ownerName,bo.owner_id ownerId,bo.link
+        from building_room t
+        inner join building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+        inner join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        inner join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        inner join pay_fee pf on t.room_id = pf.payer_obj_id and pf.payer_obj_type = '3333' and pf.status_cd = '0'
+        inner join pay_fee_detail pfd on pf.fee_id = pfd.fee_id and pfd.status_cd = '0'
+        where 1=1
+        <if test="startDate != null and startDate != ''">
+            and pfd.create_time &gt;= #{startDate}
+            and pfd.create_time &lt;= #{endDate}
+        </if>
+        <if test="floorId != null and floorId != ''">
+            and f.floor_id = #{floorId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="roomNumLike !=null and roomNumLike != ''">
+            and t.room_num like concat('%',#{roomNumLike},'%')
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and bo.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and bo.`name` like concat('%',#{ownerName},'%')
+        </if>
+        <if test="link != null and link != ''">
+            and bo.link = #{link}
+        </if>
+        group by t.fee_coefficient ,t.section,t.remark,t.user_id ,
+        t.room_id ,t.layer,t.built_up_area,t.room_num,t.unit_id,t.b_id,t.apartment,t.state,t.community_id,t.room_type,
+        t.room_sub_type,t.room_rent,t.room_area,t.room_rent,t.room_area,
+        f.floor_num ,bu.unit_num ,bo.name ,bo.owner_id ,bo.link
+        order by t.create_time desc
+        ) a
+        <if test="page != -1 and page != null">
+            limit #{page},#{row}
+        </if>
+    </select>
+
+    <select id="getOweRoomCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from
+        (select t.room_id
+        from building_room t
+        inner join building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+        inner join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        left join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        inner join report_owe_fee rof on t.room_id = rof.payer_obj_id and rof.payer_obj_type = '3333'
+        where 1=1
+        and rof.amount_owed > 0
+        and t.status_cd = '0'
+        <if test="floorId != null and floorId != ''">
+            and f.floor_id = #{floorId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="roomNumLike !=null and roomNumLike != ''">
+            and t.room_num like concat('%',#{roomNumLike},'%')
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and bo.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and bo.`name` like concat('%',#{ownerName},'%')
+        </if>
+        <if test="link != null and link != ''">
+            and bo.link = #{link}
+        </if>
+        group by t.room_id
+        ) a
+    </select>
+
+    <!-- 查询单月欠费 -->
+    <select id="getOweRoomInfo" parameterType="Map" resultType="Map">
+        select a.* from (
+        select t.fee_coefficient feeCoefficient,t.section,t.remark,t.user_id userId,
+        t.room_id roomId,t.layer,t.built_up_area,t.built_up_area
+        builtUpArea,t.room_num,t.room_num roomNum,t.unit_id,t.unit_id unitId,t.b_id,t.b_id
+        bId,t.apartment,t.state,t.community_id,t.community_id communityId,t.room_type,t.room_type roomType,
+        t.room_sub_type,t.room_rent,t.room_area,t.room_sub_type roomSubType,t.room_rent roomRent,t.room_area roomArea,
+        f.floor_num floorNum,bu.unit_num unitNum,bo.name ownerName,bo.owner_id ownerId,bo.link
+        from building_room t
+        inner join building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+        inner join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        left join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        inner join report_owe_fee rof on t.room_id = rof.payer_obj_id and rof.payer_obj_type = '3333'
+        where 1=1
+        and rof.amount_owed > 0
+        <if test="floorId != null and floorId != ''">
+            and f.floor_id = #{floorId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="roomNumLike !=null and roomNumLike != ''">
+            and t.room_num like concat('%',#{roomNumLike},'%')
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="communityId != null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="ownerId != null and ownerId != ''">
+            and bo.owner_id = #{ownerId}
+        </if>
+        <if test="ownerName != null and ownerName != ''">
+            and bo.`name` like concat('%',#{ownerName},'%')
+        </if>
+        <if test="link != null and link != ''">
+            and bo.link = #{link}
+        </if>
+        group by t.fee_coefficient ,t.section,t.remark,t.user_id ,
+        t.room_id ,t.layer,t.built_up_area,t.room_num,t.unit_id,t.b_id,t.apartment,t.state,t.community_id,t.room_type,
+        t.room_sub_type,t.room_rent,t.room_area,t.room_rent,t.room_area,
+        f.floor_num ,bu.unit_num ,bo.name ,bo.owner_id ,bo.link
+        order by t.create_time desc
+        ) a
+        <if test="page != -1 and page != null">
+            limit #{page},#{row}
+        </if>
+    </select>
+
+    <select id="getCommunityFeeDetailCount" parameterType="Map" resultType="Map">
+        select * from (
+        select t.community_id communityId,count(1) count,SUM(t.received_amount) receivedAmount from pay_fee_detail t
+        where t.status_cd = '0'
+        and t.state in ('1000','1400','1200')
+        <if test="communityIds !=null ">
+            and t.community_id in
+            <foreach collection="communityIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        and t.create_time &gt;= #{startTime}
+        and t.create_time &lt;= #{endTime}
+        group by t.community_id
+        ) a order by a.count desc limit 10
+    </select>
+    <select id="getCommunityRepairCount" parameterType="Map" resultType="Map">
+        select * from (
+        select t.community_id communityId,count(1) count from r_repair_pool t
+        where t.status_cd = '0'
+        <if test="communityIds !=null ">
+            and t.community_id in
+            <foreach collection="communityIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        and t.create_time &gt;= #{startTime}
+        and t.create_time &lt;= #{endTime}
+        group by t.community_id
+        ) a order by a.count desc limit 10
+    </select>
+
+    <select id="getCommunityFeeDetailCountAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from pay_fee_detail t
+        where 1=1
+        and t.state in ('1000','1400','1200')
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="getCommunityRepairCountAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from r_repair_pool t
+        where 1=1
+        and t.status_cd = '0'
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+    <select id="getCommunityInspectionAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from inspection_task t
+        where 1=1
+        and t.status_cd = '0'
+        and t.state in ('20200406','20200407')
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+    <select id="getCommunityMaintainanceAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from maintainance_task t
+        where 1=1
+        and t.status_cd = '0'
+        and t.state in ('20200406','20200407')
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="getCommunityItemInAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from purchase_apply t
+        where 1=1
+        and t.res_order_type = '10000'
+        and t.status_cd = '0'
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+    <select id="getCommunityItemOutAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from purchase_apply t
+        where 1=1
+        and t.res_order_type = '20000'
+        and t.status_cd = '0'
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="getCommunityCarInAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from car_inout t
+        where 1=1
+        and t.status_cd = '0'
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+    <select id="getCommunityPersonInAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from machine_record t
+        where 1=1
+        and t.status_cd = '0'
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.community_id = #{communityId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="getCommunityContractAnalysis" parameterType="Map" resultType="Map">
+        select DATE_FORMAT(t.create_time,'%Y-%m-%d') createTime,count(1) countValue
+        from contract t
+        where 1=1
+        and t.status_cd = '0'
+        and t.create_time &gt; #{startTime}
+        and t.create_time &lt; #{endTime}
+        and t.store_id = #{storeId}
+        group by DATE_FORMAT(t.create_time,'%Y-%m-%d')
+    </select>
+    <select id="getPropertyFeeSummaryDataCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from building_room br
+        left join building_unit bu on br.unit_id = br.unit_id and bu.status_cd = '0'
+        left join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        left join building_owner_room_rel borr on br.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.owner_id and bo.status_cd = '0' and bo.owner_type_cd = '1001'
+        where br.status_cd = '0'
+        <if test="communityId != null and communityId != ''">
+            and br.community_id = #{communityId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and br.room_num = #{roomNum}
+        </if>
+    </select>
+
+    <select id="getPropertyFeeSummaryData" parameterType="Map" resultType="Map">
+        select br.community_id communityId,bo.name ownerName,bo.sex,bo.link,concat(f.floor_num,'-',bu.unit_num,'-',br.room_num) roomName,br.room_id roomId,
+        borr.start_time bingTime,br.state,br.built_up_area builtUpArea,pfc.square_price squarePrice,pfc.config_id configId,pfc.fee_name feeName,
+        (
+        select max(pay_fee_time) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id and pfdm.obj_id = br.room_id
+        and pfdm.status_cd = '0' and pfdm.detail_id != '-1'
+        and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) payFeeTime,
+        (
+        select sum(pfdm.receivable_amount) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id
+        and pfdm.obj_id = br.room_id
+        and pfdm.status_cd = '0' and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) receivableAmount,
+        (
+        select sum(pfdm.received_amount) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id and pfdm.obj_id = br.room_id
+        and pfdm.status_cd = '0' and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) receivedAmount,
+        (
+        select sum(pfdm.receivable_amount) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id and pfdm.obj_id = br.room_id
+        and pfdm.status_cd = '0' and pfdm.detail_id = '-1' and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) oweAmount
+        from building_room br
+        left join building_unit bu on br.unit_id = br.unit_id and bu.status_cd = '0'
+        left join f_floor f on bu.floor_id = f.floor_id and f.status_cd = '0'
+        left join building_owner_room_rel borr on br.room_id = borr.room_id and borr.status_cd = '0'
+        left join building_owner bo on borr.owner_id = bo.owner_id and bo.status_cd = '0' and bo.owner_type_cd = '1001'
+        left join pay_fee pf on br.room_id = pf.payer_obj_id and pf.payer_obj_type = '3333' and pf.status_cd = '0' and pf.fee_type_cd = '888800010001'
+        left join pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.status_cd = '0' and pfc.fee_type_cd = '888800010001'
+        where br.status_cd = '0'
+        <if test="communityId != null and communityId != ''">
+            and br.community_id = #{communityId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and br.room_num = #{roomNum}
+        </if>
+        group by br.community_id, bo.name,bo.sex,bo.link,f.floor_num,bu.unit_num,br.room_num,br.room_id,borr.start_time,br.state,br.built_up_area,pfc.square_price,pfc.config_id,pfc.fee_name
+        order by br.community_id,f.floor_num,bu.unit_num,br.room_num
+        <if test="page != -1 and page != null">
+            limit #{page},#{row}
+        </if>
+    </select>
+    <select id="computeEveryMonthFee" parameterType="Map" resultType="Map">
+        select a.obj_id roomId,a.cur_month_time curMonthTime,a.config_id configId,sum(receivableAmount) receivableAmount,
+        sum(receivedAmount) receivedAmount,sum(oweAmount) oweAmount,max(a.receiptCode) receiptCode
+        from (
+        select t.obj_id,t.cur_month_time,pfc.config_id,
+        (
+        select sum(pfdm.receivable_amount) from pay_fee_detail_month pfdm where pfdm.month_id = t.month_id and pfdm.status_cd = '0'
+        ) receivableAmount,
+        (
+        select sum(pfdm.received_amount) from pay_fee_detail_month pfdm where pfdm.month_id = t.month_id and pfdm.status_cd = '0'
+        ) receivedAmount,
+        (
+        select sum(pfdm.receivable_amount) from pay_fee_detail_month pfdm where pfdm.month_id = t.month_id and pfdm.status_cd = '0'
+        ) oweAmount,
+        (
+        select max(fr.receipt_code) from fee_receipt_detail frd
+        left join fee_receipt fr on frd.receipt_id = fr.receipt_id and fr.status_cd = '0'
+        where frd.detail_id = t.detail_id and t.detail_id != '-1'
+        ) receiptCode
+        from pay_fee_detail_month t
+        left join pay_fee_config pfc on t.config_id = pfc.config_id and pfc.status_cd = '0' and pfc.fee_type_cd = '888800010001'
+        where 1=1
+        and t.obj_id in
+        <foreach collection="roomIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        and t.cur_month_time &gt;=#{startTime}
+        and t.cur_month_time &lt; #{endTime}
+        ) a
+        group by a.obj_id,a.cur_month_time,a.config_id
+    </select>
+
+    <select id="getParkingFeeSummaryDataCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from owner_car br
+        left join parking_space ps on br.ps_id = ps.ps_id and ps.status_cd = '0'
+        left join parking_area pa on ps.pa_id = ps.pa_id and pa.status_cd = '0'
+        left join building_owner bo on br.owner_id = bo.owner_id and bo.status_cd = '0' and bo.owner_type_cd = '1001'
+        left join pay_fee pf on br.car_id = pf.payer_obj_id and pf.payer_obj_type = '6666' and pf.status_cd = '0' and pf.fee_type_cd = '888800010008'
+        left join pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.status_cd = '0' and pfc.fee_type_cd = '888800010008'
+        where br.status_cd = '0'
+        <if test="communityId != null and communityId != ''">
+            and br.community_id = #{communityId}
+        </if>
+        <if test="paNum != null and paNum != ''">
+            and pa.num = #{paNum}
+        </if>
+        <if test="psNum != null and psNum != ''">
+            and ps.num = #{psNum}
+        </if>
+        <if test="carNum != null and carNum != ''">
+            and br.car_num = #{carNum}
+        </if>
+    </select>
+
+    <select id="getParkingFeeSummaryData" parameterType="Map" resultType="Map">
+        select br.community_id communityId,bo.name ownerName,bo.sex,bo.link,concat(pa.num,'-',ps.num) parkingName,br.car_id carId,br.car_num carNum,
+        br.start_time bingTime,br.state,pfc.additional_amount squarePrice,pfc.config_id configId,pfc.fee_name feeName,
+        (
+        select max(pay_fee_time) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id and pfdm.obj_id = br.car_id
+        and pfdm.status_cd = '0' and pfdm.detail_id != '-1'
+        and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) payFeeTime,
+        (
+        select sum(pfdm.receivable_amount) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id
+        and pfdm.obj_id = br.car_id
+        and pfdm.status_cd = '0' and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) receivableAmount,
+        (
+        select sum(pfdm.received_amount) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id and pfdm.obj_id = br.car_id
+        and pfdm.status_cd = '0' and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) receivedAmount,
+        (
+        select sum(pfdm.receivable_amount) from pay_fee_detail_month pfdm
+        where pfdm.config_id = pfc.config_id and pfdm.obj_id = br.car_id
+        and pfdm.status_cd = '0' and pfdm.detail_id = '-1' and pfdm.cur_month_time &gt;=#{startTime} and pfdm.cur_month_time &lt; #{endTime}
+        ) oweAmount
+        from owner_car br
+        left join parking_space ps on br.ps_id = ps.ps_id and ps.status_cd = '0'
+        left join parking_area pa on ps.pa_id = ps.pa_id and pa.status_cd = '0'
+        left join building_owner bo on br.owner_id = bo.owner_id and bo.status_cd = '0' and bo.owner_type_cd = '1001'
+        left join pay_fee pf on br.car_id = pf.payer_obj_id and pf.payer_obj_type = '6666' and pf.status_cd = '0' and pf.fee_type_cd = '888800010008'
+        left join pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.status_cd = '0' and pfc.fee_type_cd = '888800010008'
+        where br.status_cd = '0'
+        <if test="communityId != null and communityId != ''">
+            and br.community_id = #{communityId}
+        </if>
+        <if test="paNum != null and paNum != ''">
+            and pa.num = #{paNum}
+        </if>
+        <if test="psNum != null and psNum != ''">
+            and ps.num = #{psNum}
+        </if>
+        <if test="carNum != null and carNum != ''">
+            and br.car_num = #{carNum}
+        </if>
+        group by br.community_id ,bo.name ,bo.sex,bo.link,pa.num,ps.num ,br.car_id ,br.car_num ,
+        br.start_time ,br.state,pfc.additional_amount ,pfc.config_id ,pfc.fee_name
+        order by br.community_id,pa.num,ps.num
+        <if test="page != -1 and page != null">
+            limit #{page},#{row}
+        </if>
+    </select>
+
+
+</mapper>

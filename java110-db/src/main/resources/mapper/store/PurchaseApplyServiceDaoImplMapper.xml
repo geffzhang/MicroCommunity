@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="purchaseApplyServiceDaoImpl">
-
-
-    <resultMap type="com.java110.dto.purchaseApply.PurchaseApplyDto" id="applyMap">
+    <resultMap type="com.java110.dto.purchase.PurchaseApplyDto" id="applyMap">
         <id column="applyOrderId" property="applyOrderId"/>
         <result column="description" property="description"/>
         <result column="resOrderType" property="resOrderType"/>
@@ -19,12 +17,14 @@
         <result column="stateName" property="stateName"/>
         <result column="endUserName" property="endUserName"/>
         <result column="endUserTel" property="endUserTel"/>
+        <result column="communityId" property="communityId"/>
         <!-- 一对多关系 -->
         <collection property="purchaseApplyDetailVo" ofType="com.java110.vo.api.purchaseApply.PurchaseApplyDetailVo"
                     javaType="java.util.ArrayList">
             <id property="id" column="id"/>
             <result property="applyOrderId" column="applyOrderId"/>
             <result property="resId" column="resId"/>
+            <result column="rsId" property="rsId"/>
             <result property="quantity" column="quantity"/>
             <result property="resName" column="resName"/>
             <result property="remark" column="remark"/>
@@ -38,9 +38,10 @@
     <!-- 保存采购申请信息 add by wuxw 2018-07-03 -->
     <insert id="saveBusinessPurchaseApplyInfo" parameterType="Map">
         insert into business_purchase_apply
-        (operate,res_order_type,description,apply_order_id,state,store_id,user_id,user_name,b_id,end_user_name,end_user_tel)
-        values
-        (#{operate},#{resOrderType},#{description},#{applyOrderId},#{state},#{storeId},#{userId},#{userName},#{bId},#{endUserName},#{endUserTel})
+        (operate, res_order_type, description, apply_order_id, state, store_id, user_id, user_name, b_id, end_user_name,
+         end_user_tel, community_id)
+        values (#{operate}, #{resOrderType}, #{description}, #{applyOrderId}, #{state}, #{storeId}, #{userId},
+                #{userName}, #{bId}, #{endUserName}, #{endUserTel}, #{communityId})
     </insert>
 
     <!-- 保存采购明细表备份表 -->
@@ -60,48 +61,55 @@
         </foreach>
     </insert>
 
-
     <!-- 保存采购明细表-->
     <insert id="savePurchaseApplyDetailInfo" parameterType="List">
-        insert into purchase_apply_detail (id,apply_order_id,res_id,quantity,remark,b_id,operate,status_cd)
+        insert into purchase_apply_detail
+        (id,rs_id,apply_order_id,res_id,quantity,remark,b_id,operate,status_cd,price,purchase_quantity,purchase_remark,original_stock,times_id,consult_price)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.id},
+            #{item.rsId},
             #{item.applyOrderId},
             #{item.resId},
             #{item.quantity},
             #{item.remark},
             '-1',
             'ADD',
-            '0'
+            '0',
+            #{item.price},
+            #{item.purchaseQuantity},
+            #{item.purchaseRemark},
+            #{item.originalStock},
+            #{item.timesId},
+            #{item.consultPrice}
             )
         </foreach>
     </insert>
 
-
     <!-- 查询采购申请信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessPurchaseApplyInfo" parameterType="Map" resultType="Map">
         select
-            t.operate,
-            t.res_order_type,
-            t.res_order_type resOrderType,
-            t.description,
-            t.apply_order_id,
-            t.apply_order_id applyOrderId,
-            t.state,
-            t.store_id,
-            t.store_id storeId,
-            t.user_name userName,
-            t.b_id bId,
-            t.b_id,
-            t.user_id,
-            t.user_id userId,
-            t.status_cd statusCd,
-            t.end_user_name,
-            t.end_user_tel,
-            t.end_user_name endUserName,
-            t.end_user_tel endUserTel
+        t.operate,
+        t.res_order_type,
+        t.res_order_type resOrderType,
+        t.description,
+        t.apply_order_id,
+        t.apply_order_id applyOrderId,
+        t.state,
+        t.store_id,
+        t.store_id storeId,
+        t.user_name userName,
+        t.b_id bId,
+        t.b_id,
+        t.user_id,
+        t.user_id userId,
+        t.status_cd statusCd,
+        t.end_user_name,
+        t.end_user_tel,
+        t.end_user_name endUserName,
+        t.end_user_tel endUserTel,
+        t.community_id communityId
         from business_purchase_apply t
         where 1 =1
         <if test="operate !=null and operate != ''">
@@ -134,7 +142,9 @@
         <if test="endUserTel !=null and endUserTel != ''">
             and t.end_user_tel= #{endUserTel}
         </if>
-
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
     </select>
 
     <select id="getBusinessPurchaseApplyDetailInfo" parameterType="Map" resultType="Map">
@@ -157,13 +167,13 @@
         </if>
     </select>
 
-
     <!-- 保存采购申请信息至 instance表中 add by wuxw 2018-07-03 -->
     <insert id="savePurchaseApplyInfoInstance" parameterType="Map">
         insert into purchase_apply
-        (res_order_type,description,apply_order_id,status_cd,state,store_id,user_name,b_id,user_id,end_user_name,end_user_tel)
+        (res_order_type,description,apply_order_id,status_cd,state,store_id,user_name,b_id,user_id,end_user_name,end_user_tel,community_id)
         select
-        t.res_order_type,t.description,t.apply_order_id,'0',t.state,t.store_id,t.user_name,t.b_id,t.user_id,t.end_user_name,t.end_user_tel
+        t.res_order_type,t.description,t.apply_order_id,'0',t.state,t.store_id,t.user_name,t.b_id,t.user_id,t.end_user_name,t.end_user_tel,
+        t.community_id
         from business_purchase_apply t where 1=1
         and t.operate= 'ADD'
         <if test="resOrderType !=null and resOrderType != ''">
@@ -187,9 +197,10 @@
         <if test="userId !=null and userId != ''">
             and t.user_id= #{userId}
         </if>
-
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
     </insert>
-
 
     <!-- 查询采购申请信息 add by wuxw 2018-07-03 -->
     <select id="getPurchaseApplyInfo" parameterType="Map" resultType="Map">
@@ -202,10 +213,21 @@
         t.end_user_tel,
         t.end_user_name endUserName,
         t.end_user_tel endUserTel,
-        t.description
+        t.description,
+        t.create_user_id createUserId,
+        t.create_user_name createUserName,
+        t.warehousing_way warehousingWay,
+        t.community_id communityId
         from purchase_apply t
+        <if test="resName != null and resName != ''">
+            left join purchase_apply_detail pad on t.apply_order_id = pad.apply_order_id and pad.status_cd = '0'
+            left join resource_store rs on pad.res_id = rs.res_id and rs.status_cd = '0'
+        </if>
         inner join t_dict d on t.state = d.status_cd and d.table_name = 'purchase_apply' and d.table_columns = 'state'
-        where 1 =1
+        where 1 = 1
+        <if test="resName != null and resName != ''">
+            and rs.res_name like concat('%',#{resName},'%')
+        </if>
         <if test="resOrderType !=null and resOrderType != ''">
             and t.res_order_type= #{resOrderType}
         </if>
@@ -213,9 +235,8 @@
             and t.description= #{description}
         </if>
         <if test="applyOrderId !=null and applyOrderId != ''">
-            and t.apply_order_id= #{applyOrderId}
+            and t.apply_order_id like concat('%',#{applyOrderId},'%')
         </if>
-
         <if test="applyOrderIds !=null ">
             and t.apply_order_id in
             <foreach open="(" close=")"
@@ -244,14 +265,26 @@
         <if test="endUserTel !=null and endUserTel != ''">
             and t.end_user_tel= #{endUserTel}
         </if>
-
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="createUserId !=null and createUserId != ''">
+            and t.create_user_id= #{createUserId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            and t.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            and t.create_time &lt;= #{endTime}
+        </if>
         order by t.create_time desc
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
     </select>
-
 
     <select id="getPurchaseApplyInfo2" parameterType="Map" resultMap="applyMap">
         select
@@ -264,17 +297,16 @@
         t.end_user_name,
         t.end_user_tel,
         t.end_user_name endUserName,
-        t.end_user_tel endUserTel
+        t.end_user_tel endUserTel,
+        t.community_id communityId
         from purchase_apply t
         inner join t_dict d on t.state = d.status_cd and d.table_name = 'purchase_apply' and d.table_columns = 'state'
         inner join purchase_apply_detail de on de.apply_order_id = t.apply_order_id
         inner join resource_store rs on de.res_id = rs.res_id
-
         where 1 =1
         <if test="resOrderType !=null and resOrderType != ''">
             and t.res_order_type= #{resOrderType}
         </if>
-
         <if test="applyOrderId !=null and applyOrderId != ''">
             and t.apply_order_id= #{applyOrderId}
         </if>
@@ -296,23 +328,42 @@
         <if test="endUserTel !=null and endUserTel != ''">
             and t.end_user_tel= #{endUserTel}
         </if>
-
+        <if test="createUserId !=null and createUserId != ''">
+            and t.create_user_id= #{createUserId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
         order by t.create_time desc
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
     </select>
+
     <!-- 查询采购明细 -->
     <select id="getPurchaseApplyDetailInfo" parameterType="Map" resultType="Map">
         select
         p.id,
         p.apply_order_id applyOrderId,
-        p.res_id resId,p.quantity,p.remark,
+        p.res_id resId,p.quantity,p.remark,p.purchase_quantity purchaseQuantity,p.purchase_remark purchaseRemark,p.price
+        purchasePrice,p.original_stock originalStock,p.consult_price consultPrice,p.times_id timesId,
         r.res_name resName,r.res_code resCode,
-        r.price,r.stock
+        r.price,r.price standardPrice,rstime.stock,rst.name rstName,rst1.name parentRstName,rss.spec_name
+        specName,rs.supplier_name supplierName,
+        td1.name unitCodeName,
+        td2.name miniUnitCodeName
         from
-        purchase_apply_detail p inner join resource_store r on p.res_id = r.res_id and r.status_cd = '0'
+        purchase_apply_detail p
+        inner join resource_store r on p.res_id = r.res_id and r.status_cd = '0'
+        left join t_dict td1 on r.unit_code = td1.status_cd and td1.table_name = 'resource_store' and td1.table_columns
+        = 'unit_code'
+        left join t_dict td2 on r.mini_unit_code = td2.status_cd and td2.table_name = 'resource_store' and
+        td2.table_columns = 'unit_code'
+        LEFT JOIN resource_supplier rs on p.rs_id=rs.rs_id
+        LEFT JOIN resource_store_type rst on r.rst_id=rst.rst_id
+        LEFT JOIN resource_store_type rst1 on r.parent_rst_id=rst1.rst_id
+        LEFT JOIN resource_store_specification rss on r.rss_id=rss.rss_id
+        left join resource_store_times rstime on p.times_id = rstime.times_id and rstime.status_cd = '0'
         where 1=1
         and p.status_cd = '0'
         <if test="applyOrderIds !=null">
@@ -331,7 +382,6 @@
             and p.operate= #{operate}
         </if>
     </select>
-
 
     <!-- 修改采购申请信息 add by wuxw 2018-07-03 -->
     <update id="updatePurchaseApplyInfoInstance" parameterType="Map">
@@ -363,6 +413,9 @@
         <if test="endUserTel !=null and endUserTel != ''">
             , t.end_user_tel= #{endUserTel}
         </if>
+        <if test="communityId !=null and communityId != ''">
+            , t.community_id= #{communityId}
+        </if>
         where 1=1
         <if test="applyOrderId !=null and applyOrderId != ''">
             and t.apply_order_id= #{applyOrderId}
@@ -370,14 +423,20 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-
     </update>
 
     <!-- 查询采购申请数量 add by wuxw 2018-07-03 -->
     <select id="queryPurchaseApplysCount" parameterType="Map" resultType="Map">
         select count(1) count
         from purchase_apply t
-        where 1 =1
+        <if test="resName != null and resName != ''">
+            left join purchase_apply_detail pad on t.apply_order_id = pad.apply_order_id and pad.status_cd = '0'
+            left join resource_store rs on pad.res_id = rs.res_id and rs.status_cd = '0'
+        </if>
+        where 1 = 1
+        <if test="resName != null and resName != ''">
+            and rs.res_name like concat('%',#{resName},'%')
+        </if>
         <if test="resOrderType !=null and resOrderType != ''">
             and t.res_order_type= #{resOrderType}
         </if>
@@ -385,10 +444,23 @@
             and t.description= #{description}
         </if>
         <if test="applyOrderId !=null and applyOrderId != ''">
-            and t.apply_order_id= #{applyOrderId}
+            and t.apply_order_id like concat('%',#{applyOrderId},'%')
+        </if>
+        <if test="applyOrderIds !=null ">
+            and t.apply_order_id in
+            <foreach open="(" close=")"
+                     separator="," collection="applyOrderIds" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="userName !=null and userName != ''">
+            and t.user_name like concat('%',#{userName},'%')
         </if>
         <if test="statusCd !=null and statusCd != ''">
             and t.status_cd= #{statusCd}
+        </if>
+        <if test="warehousingWay !=null and warehousingWay != ''">
+            and t.warehousing_way= #{warehousingWay}
         </if>
         <if test="state !=null and state != ''">
             and t.state= #{state}
@@ -405,16 +477,73 @@
         <if test="endUserTel !=null and endUserTel != ''">
             and t.end_user_tel= #{endUserTel}
         </if>
-
+        <if test="createUserId !=null and createUserId != ''">
+            and t.create_user_id= #{createUserId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id = #{communityId}
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            and t.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            and t.create_time &lt;= #{endTime}
+        </if>
+        <if test='urgentFlag !=null and urgentFlag == "1"'>
+            and date_format(t.create_time,'%Y-%m') = date_format(now(),'%Y-%m')
+        </if>
     </select>
-
 
     <!-- 保存采购申请信息 add by wuxw 2018-07-03 -->
     <insert id="savePurchaseApply" parameterType="Map">
         insert into purchase_apply
-        (status_cd,res_order_type,description,apply_order_id,state,store_id,user_id,user_name,b_id,end_user_name,end_user_tel)
-        values
-        ('0',#{resOrderType},#{description},#{applyOrderId},#{state},#{storeId},#{userId},#{userName},'-1',#{endUserName},#{endUserTel})
+        (status_cd, res_order_type, description, apply_order_id, state, store_id, user_id, user_name, b_id,
+         end_user_name, end_user_tel,
+         create_time, create_user_id, create_user_name, warehousing_way, community_id)
+        values ('0', #{resOrderType}, #{description}, #{applyOrderId}, #{state}, #{storeId}, #{userId}, #{userName},
+                '-1', #{endUserName}, #{endUserTel},
+                #{createTime}, #{createUserId}, #{createUserName}, #{warehousingWay}, #{communityId})
     </insert>
 
+    <!--查询下级用户id-->
+    <select id="getActRuTaskUserId" parameterType="Map" resultType="Map">
+        SELECT ASSIGNEE_ taskUserId FROM ACT_RU_TASK t
+        LEFT JOIN ACT_HI_PROCINST ahp on t.PROC_INST_ID_=ahp.ID_
+        LEFT JOIN ACT_RU_EXECUTION are on t.EXECUTION_ID_=are.ID_
+        where 1 = 1
+        <if test="actRuTaskId !=null and actRuTaskId != ''">
+            and ahp.ID_ = #{actRuTaskId}
+        </if>
+        <if test="procDefId !=null and procDefId != ''">
+            and t.PROC_DEF_ID_ = #{procDefId}
+        </if>
+        <if test="businessKey !=null and businessKey != ''">
+            and ahp.BUSINESS_KEY_ = #{businessKey}
+        </if>
+    </select>
+
+    <!--获得获取流程任务id-->
+    <select id="getActRuTaskId" parameterType="Map" resultType="Map">
+        SELECT art.ID_ actRuTaskId FROM ACT_RU_EXECUTION are
+        LEFT JOIN ACT_RU_TASK art ON are.PROC_INST_ID_=art.PROC_INST_ID_
+        where 1 = 1
+        <if test="businessKey !=null and businessKey != ''">
+            and are.BUSINESS_KEY_ = #{businessKey}
+        </if>
+    </select>
+
+    <!-- 修改流程任务信息 -->
+    <update id="updateActRuTaskById" parameterType="Map">
+        update ACT_RU_TASK t set SUSPENSION_STATE_=1
+        <if test="assigneeUser != null and assigneeUser != ''">
+            ,t.ASSIGNEE_ = #{assigneeUser}
+        </if>
+        where 1=1
+        <if test="actRuTaskId !=null and actRuTaskId != ''">
+            and t.ID_= #{actRuTaskId}
+        </if>
+    </update>
 </mapper>

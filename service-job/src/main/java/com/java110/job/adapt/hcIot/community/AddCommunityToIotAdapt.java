@@ -17,7 +17,7 @@ package com.java110.job.adapt.hcIot.community;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.Business;
 import com.java110.job.adapt.DatabusAdaptImpl;
 import com.java110.job.adapt.hcIot.asyn.IIotSendAsyn;
 import com.java110.po.community.CommunityPo;
@@ -54,23 +54,27 @@ public class AddCommunityToIotAdapt extends DatabusAdaptImpl {
      * @param businesses 所有业务信息
      */
     @Override
-    public void execute(Business business, List<Business> businesses) {
+    public void execute(Business business, List<Business> businesses) throws Exception{
         JSONObject data = business.getData();
+        JSONArray businessCommunitys = new JSONArray();
         if (data.containsKey(CommunityPo.class.getSimpleName())) {
             Object bObj = data.get(CommunityPo.class.getSimpleName());
-            JSONArray businessCommunitys = null;
             if (bObj instanceof JSONObject) {
-                businessCommunitys = new JSONArray();
                 businessCommunitys.add(bObj);
             } else if (bObj instanceof List) {
                 businessCommunitys = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessCommunitys = (JSONArray) bObj;
             }
-            for (int bMachineIndex = 0; bMachineIndex < businessCommunitys.size(); bMachineIndex++) {
-                JSONObject businessCommunity = businessCommunitys.getJSONObject(bMachineIndex);
-                doAddCommunity(business, businessCommunity);
+        }else {
+            if (data instanceof JSONObject) {
+                businessCommunitys.add(data);
             }
+        }
+
+        for (int bMachineIndex = 0; bMachineIndex < businessCommunitys.size(); bMachineIndex++) {
+            JSONObject businessCommunity = businessCommunitys.getJSONObject(bMachineIndex);
+            doAddCommunity(business, businessCommunity);
         }
     }
 
@@ -80,7 +84,7 @@ public class AddCommunityToIotAdapt extends DatabusAdaptImpl {
      * @param business
      * @param businessCommunity
      */
-    private void doAddCommunity(Business business, JSONObject businessCommunity) {
+    private void doAddCommunity(Business business, JSONObject businessCommunity) throws Exception{
         CommunityPo communityPo = BeanConvertUtil.covertBean(businessCommunity, CommunityPo.class);
         JSONObject postParameters = new JSONObject();
         postParameters.put("name", communityPo.getName());

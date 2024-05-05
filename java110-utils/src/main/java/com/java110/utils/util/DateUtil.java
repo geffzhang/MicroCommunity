@@ -1,13 +1,11 @@
 package com.java110.utils.util;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wuxw on 2017/7/24.
@@ -32,6 +30,11 @@ public class DateUtil {
     public static final String DATE_FORMATE_STRING_J = "yyyyMMddHHmmss.SSS";
     public static final String DATE_FORMATE_STRING_K = "yyyyMMddHHmmssSSS";
     public static final String DATE_FORMATE_STRING_L = "MMdd";
+    public static final String DATE_FORMATE_STRING_M = "yyyyMM";
+    public static final String DATE_FORMATE_STRING_N = "HHmmss";
+    public static final String DATE_FORMATE_STRING_O = "yyyyMMddHHmm";
+    public static final String DATE_FORMATE_STRING_Q = "yyyy-MM";
+
 
     static {
         formats.put("yyyyMMddHHmmss", new SimpleDateFormat("yyyyMMddHHmmss"));
@@ -47,6 +50,11 @@ public class DateUtil {
         formats.put("yyyyMMddHHmmss.SSS", new SimpleDateFormat("yyyyMMddHHmmss.SSS"));
         formats.put("yyyyMMddHHmmssSSS", new SimpleDateFormat("yyyyMMddHHmmssSSS"));
         formats.put("MMdd", new SimpleDateFormat("MMdd"));
+        formats.put("yyyyMM", new SimpleDateFormat("yyyyMM"));
+        formats.put("HHmmss", new SimpleDateFormat("HHmmss"));
+        formats.put("yyyyMMddHHmm", new SimpleDateFormat("yyyyMMddHHmm"));
+        formats.put("yyyy-MM", new SimpleDateFormat("yyyy-MM"));
+
     }
 
 
@@ -115,6 +123,22 @@ public class DateUtil {
         }
     }
 
+    public static String getFormatTimeStringA(Date date) {
+        SimpleDateFormat sDateFormat = getDateFormat(DateUtil.DATE_FORMATE_STRING_A);
+
+        synchronized (sDateFormat) {
+            return sDateFormat.format(date);
+        }
+    }
+
+    public static String getFormatTimeStringB(Date date) {
+        SimpleDateFormat sDateFormat = getDateFormat(DateUtil.DATE_FORMATE_STRING_B);
+
+        synchronized (sDateFormat) {
+            return sDateFormat.format(date);
+        }
+    }
+
     public static String getDefaultFormateTimeString(Date date) {
         return getFormatTimeString(date, "yyyyMMddHHmmss");
     }
@@ -137,6 +161,29 @@ public class DateUtil {
         }
     }
 
+    public static Date getDateFromStringB(String date) {
+        SimpleDateFormat sDateFormat = getDateFormat(DateUtil.DATE_FORMATE_STRING_B);
+        try {
+            synchronized (sDateFormat) {
+                return sDateFormat.parse(date);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static Date getDateFromStringA(String date) {
+        SimpleDateFormat sDateFormat = getDateFormat(DateUtil.DATE_FORMATE_STRING_A);
+        try {
+            synchronized (sDateFormat) {
+                return sDateFormat.parse(date);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     public static Date getDefaultDateFromString(String date)
             throws ParseException {
         return getDateFromString(date, "yyyyMMddHHmmss");
@@ -149,6 +196,7 @@ public class DateUtil {
     public static String getNow(String pattern) {
         return getFormatTimeString(new Date(), pattern);
     }
+
 
     public static String getLastTime() {
         return LAST_TIME;
@@ -350,15 +398,66 @@ public class DateUtil {
     public static Date getNextMonthFirstDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
         calendar.add(Calendar.MONTH, 1);
         return calendar.getTime();
     }
 
-    public static Date getFirstDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
+    public static Date getNextMonthFirstDate(String curDate) {
+        Date date = DateUtil.getDateFromStringB(curDate);
+        return getNextMonthFirstDate(date);
     }
+
+    public static Date getNextMonthFirstDate(Date curDate) {
+
+        return getNextMonthFirstDate(curDate,1);
+    }
+
+    public static Date getNextMonthFirstDate(Date curDate,int monthCount) {
+
+        Calendar curDateCal = Calendar.getInstance();
+        curDateCal.setTime(curDate);
+        curDateCal.set(Calendar.DAY_OF_MONTH, 1);
+        curDateCal.set(Calendar.HOUR_OF_DAY, 0);
+        curDateCal.set(Calendar.MINUTE, 0);
+        curDateCal.set(Calendar.SECOND, 0);
+        curDateCal.add(Calendar.MONTH, monthCount);
+        return curDateCal.getTime();
+    }
+
+    public static Date getFirstDate() {
+        Calendar curDateCal = Calendar.getInstance();
+        curDateCal.set(Calendar.DAY_OF_MONTH, 1);
+        curDateCal.set(Calendar.HOUR_OF_DAY, 0);
+        curDateCal.set(Calendar.MINUTE, 0);
+        curDateCal.set(Calendar.SECOND, 0);
+        Date curDate = curDateCal.getTime();
+        return curDate;
+    }
+
+    public static Date getFirstDate(Date curDate) {
+        Calendar curDateCal = Calendar.getInstance();
+        curDateCal.setTime(curDate);
+        curDateCal.set(Calendar.DAY_OF_MONTH, 1);
+        curDateCal.set(Calendar.HOUR_OF_DAY, 0);
+        curDateCal.set(Calendar.MINUTE, 0);
+        curDateCal.set(Calendar.SECOND, 0);
+        return curDateCal.getTime();
+    }
+
+    public static Date getFirstDate(String curDate) {
+        Date date = DateUtil.getDateFromStringB(curDate);
+        Calendar curDateCal = Calendar.getInstance();
+        curDateCal.setTime(date);
+        curDateCal.set(Calendar.DAY_OF_MONTH, 1);
+        curDateCal.set(Calendar.HOUR_OF_DAY, 0);
+        curDateCal.set(Calendar.MINUTE, 0);
+        curDateCal.set(Calendar.SECOND, 0);
+        return curDateCal.getTime();
+    }
+
 
     public static String getNextMonthFirstDay(String fmt) {
         String returndate = "";
@@ -405,6 +504,63 @@ public class DateUtil {
         return maxDate;
     }
 
+    public static int getMonthDay(Date date) {
+        Calendar a = Calendar.getInstance();
+        a.setTime(date);
+        return a.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    public static void main(String[] args) throws ParseException {
+
+//        SimpleDateFormat sf = new SimpleDateFormat(DateUtil.DATE_FORMATE_STRING_A);
+//        Calendar c = Calendar.getInstance();
+//        c.setTime(DateUtil.getDateFromString("2021-12-03",DateUtil.DATE_FORMATE_STRING_A));
+//        c.add(Calendar.DAY_OF_MONTH, 125);
+//        System.out.println("增加一天后日期:"+sf.format(c.getTime()));
+        System.out.println("2021-12-07".compareTo(DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_B)));
+    }
+
+    public static String getAddDayString(Date date, String pattern, int days) {
+        SimpleDateFormat sf = new SimpleDateFormat(pattern);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DAY_OF_MONTH, days);
+        return sf.format(c.getTime());
+    }
+
+    public static String getAddDayStringB(Date date, int days) {
+        SimpleDateFormat sf = new SimpleDateFormat(DATE_FORMATE_STRING_B);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DAY_OF_MONTH, days);
+        return sf.format(c.getTime());
+    }
+
+    public static String getAddDayStringA(Date date, int days) {
+        SimpleDateFormat sf = new SimpleDateFormat(DATE_FORMATE_STRING_A);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.DAY_OF_MONTH, days);
+        return sf.format(c.getTime());
+    }
+
+
+    public static String getAddHoursStringA(Date date, int hours) {
+        SimpleDateFormat sf = new SimpleDateFormat(DATE_FORMATE_STRING_A);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.HOUR_OF_DAY, hours);
+        return sf.format(c.getTime());
+    }
+
+
+    public static String getAddMonthStringA(Date date, int month) {
+        SimpleDateFormat sf = new SimpleDateFormat(DATE_FORMATE_STRING_A);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, month);
+        return sf.format(c.getTime());
+    }
 
     /**
      * 在给定的日期加上或减去指定月份后的日期
@@ -421,6 +577,20 @@ public class DateUtil {
         return c.getTime();
     }
 
+    /**
+     * 在给定的日期加上或减去指定天数后的日期
+     *
+     * @param sourceDate 原始时间
+     * @param day        要调整的月份，向前为负数，向后为正数
+     * @return
+     */
+    public static Date stepDay(Date sourceDate, int day) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(sourceDate);
+        c.add(Calendar.DATE, day);
+        return c.getTime();
+    }
+
     public static String dateTimeToDate(String dateTime) {
         String dateStr = "";
         try {
@@ -432,6 +602,7 @@ public class DateUtil {
 
         return dateStr;
     }
+
 
     public static int getYear() {
         Date date = getCurrentDate();
@@ -495,5 +666,252 @@ public class DateUtil {
     //获取两个日期之间的分钟数
     private static int millisecondsToDays(long intervalMs) {
         return (int) (intervalMs / (1000 * 86400));
+    }
+
+    /**
+     * 　　 *字符串的日期格式的计算
+     */
+    public static int daysBetween(String smdate, String bdate) {
+        long between_days = 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(sdf.parse(smdate));
+            long time1 = cal.getTimeInMillis();
+            cal.setTime(sdf.parse(bdate));
+            long time2 = cal.getTimeInMillis();
+            between_days = (time2 - time1) / (1000 * 3600 * 24);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Integer.parseInt(String.valueOf(between_days));
+    }
+
+//    public static double dayCompare(Date fromDate, Date toDate) {
+//        double resMonth = 0.0;
+//        Calendar from = Calendar.getInstance();
+//        from.setTime(fromDate);
+//        Calendar to = Calendar.getInstance();
+//        to.setTime(toDate);
+//        //比较月份差 可能有整数 也会负数
+//        int result = to.get(Calendar.MONTH) - from.get(Calendar.MONTH);
+//        //比较年差
+//        int month = (to.get(Calendar.YEAR) - from.get(Calendar.YEAR)) * 12;
+//
+//        //真实 相差月份
+//        result = result + month;
+//
+//        //开始时间  2021-06-01  2021-08-05   result = 2    2021-08-01
+//        Calendar newFrom = Calendar.getInstance();
+//        newFrom.setTime(fromDate);
+//        newFrom.add(Calendar.MONTH, result);
+//        //如果加月份后 大于了当前时间 默认加 月份 -1 情况 12-19  21-01-10
+//        //这个是神的逻辑一定好好理解
+//        if (newFrom.getTime().getTime() > toDate.getTime()) {
+//            newFrom.setTime(fromDate);
+//            result = result - 1;
+//            newFrom.add(Calendar.MONTH, result);
+//        }
+//
+//        // t1 2021-08-01   t2 2021-08-05
+//        long t1 = newFrom.getTime().getTime();
+//        long t2 = to.getTime().getTime();
+//        //相差毫秒
+//        double days = (t2 - t1) * 1.00 / (24 * 60 * 60 * 1000);
+//        BigDecimal tmpDays = new BigDecimal(days); //相差天数
+//        BigDecimal monthDay = null;
+//        Calendar newFromMaxDay = Calendar.getInstance();
+//        newFromMaxDay.set(newFrom.get(Calendar.YEAR), newFrom.get(Calendar.MONTH), 1, 0, 0, 0);
+//        newFromMaxDay.add(Calendar.MONTH, 1); //下个月1号
+//        //在当前月中 这块有问题
+//        if (toDate.getTime() < newFromMaxDay.getTime().getTime()) {
+//            monthDay = new BigDecimal(newFrom.getActualMaximum(Calendar.DAY_OF_MONTH));
+//            return tmpDays.divide(monthDay, 4, BigDecimal.ROUND_HALF_UP).add(new BigDecimal(result)).doubleValue();
+//        }
+//        // 上月天数
+//        days = (newFromMaxDay.getTimeInMillis() - t1) * 1.00 / (24 * 60 * 60 * 1000);
+//        tmpDays = new BigDecimal(days);
+//        monthDay = new BigDecimal(newFrom.getActualMaximum(Calendar.DAY_OF_MONTH));
+//        BigDecimal preRresMonth = tmpDays.divide(monthDay, 4, BigDecimal.ROUND_HALF_UP);
+//
+//        //下月天数
+//        days = (t2 - newFromMaxDay.getTimeInMillis()) * 1.00 / (24 * 60 * 60 * 1000);
+//        tmpDays = new BigDecimal(days);
+//        monthDay = new BigDecimal(newFromMaxDay.getActualMaximum(Calendar.DAY_OF_MONTH));
+//        resMonth = tmpDays.divide(monthDay, 4, BigDecimal.ROUND_HALF_UP).add(new BigDecimal(result)).add(preRresMonth).doubleValue();
+//        return resMonth;
+//    }
+
+    /**
+     * 通过时间秒毫秒数判断两个时间的间隔
+     *
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static int differentDaysUp(Date date1, Date date2) {
+        double days = ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24 * 1.00));
+        return new Double(Math.ceil(days)).intValue();
+    }
+
+    /**
+     * 获取两个日期之间的所有月份 (年月)
+     *
+     * @param startTime
+     * @param endTime
+     * @return：list
+     */
+    public static List<String> getMonthBetweenDate(Date startTime, Date endTime) {
+        return getMonthBetweenDate(DateUtil.getFormatTimeStringA(startTime), DateUtil.getFormatTimeStringA(endTime));
+    }
+
+    /**
+     * 获取两个日期之间的所有月份 (年月)
+     *
+     * @param startTime
+     * @param endTime
+     * @return：list
+     */
+    public static List<String> getMonthBetweenDate(String startTime, String endTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMATE_STRING_Q);
+        // 声明保存日期集合
+        List<String> list = new ArrayList<>();
+        try {
+            // 转化成日期类型
+            Date startDate = sdf.parse(startTime);
+            Date endDate = sdf.parse(endTime);
+
+            //用Calendar 进行日期比较判断
+            Calendar calendar = Calendar.getInstance();
+            while (startDate.getTime() <= endDate.getTime()) {
+
+                // 把日期添加到集合
+                list.add(sdf.format(startDate));
+
+                // 设置日期
+                calendar.setTime(startDate);
+
+                //把月数增加 1
+                calendar.add(Calendar.MONTH, 1);
+
+                // 获取增加后的日期
+                startDate = calendar.getTime();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * 除去 小时 分 秒
+     *
+     * @param time
+     * @return
+     */
+    public static Date timeToDate(Date time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        setTimeToMidnight(calendar);
+        return calendar.getTime();
+    }
+
+    public static boolean sameMonthDay(Date startDate, Date endDate) {
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(startDate);
+        Calendar endCalender = Calendar.getInstance();
+        endCalender.setTime(endDate);
+        if (startCalendar.get(Calendar.DAY_OF_MONTH) == endCalender.get(Calendar.DAY_OF_MONTH)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 计算 fromDate 2023-01-12  toDate 2023-09-15
+     * 2023-01-12--->2023-01-01        --->  2023-09-01    ------> 2023-09-15
+     * fromDate ---> fromDateFirstDate --->  toDateFirstDate ----> toDate
+     *
+     * @param fromDate
+     * @param toDate
+     * @return
+     */
+    public static double dayCompare(Date fromDate, Date toDate) {
+
+
+        //todo 需要计算三端时间 相加即可
+        Date fromDateFirstDate = fromDate; // 第一个1日
+
+        Date toDateFirstDate = toDate; // 最后一个1日
+
+        boolean firstDay = true;
+
+        //todo 1.0 计算 fromDateFirstDate
+        Calendar fromDateCal = Calendar.getInstance();
+        fromDateCal.setTime(fromDate);
+        fromDateCal.set(Calendar.DAY_OF_MONTH, 1);
+        if (fromDate.getTime() > fromDateCal.getTime().getTime()) {
+            fromDateCal.add(Calendar.MONTH, 1);
+            firstDay = false;
+            fromDateFirstDate = fromDateCal.getTime();
+        }
+
+        //todo 2.0 计算 toDateFirstDate
+        Calendar toDateCal = Calendar.getInstance();
+        toDateCal.setTime(toDate);
+        toDateCal.set(Calendar.DAY_OF_MONTH, 1);
+        if (toDate.getTime() > toDateCal.getTime().getTime()) {
+            toDateFirstDate = toDateCal.getTime();
+        }
+
+        // todo 3.0 计算整数月  fromDateFirstDate --->  toDateFirstDate
+        Calendar from = Calendar.getInstance();
+        from.setTime(fromDateFirstDate);
+        Calendar to = Calendar.getInstance();
+        to.setTime(toDateFirstDate);
+        //比较月份差 可能有整数 也会负数
+        int result = to.get(Calendar.MONTH) - from.get(Calendar.MONTH);
+        //比较年差
+        int month = (to.get(Calendar.YEAR) - from.get(Calendar.YEAR)) * 12;
+        //真实 相差月份
+        result = result + month;
+
+        //todo 3.1  如果 fromDate 和toDate 是同一天 则直接返回整月，不再计算 4.0 和5.0
+        if (DateUtil.sameMonthDay(fromDate, toDate)) {
+            return firstDay ? result : result + 1;
+        }
+
+        // todo 4.0 计算 fromDate ---> fromDateFirstDate 的月份
+        double days = (fromDateFirstDate.getTime() - fromDate.getTime()) * 1.00 / (24 * 60 * 60 * 1000);
+        BigDecimal tmpDays = new BigDecimal(days); //相差天数
+        BigDecimal monthDay = new BigDecimal(DateUtil.getMonthDay(fromDate));
+        BigDecimal resMonth = tmpDays.divide(monthDay, 4, BigDecimal.ROUND_HALF_UP).add(new BigDecimal(result));
+
+        // todo 5.0 计算  toDateFirstDate ----> toDate 月份
+        days = (toDate.getTime() - toDateFirstDate.getTime()) * 1.00 / (24 * 60 * 60 * 1000);
+        tmpDays = new BigDecimal(days); //相差天数
+        monthDay = new BigDecimal(DateUtil.getMonthDay(toDate));
+        resMonth = tmpDays.divide(monthDay, 4, BigDecimal.ROUND_HALF_UP).add(resMonth);
+
+        return resMonth.doubleValue();
+
+    }
+
+    public static Date getTargetEndTime(double month, Date startDate) {
+        Calendar endDate = Calendar.getInstance();
+        endDate.setTime(startDate);
+
+        Double intMonth = Math.floor(month);
+        endDate.add(Calendar.MONTH, intMonth.intValue());
+        double doubleMonth = month - intMonth;
+        if (doubleMonth <= 0) {
+            return endDate.getTime();
+        }
+        int futureDay = endDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+        Double hour = doubleMonth * futureDay * 24;
+        endDate.add(Calendar.HOUR_OF_DAY, hour.intValue());
+        return endDate.getTime();
     }
 }

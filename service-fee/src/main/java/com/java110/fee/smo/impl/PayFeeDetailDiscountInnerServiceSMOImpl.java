@@ -4,7 +4,7 @@ package com.java110.fee.smo.impl;
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.intf.fee.IPayFeeDetailDiscountInnerServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.payFeeDetailDiscount.PayFeeDetailDiscountDto;
+import com.java110.dto.payFee.PayFeeDetailDiscountDto;
 import com.java110.dto.user.UserDto;
 import com.java110.fee.dao.IPayFeeDetailDiscountServiceDao;
 import com.java110.utils.util.BeanConvertUtil;
@@ -81,6 +81,13 @@ public class PayFeeDetailDiscountInnerServiceSMOImpl extends BaseServiceSMO impl
     @Override
     public int queryPayFeeDetailDiscountsCount(@RequestBody PayFeeDetailDiscountDto payFeeDetailDiscountDto) {
         return payFeeDetailDiscountServiceDaoImpl.queryPayFeeDetailDiscountsCount(BeanConvertUtil.beanCovertMap(payFeeDetailDiscountDto));
+    }
+
+    @Override
+    public List<PayFeeDetailDiscountDto> computeDiscountFee(@RequestBody PayFeeDetailDiscountDto payFeeDetailDiscountDto) {
+        List<PayFeeDetailDiscountDto> payFeeDetailDiscounts = BeanConvertUtil.covertBeanList(payFeeDetailDiscountServiceDaoImpl.computeDiscountFee(BeanConvertUtil.beanCovertMap(payFeeDetailDiscountDto)), PayFeeDetailDiscountDto.class);
+
+        return payFeeDetailDiscounts;
     }
 
     public IPayFeeDetailDiscountServiceDao getPayFeeDetailDiscountServiceDaoImpl() {

@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="privilegeDAOImpl">
+
     <select id="queryUserDefaultPrivilege" parameterType="map" resultType="map">
-        SELECT a.`p_id` pId,a.`privilege_flag` privilegeFlag,a.`user_id` userId FROM p_privilege_user a WHERE a.`p_id` =
-        #{pId}
-        AND a.`user_id` = #{userId}
-        AND a.`privilege_flag` = '1'
-        AND a.`status_cd` = '0'
+        SELECT a.`p_id` pId, a.`privilege_flag` privilegeFlag, a.`user_id` userId
+        FROM p_privilege_user a
+        WHERE a.`p_id` = #{pId}
+          AND a.`user_id` = #{userId}
+          AND a.`privilege_flag` = '1'
+          AND a.`status_cd` = '0'
     </select>
 
     <!-- 保存属性信息 c_business_attrs -->
     <insert id="saveUserDefaultPrivilege" parameterType="Map">
         <![CDATA[
-            INSERT INTO p_privilege_user(p_id,privilege_flag,user_id,store_id) VALUES(#{pId},'1',#{userId},#{storeId})
+        INSERT INTO p_privilege_user(p_id, privilege_flag, user_id, store_id)
+        VALUES (#{pId}, '1', #{userId}, #{storeId})
         ]]>
     </insert>
 
     <!-- 删除用户所有权限-->
     <update id="deleteUserAllPrivilege" parameterType="Map">
-        UPDATE p_privilege_user a SET a.`status_cd` = '1' WHERE a.`user_id` = #{userId}
+        UPDATE p_privilege_user a
+        SET a.`status_cd` = '1'
+        WHERE a.`user_id` = #{userId}
     </update>
 
     <insert id="savePrivilegeGroup" parameterType="map">
-        INSERT INTO p_privilege_group(pg_id,`name`,description,store_id,domain)
-        VALUES(#{pgId},#{name},#{description},#{storeId},#{storeTypeCd})
+        INSERT INTO p_privilege_group(pg_id, `name`, description, store_id, domain, seq)
+        VALUES (#{pgId}, #{name}, #{description}, #{storeId}, #{storeTypeCd}, #{seq})
     </insert>
-
 
     <update id="updatePrivilegeGroup" parameterType="Map">
         UPDATE p_privilege_group a SET
@@ -45,8 +48,8 @@
         <if test="storeTypeCd != null and storeTypeCd != ''">
             and a.domain= #{storeTypeCd}
         </if>
-
     </update>
+
     <!-- 删除权限组 -->
     <update id="deletePrivilegeGroup" parameterType="Map">
         UPDATE p_privilege_group a SET a.`status_cd` = '1'
@@ -58,7 +61,6 @@
         <if test="storeTypeCd != null and storeTypeCd != ''">
             and a.domain= #{storeTypeCd}
         </if>
-
     </update>
 
     <!-- 删除权限组 -->
@@ -74,20 +76,17 @@
     </update>
 
     <select id="queryPrivilegeRel" parameterType="Map" resultType="Map">
-        SELECT
-        pp.`name`,
-        pp.`domain`,
-        pp.`p_id` pId,
-        pp.`description`,
-        pp.`create_time` createTime
-        FROM
-        p_privilege pp,
-        p_privilege_rel ppr
+        SELECT pp.`name`,
+               pp.`domain`,
+               pp.`p_id`        pId,
+               pp.`description`,
+               pp.`create_time` createTime
+        FROM p_privilege pp,
+             p_privilege_rel ppr
         WHERE ppr.`p_id` = pp.`p_id`
-        AND ppr.`status_cd` = '0'
-        AND pp.`status_cd` = '0'
-        AND ppr.`pg_id` = #{pgId}
-
+          AND ppr.`status_cd` = '0'
+          AND pp.`status_cd` = '0'
+          AND ppr.`pg_id` = #{pgId}
     </select>
 
     <select id="queryPrivilegeGroup" parameterType="Map" resultType="Map">
@@ -104,13 +103,13 @@
             and ppg.domain = #{storeTypeCd}
         </if>
         and ppg.status_cd = '0'
-
     </select>
 
     <insert id="addPrivilegeRel" parameterType="Map">
-        insert into p_privilege_rel(p_id,pg_id)
-        values(#{pId},#{pgId})
+        insert into p_privilege_rel(p_id, pg_id)
+        values (#{pId}, #{pgId})
     </insert>
+
     <!-- 查询权限 -->
     <select id="queryPrivilege" parameterType="Map" resultType="Map">
         SELECT
@@ -125,6 +124,7 @@
         </if>
         AND pp.`status_cd` = '0'
     </select>
+
     <!-- 查询用户权限 -->
     <select id="queryUserPrivilege" parameterType="Map" resultType="Map">
         SELECT
@@ -146,10 +146,12 @@
         </if>
         AND ppu.`status_cd` = '0'
     </select>
+
     <!-- 保存属性信息 c_business_attrs -->
     <insert id="addUserPrivilege" parameterType="Map">
         <![CDATA[
-            INSERT INTO p_privilege_user(p_id,privilege_flag,user_id,store_id) VALUES(#{pId},#{privilegeFlag},#{userId},#{storeId})
+        INSERT INTO p_privilege_user(p_id, privilege_flag, user_id, store_id)
+        VALUES (#{pId}, #{privilegeFlag}, #{userId}, #{storeId})
         ]]>
     </insert>
 
@@ -170,23 +172,33 @@
     </update>
 
     <select id="queryPrivilegeUsers" parameterType="map" resultType="map">
-        select t.user_id userId
+        select distinct t.user_id userId
         from p_privilege_user t
         INNER JOIN p_privilege p on t.p_id = p.p_id and p.status_cd = '0'
         where t.privilege_flag = '0'
         and t.status_cd = '0'
-        and p.resource = #{resource}
-        and t.store_id = #{storeId}
+        <if test="resource != null and resource != ''">
+            and p.resource = #{resource}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            and t.store_id = #{storeId}
+        </if>
         union ALL
-        select t.user_id userId
+        select distinct t.user_id userId
         from p_privilege_user t
         inner join p_privilege_group pg on t.p_id = pg.pg_id and pg.status_cd = '0' and pg.pg_id != '600201904002'
         inner join p_privilege_rel pr on pg.pg_id = pr.pg_id and pr.status_cd ='0'
         INNER JOIN p_privilege p on pr.p_id = p.p_id and p.status_cd = '0'
+        <if test="communityId != null and communityId != ''">
+            LEFT JOIN u_role_community rc on pg.pg_id = rc.role_id and rc.status_cd = '0'
+        </if>
         where t.status_cd = '0'
         and t.privilege_flag = '1'
-        and p.resource = #{resource}
-        and t.store_id = #{storeId}
+        <if test="resource != null and resource != ''">
+            and p.resource = #{resource}
+        </if>
+        <if test="storeId != null and storeId != ''">
+            and t.store_id = #{storeId}
+        </if>
     </select>
-
 </mapper>

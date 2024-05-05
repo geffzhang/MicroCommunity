@@ -3,6 +3,7 @@ package com.java110.db;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.core.client.RestTemplate;
+import com.java110.core.context.Environment;
 import com.java110.core.factory.Java110TransactionalFactory;
 import com.java110.db.dao.IQueryServiceDAO;
 import com.java110.dto.order.OrderItemDto;
@@ -11,16 +12,13 @@ import com.java110.utils.factory.ApplicationContextFactory;
 import com.java110.utils.util.DateUtil;
 import com.java110.utils.util.StringUtil;
 import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.mapping.*;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.http.*;
 
 import java.sql.Timestamp;
@@ -54,7 +52,11 @@ public class Java110MybatisInterceptor implements Interceptor {
         Map<String, Object> sqlValue = new HashMap<>();
         //获取sql语句
         String sql = showSql(configuration, boundSql, sqlValue, sqlCommandType);
-        restTemplate = ApplicationContextFactory.getBean("restTemplate", RestTemplate.class);
+        if(Environment.isStartBootWay()){
+            restTemplate = ApplicationContextFactory.getBean("outRestTemplate", RestTemplate.class);
+        }else {
+            restTemplate = ApplicationContextFactory.getBean("restTemplate", RestTemplate.class);
+        }
         switch (sqlCommandType) {
             case INSERT:
                 dealInsertSql(mappedStatement, parameter, sql, sqlValue);
@@ -77,12 +79,16 @@ public class Java110MybatisInterceptor implements Interceptor {
      */
     private void dealDeleteSql(MappedStatement mappedStatement, Object parameter, String sql, Map<String, Object> sqlValue) {
 
-        String tmpTable = sql.substring(sql.indexOf("into") + 4, sql.indexOf("("));
+        String tmpTable = sql.substring(sql.indexOf("from") + 4, sql.indexOf("where")).trim();
+        String tmpTableHasT = tmpTable;
+        if(tmpTable.indexOf(" ") > 0){
+            tmpTable = tmpTable.substring(0,tmpTable.indexOf(" "));
+        }
         String tmpWhere = sql.substring(sql.indexOf("where"));
         //插入操作时之前的 没有数据 所以 preValue 为空对象
         JSONArray preValues = new JSONArray();
 
-        String execSql = "select * from " + tmpTable + " " + tmpWhere;
+        String execSql = "select * from " + tmpTableHasT + " " + tmpWhere;
 
         queryServiceDAOImpl = ApplicationContextFactory.getBean("queryServiceDAOImpl", IQueryServiceDAO.class);
         List<Map<String, Object>> deleteDatas = queryServiceDAOImpl.executeSql(execSql, null);
@@ -111,6 +117,9 @@ public class Java110MybatisInterceptor implements Interceptor {
         String url = ServiceConstant.SERVICE_ORDER_URL + "/order/oIdApi/createOrderItem";
         HttpHeaders httpHeaders = new HttpHeaders();
         HttpEntity httpEntity = new HttpEntity(orderItemDto.toString(), httpHeaders);
+        if(Environment.isStartBootWay()){
+            url = ServiceConstant.BOOT_SERVICE_ORDER_URL + "/order/oIdApi/createOrderItem";
+        }
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
@@ -127,14 +136,20 @@ public class Java110MybatisInterceptor implements Interceptor {
     private void dealUpdateSql(MappedStatement mappedStatement, Object parameter, String sql, Map<String, Object> sqlValue) {
         //RestTemplate restTemplate = ApplicationContextFactory.getBean("restTemplate", RestTemplate.class);
 
-        String tmpTable = sql.substring(sql.indexOf("update") + 6, sql.indexOf("set"));
+        String tmpTable = sql.substring(sql.indexOf("update") + 6, sql.indexOf("set ")).trim();
+
+        String tmpTableHasT = tmpTable;
+
+        if(tmpTable.indexOf(" ") > 0){
+            tmpTable = tmpTable.substring(0,tmpTable.indexOf(" "));
+        }
         String tmpWhere = sql.substring(sql.indexOf("where"));
 
         //插入操作时之前的 没有数据 所以 preValue 为空对象
         JSONArray preValues = new JSONArray();
         JSONArray afterValues = new JSONArray();
         JSONObject afterVaule = null;
-        String execSql = "select * from " + tmpTable + " " + tmpWhere;
+        String execSql = "select * from " + tmpTableHasT + " " + tmpWhere;
         queryServiceDAOImpl = ApplicationContextFactory.getBean("queryServiceDAOImpl", IQueryServiceDAO.class);
         List<Map<String, Object>> deleteDatas = queryServiceDAOImpl.executeSql(execSql, null);
 
@@ -164,7 +179,11 @@ public class Java110MybatisInterceptor implements Interceptor {
         String url = ServiceConstant.SERVICE_ORDER_URL + "/order/oIdApi/createOrderItem";
         HttpHeaders httpHeaders = new HttpHeaders();
         HttpEntity httpEntity = new HttpEntity(orderItemDto.toString(), httpHeaders);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+        ResponseEntity<String> responseEntity = null;
+        if(Environment.isStartBootWay()){
+            url = ServiceConstant.BOOT_SERVICE_ORDER_URL + "/order/oIdApi/createOrderItem";
+        }
+        responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new IllegalArgumentException("注册事务回滚日志失败" + responseEntity);
@@ -210,40 +229,11 @@ public class Java110MybatisInterceptor implements Interceptor {
 
         JSONArray afterValues = new JSONArray();
 
-        String tmpTable = sql.substring(sql.toLowerCase().indexOf("into") + 4, sql.indexOf("("));
-//        String tmpKey = sql.substring(sql.indexOf("(") + 1, sql.indexOf(")"));
-//        String[] tmpKeys = tmpKey.split(",");
-//        int valuePos = 0;
-//        if (sql.contains("VALUES")) {
-//            valuePos = sql.indexOf("VALUES") + 6;
-//        } else {
-//            valuePos = sql.indexOf("values") + 6;
-//        }
-//        String sqlValues = sql.substring(valuePos);
-//        //说明批操作
-//
-//        String[] sqlVauleses = sqlValues.split("\\)");
-//        JSONObject afterValue = null;
-//        for (String sqlV : sqlVauleses) {
-//            String tmpValue = sqlV.substring(sqlV.lastIndexOf("(") + 1);
-//            String[] tmpValues = tmpValue.split(",");
-//            afterValue = new JSONObject();
-//
-//            if (tmpKeys.length != tmpValues.length) {
-//                throw new IllegalArgumentException("sql 错误 key 和value 个数不等" + sql);
-//            }
-//
-//            if (tmpKeys.length < 1) {
-//                throw new IllegalArgumentException("sql 错误 未找到key" + sql);
-//            }
-//            for (int keyIndex = 0; keyIndex < tmpKeys.length; keyIndex++) {
-//                if ("''".equals(tmpValues[keyIndex])) {
-//                    continue;
-//                }
-//                afterValue.put(tmpKeys[keyIndex], tmpValues[keyIndex]);
-//            }
-//
-//        }
+        String tmpTable = sql.substring(sql.toLowerCase().indexOf("into") + 4, sql.indexOf("(")).trim();
+
+        if(tmpTable.indexOf(" ") > 0){
+            tmpTable = tmpTable.substring(0,tmpTable.indexOf(" "));
+        }
 
         afterValues.add(sqlValue);
 
@@ -262,6 +252,9 @@ public class Java110MybatisInterceptor implements Interceptor {
         String url = ServiceConstant.SERVICE_ORDER_URL + "/order/oIdApi/createOrderItem";
         HttpHeaders httpHeaders = new HttpHeaders();
         HttpEntity httpEntity = new HttpEntity(orderItemDto.toString(), httpHeaders);
+        if(Environment.isStartBootWay()){
+            url = ServiceConstant.BOOT_SERVICE_ORDER_URL + "/order/oIdApi/createOrderItem";
+        }
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
@@ -269,6 +262,7 @@ public class Java110MybatisInterceptor implements Interceptor {
         }
 
     }
+
 
     @Override
     public Object plugin(Object target) {
@@ -300,7 +294,11 @@ public class Java110MybatisInterceptor implements Interceptor {
                     String propertyName = parameterMapping.getProperty();
                     if (metaObject.hasGetter(propertyName)) {
                         Object obj = metaObject.getValue(propertyName);
-                        sql = sql.replaceFirst("\\?", getParameterValue(obj));
+                        String value = getParameterValue(obj);
+                        if(value.contains("${")){
+                            value = value.replace("${","\\${");
+                        }
+                        sql = sql.replaceFirst("\\?", value);
                         values.add(getParameterValue(obj));
                     } else if (boundSql.hasAdditionalParameter(propertyName)) {
                         Object obj = boundSql.getAdditionalParameter(propertyName);
@@ -316,7 +314,7 @@ public class Java110MybatisInterceptor implements Interceptor {
             String[] tmpKeys = tmpKey.split(",");
 
 //            if (values.size() < tmpKeys.length) {
-//                throw new IllegalArgumentException("sql 错误 key 和value 个数不等" + sql);
+//                throw new IllegalArgumentException("sql 错误 key P和value 个数不等" + sql);
 //            }
             for (int keyIndex = 0; keyIndex < tmpKeys.length; keyIndex++) {
                 String key = tmpKeys[keyIndex].trim();
@@ -367,6 +365,7 @@ public class Java110MybatisInterceptor implements Interceptor {
         return sql;
     }
 
+
     private String getParameterValue(Object obj) {
         String value = null;
         if (obj instanceof String) {
@@ -387,14 +386,5 @@ public class Java110MybatisInterceptor implements Interceptor {
     }
 
 
-    public static void main(String[] args) {
-        String tmpKey = " prime_rate,detail_id,receivable_amount,cycles,remark,status_cd,received_amount,community_id,b_id,fee_id,state";
-        String tmpValue = "'1.00','912020080411040001','1500.0','1.0',,'0','1500.0','7020181217000001','-1',,";
-        String[] tmpKeys = tmpKey.split(",");
-        String[] tmpValues = tmpValue.split(",");
 
-        if (tmpKeys.length != tmpValues.length) {
-            throw new IllegalArgumentException("sql 错误 key 和value 个数不等");
-        }
-    }
 }

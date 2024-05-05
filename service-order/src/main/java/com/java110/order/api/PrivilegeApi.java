@@ -5,7 +5,7 @@ import com.java110.order.smo.IPrivilegeSMO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +43,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
-
+        return responseEntity;
     }
 
     @RequestMapping(path = "/deleteUserAllPrivilege",method= RequestMethod.POST)
@@ -61,8 +60,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
 
@@ -79,8 +78,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
     @RequestMapping(path = "/editPrivilegeGroup",method= RequestMethod.POST)
@@ -96,8 +95,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
     @RequestMapping(path = "/deletePrivilegeGroup",method= RequestMethod.POST)
@@ -113,8 +112,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
     @RequestMapping(path = "/addPrivilegeToPrivilegeGroup",method= RequestMethod.POST)
@@ -130,8 +129,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
 
@@ -148,8 +147,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
 
@@ -166,8 +165,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
 
@@ -184,8 +183,8 @@ public class PrivilegeApi extends BaseController {
             responseEntity =  new ResponseEntity<String>("请求中心服务发生异常，"+e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }finally {
             logger.debug("订单服务返回报文为: {}",responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
 

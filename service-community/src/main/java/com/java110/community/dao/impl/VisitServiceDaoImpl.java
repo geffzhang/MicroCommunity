@@ -7,7 +7,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.community.dao.IVisitServiceDao;
 import com.java110.core.base.dao.BaseServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -34,7 +34,6 @@ public class VisitServiceDaoImpl extends BaseServiceDao implements IVisitService
         businessVisitInfo.put("month", DateUtil.getCurrentMonth());
         // 查询business_user 数据是否已经存在
         logger.debug("保存访客信息信息 入参 businessVisitInfo : {}",businessVisitInfo);
-        businessVisitInfo.put("visitTime",new Date());
         int saveFlag = sqlSessionTemplate.insert("visitServiceDaoImpl.saveBusinessVisitInfo",businessVisitInfo);
 
         if(saveFlag < 1){

@@ -3,7 +3,7 @@ package com.java110.dto.parking;
 import com.java110.dto.PageDto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -21,6 +21,7 @@ public class ParkingAreaDto extends PageDto implements Serializable {
     private String[] paIds;
     private String remark;
     private String communityId;
+    private List<ParkingAreaAttrDto> attrs;
 
 
     private String createTime;
@@ -90,5 +91,13 @@ public class ParkingAreaDto extends PageDto implements Serializable {
 
     public void setPaIds(String[] paIds) {
         this.paIds = paIds;
+    }
+
+    public List<ParkingAreaAttrDto> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(List<ParkingAreaAttrDto> attrs) {
+        this.attrs = attrs;
     }
 }

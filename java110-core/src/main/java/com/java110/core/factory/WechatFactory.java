@@ -3,14 +3,15 @@ package com.java110.core.factory;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.core.annotation.Java110Synchronized;
 import com.java110.utils.cache.JWTCache;
+import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.WechatConstant;
 import com.java110.utils.factory.ApplicationContextFactory;
 import com.java110.utils.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.client.RestTemplate;
-import sun.misc.BASE64Decoder;
 
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import com.java110.core.log.LoggerFactory;
+import org.springframework.web.client.RestTemplate;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -67,7 +68,11 @@ public class WechatFactory {
      * @return
      */
     private static String refreshAccessToken(String appId, String appSecure) {
-        String url = WechatConstant.GET_ACCESS_TOKEN.replace("APPID", appId)
+        String getAccessToken = MappingCache.getRemark(WechatConstant.WECHAT_DOMAIN,WechatConstant.GET_ACCESS_TOKEN_URL);
+        if(StringUtil.isEmpty(getAccessToken)){
+            getAccessToken = WechatConstant.GET_ACCESS_TOKEN;
+        }
+        String url = getAccessToken.replace("APPID", appId)
                 .replace("SECRET", appSecure);
         RestTemplate outRestTemplate = ApplicationContextFactory.getBean("outRestTemplate", RestTemplate.class);
         String response = outRestTemplate.getForObject(url, String.class);
@@ -117,13 +122,13 @@ public class WechatFactory {
 
     public static String decryptS5(String sSrc, String encodingFormat, String sKey, String ivParameter) {
         try {
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] raw = decoder.decodeBuffer(sKey);
+        	Base64 base64 = new Base64();
+            byte[] raw = base64.decode(sKey);
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
-            IvParameterSpec iv = new IvParameterSpec(decoder.decodeBuffer(ivParameter));
+            IvParameterSpec iv = new IvParameterSpec(base64.decode(ivParameter));
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-            byte[] myendicod = decoder.decodeBuffer(sSrc);
+            byte[] myendicod = base64.decode(sSrc);
             byte[] original = cipher.doFinal(myendicod);
             String originalString = new String(original, encodingFormat);
             return originalString;

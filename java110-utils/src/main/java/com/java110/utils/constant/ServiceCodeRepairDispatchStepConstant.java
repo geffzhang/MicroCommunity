@@ -16,6 +16,15 @@ public class ServiceCodeRepairDispatchStepConstant {
      */
     public static final String BINDING_REPAIR_DISPATCH = "ownerRepair.repairDispatch";
 
+    /**
+     * 暂停报修单
+     */
+    public static final String BINDING_REPAIR_STOP = "ownerRepair.repairStop";
+
+    /**
+     * 启动报修单
+     */
+    public static final String BINDING_REPAIR_START = "ownerRepair.repairStart";
 
     /**
      * 报修结单
@@ -28,6 +37,11 @@ public class ServiceCodeRepairDispatchStepConstant {
      */
     public static final String BINDING_REPAIR_FINISH = "ownerRepair.repairFinish";
 
+
+    /**
+     * 强制回单
+     */
+    public static final String BINDING_REPAIR_FORCE_FINISH = "ownerRepair.repairForceFinish";
     /**
      * 抢单
      */
@@ -37,7 +51,5 @@ public class ServiceCodeRepairDispatchStepConstant {
      * 评价
      */
     public static final String BINDING_APPRAISE_REPAIR = "ownerRepair.appraiseRepair";
-
-
 
 }

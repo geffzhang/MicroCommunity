@@ -7,11 +7,11 @@ import com.java110.intf.common.IWorkflowInnerServiceSMO;
 import com.java110.intf.store.IComplaintInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.auditMessage.AuditMessageDto;
+import com.java110.dto.audit.AuditMessageDto;
 import com.java110.dto.complaint.ComplaintDto;
 import com.java110.dto.user.UserDto;
-import com.java110.dto.workflow.WorkflowDto;
-import com.java110.entity.audit.AuditUser;
+import com.java110.dto.oaWorkflow.WorkflowDto;
+import com.java110.dto.audit.AuditUser;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.StringUtil;
 import org.activiti.engine.HistoryService;
@@ -27,6 +27,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +42,9 @@ import java.util.Map;
 @RestController
 public class ComplaintUserInnerServiceSMOImpl extends BaseServiceSMO implements IComplaintUserInnerServiceSMO {
 
+
+    private final static Logger logger = LoggerFactory.getLogger(ComplaintUserInnerServiceSMOImpl.class);
+
     @Autowired
     private ProcessEngine processEngine;
 
@@ -48,6 +53,9 @@ public class ComplaintUserInnerServiceSMOImpl extends BaseServiceSMO implements 
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private HistoryService historyService;
 
     @Autowired
     private IComplaintInnerServiceSMO complaintInnerServiceSMOImpl;
@@ -69,8 +77,13 @@ public class ComplaintUserInnerServiceSMOImpl extends BaseServiceSMO implements 
         Map<String, Object> variables = new HashMap<String, Object>();
         //variables.put("complaintDto", complaintDto);
         variables.put("startUserId", complaintDto.getCurrentUserId());
+        String key = getWorkflowDto(complaintDto.getCommunityId());
 
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(getWorkflowDto(complaintDto.getCommunityId()), complaintDto.getComplaintId(), variables);
+        if(StringUtil.isEmpty(key)){
+            return null;
+        }
+
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(key, complaintDto.getComplaintId(), variables);
         //将得到的实例流程id值赋给之前设置的变量
         String processInstanceId = processInstance.getId();
         // System.out.println("流程开启成功.......实例流程id:" + processInstanceId);
@@ -89,11 +102,13 @@ public class ComplaintUserInnerServiceSMOImpl extends BaseServiceSMO implements 
         workflowDto.setCommunityId(communityId);
         List<WorkflowDto> workflowDtos = workflowInnerServiceSMOImpl.queryWorkflows(workflowDto);
 
-        Assert.listOnlyOne(workflowDtos, "未找到 投诉建议流程或找到多条");
+        if(workflowDtos == null || workflowDtos.size() < 1){
+            return "";
+        }
 
         WorkflowDto tmpWorkflowDto = workflowDtos.get(0);
         if (StringUtil.isEmpty(tmpWorkflowDto.getProcessDefinitionKey())) {
-            throw new IllegalArgumentException("流程还未部署");
+            return "";
         }
         return WorkflowDto.DEFAULT_PROCESS + tmpWorkflowDto.getFlowId();
     }
@@ -297,6 +312,27 @@ public class ComplaintUserInnerServiceSMOImpl extends BaseServiceSMO implements 
 
         return auditMessageDtos;
     }
+
+    /**
+     * 删除指定任务
+     */
+    public boolean deleteTask(@RequestBody ComplaintDto complaintDto){
+        String taskId = complaintDto.getTaskId();
+
+        Task task = taskService.createTaskQuery().taskId(complaintDto.getTaskId()).singleResult();
+        String processInstanceId = task.getProcessInstanceId();
+        ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .singleResult();
+        logger.info("删除id为：{}，投诉建议任务");
+        if (null != pi) {
+            //该流程实例未结束的
+            runtimeService.deleteProcessInstance(processInstanceId, "删除任务");
+        }
+        historyService.deleteHistoricProcessInstance(processInstanceId);
+        return true;
+    }
+
 
     /**
      * 获取任务当前处理人

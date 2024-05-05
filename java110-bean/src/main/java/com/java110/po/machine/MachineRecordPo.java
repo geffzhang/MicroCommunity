@@ -23,6 +23,13 @@ public class MachineRecordPo implements Serializable {
     private String fileId;
     private String fileTime;
 
+    private String applyOrderId;
+    private String purchaseUserId;
+    private String resOrderType;
+    private String noticeState;
+    private String auditMessage;
+    private String similar;
+    private String statusCd;
 
     public String getMachineRecordId() {
         return machineRecordId;
@@ -110,5 +117,61 @@ public class MachineRecordPo implements Serializable {
 
     public void setFileTime(String fileTime) {
         this.fileTime = fileTime;
+    }
+
+    public String getApplyOrderId() {
+        return applyOrderId;
+    }
+
+    public void setApplyOrderId(String applyOrderId) {
+        this.applyOrderId = applyOrderId;
+    }
+
+    public String getPurchaseUserId() {
+        return purchaseUserId;
+    }
+
+    public void setPurchaseUserId(String purchaseUserId) {
+        this.purchaseUserId = purchaseUserId;
+    }
+
+    public String getResOrderType() {
+        return resOrderType;
+    }
+
+    public void setResOrderType(String resOrderType) {
+        this.resOrderType = resOrderType;
+    }
+
+    public String getNoticeState() {
+        return noticeState;
+    }
+
+    public void setNoticeState(String noticeState) {
+        this.noticeState = noticeState;
+    }
+
+    public String getAuditMessage() {
+        return auditMessage;
+    }
+
+    public void setAuditMessage(String auditMessage) {
+        this.auditMessage = auditMessage;
+    }
+
+    public String getSimilar() {
+        return similar;
+    }
+
+    public void setSimilar(String similar) {
+        this.similar = similar;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
     }
 }

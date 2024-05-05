@@ -1,7 +1,7 @@
 package com.java110.store.dao;
 
 
-import com.java110.dto.purchaseApply.PurchaseApplyDto;
+import com.java110.dto.purchase.PurchaseApplyDto;
 import com.java110.po.purchase.PurchaseApplyDetailPo;
 import com.java110.utils.exception.DAOException;
 import com.java110.vo.api.purchaseApply.PurchaseApplyDetailVo;
@@ -99,5 +99,23 @@ public interface IPurchaseApplyServiceDao {
      * @throws DAOException 操作数据库异常
      */
     int savePurchaseApply(Map businessPurchaseApplyInfo) throws DAOException;
+
+    /**
+     * 获取下级处理人id
+     */
+    List<Map> getActRuTaskUserId(Map info);
+
+    /**
+     * 获取流程任务id
+     */
+    List<Map> getActRuTaskId(Map info);
+
+    /**
+     * 修改流程任务信息
+     *
+     * @param info 修改信息
+     * @throws DAOException DAO异常
+     */
+    void updateActRuTaskById(Map info) throws DAOException;
 
 }

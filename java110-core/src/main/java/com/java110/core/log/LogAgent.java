@@ -26,13 +26,15 @@ public class LogAgent extends LoggerEngine{
     public static final String LOG_STATUS_F = "F";
 
 
+
+
     /**
      * 发送日志
      * @param transactionLog
      * @return
      */
     public static boolean sendLog(TransactionLog transactionLog){
-        if(MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_LOG_ON_OFF))) {
+        if(MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_LOG_ON_OFF))) {
             try {
                 KafkaFactory.sendKafkaMessage(KafkaConstant.TOPIC_LOG_NAME, "", transactionLog.toString());
             }catch (Exception e){
@@ -135,5 +137,6 @@ public class LogAgent extends LoggerEngine{
         message.put("body",dataInfo);
         return message;
     }
+
 
 }

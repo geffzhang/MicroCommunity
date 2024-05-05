@@ -1,12 +1,12 @@
 package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.feeFormula.FeeFormulaDto;
+import com.java110.dto.fee.FeeFormulaDto;
 import com.java110.fee.bmo.feeFormula.IDeleteFeeFormulaBMO;
 import com.java110.fee.bmo.feeFormula.IGetFeeFormulaBMO;
 import com.java110.fee.bmo.feeFormula.ISaveFeeFormulaBMO;
 import com.java110.fee.bmo.feeFormula.IUpdateFeeFormulaBMO;
-import com.java110.po.feeFormula.FeeFormulaPo;
+import com.java110.po.fee.FeeFormulaPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;

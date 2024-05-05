@@ -17,15 +17,17 @@ package com.java110.job.adapt.hcIot.owner;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.file.FileDto;
 import com.java110.dto.file.FileRelDto;
 import com.java110.dto.machine.MachineDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.owner.OwnerDto;
+import com.java110.dto.system.Business;
 import com.java110.intf.common.IFileInnerServiceSMO;
 import com.java110.intf.common.IFileRelInnerServiceSMO;
 import com.java110.intf.common.IMachineInnerServiceSMO;
 import com.java110.intf.community.IRoomInnerServiceSMO;
+import com.java110.intf.user.IOwnerInnerServiceSMO;
 import com.java110.job.adapt.DatabusAdaptImpl;
 import com.java110.job.adapt.hcIot.asyn.IIotSendAsyn;
 import com.java110.po.owner.OwnerPo;
@@ -57,10 +59,15 @@ public class AddOwnerToIotAdapt extends DatabusAdaptImpl {
     private IRoomInnerServiceSMO roomInnerServiceSMOImpl;
 
     @Autowired
+    private IOwnerInnerServiceSMO ownerInnerServiceSMOImpl;
+
+    @Autowired
     private IFileRelInnerServiceSMO fileRelInnerServiceSMOImpl;
 
     @Autowired
     private IFileInnerServiceSMO fileInnerServiceSMOImpl;
+
+
 
     /**
      * accessToken={access_token}
@@ -77,21 +84,24 @@ public class AddOwnerToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray businessMachines = new JSONArray();
         if (data.containsKey(OwnerPo.class.getSimpleName())) {
             Object bObj = data.get(OwnerPo.class.getSimpleName());
-            JSONArray businessMachines = null;
             if (bObj instanceof JSONObject) {
-                businessMachines = new JSONArray();
                 businessMachines.add(bObj);
             } else if (bObj instanceof List) {
                 businessMachines = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessMachines = (JSONArray) bObj;
             }
-            for (int bOwnerIndex = 0; bOwnerIndex < businessMachines.size(); bOwnerIndex++) {
-                JSONObject businessOwner = businessMachines.getJSONObject(bOwnerIndex);
-                doSendMachine(business, businessOwner);
+        }else {
+            if (data instanceof JSONObject) {
+                businessMachines.add(data);
             }
+        }
+        for (int bOwnerIndex = 0; bOwnerIndex < businessMachines.size(); bOwnerIndex++) {
+            JSONObject businessOwner = businessMachines.getJSONObject(bOwnerIndex);
+            doSendMachine(business, businessOwner);
         }
     }
 
@@ -114,6 +124,12 @@ public class AddOwnerToIotAdapt extends DatabusAdaptImpl {
         if (fileDtos == null || fileDtos.size() != 1) {
             return;
         }
+        OwnerDto ownerDto = new OwnerDto();
+        ownerDto.setMemberId(ownerPo.getMemberId());
+        ownerDto.setCommunityId(ownerPo.getCommunityId());
+        List<OwnerDto> ownerDtos = ownerInnerServiceSMOImpl.queryOwnerMembers(ownerDto);
+
+        Assert.listOnlyOne(ownerDtos,"业主不存在");
 
         RoomDto roomDto = new RoomDto();
         roomDto.setOwnerId(ownerPo.getOwnerId());
@@ -131,6 +147,7 @@ public class AddOwnerToIotAdapt extends DatabusAdaptImpl {
         for (RoomDto tRoomDto : rooms) {
             locationObjIds.add(tRoomDto.getUnitId());
             locationObjIds.add(tRoomDto.getRoomId());
+            locationObjIds.add(tRoomDto.getFloorId());
         }
 
         machineDto.setLocationObjIds(locationObjIds.toArray(new String[locationObjIds.size()]));
@@ -148,9 +165,11 @@ public class AddOwnerToIotAdapt extends DatabusAdaptImpl {
             postParameters.put("endTime", DateUtil.LAST_TIME);
             postParameters.put("name", ownerPo.getName());
             postParameters.put("idNumber", ownerPo.getIdCard());
+            postParameters.put("link",ownerPo.getLink());
             postParameters.put("machineCode", tmpMachineDto.getMachineCode());
             postParameters.put("extMachineId", tmpMachineDto.getMachineId());
             postParameters.put("extCommunityId", tmpMachineDto.getCommunityId());
+            postParameters.put("attrs",ownerDtos.get(0).getOwnerAttrDtos());
             hcMachineAsynImpl.addOwner(postParameters);
         }
 

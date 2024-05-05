@@ -1,9 +1,11 @@
 package com.java110.dto.fee;
 
 import com.java110.dto.PageDto;
+import com.java110.dto.payFee.PayFeeDetailDiscountDto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -15,16 +17,40 @@ import java.util.Date;
  **/
 public class FeeDetailDto extends PageDto implements Serializable {
 
+
+    public static final String PRIME_REATE_WECHAT_QRCODE = "3";
+    public static final String PRIME_REATE_ALI_QRCODE = "4";
+    public static final String PRIME_REATE_WECHAT = "5";
+    public static final String PRIME_REATE_CRASH = "1";
+    public static final String PRIME_REATE_WECHAT_APP = "6";
+    public static final String STATE_RETURNING = "1000";
+    public static final String STATE_RETURNED = "1100";
+    public static final String STATE_RETURN_ERROR = "1200";
+    public static final String STATE_RETURN_ORDER = "1300";
+    public static final String STATE_NORMAL = "1400";
+    public static final String STATE_OWE = "1500"; // 欠费
+    /**
+     * 1000	退费中
+     * 1100	已退费
+     * 1200	退费失败
+     * 1300	退费单
+     * 1400	正常
+     */
+
     private String primeRate;
     private String detailId;
+    private String[] detailIds;
     private String receivableAmount;
     private String cycles;
     private String remark;
     private String receivedAmount;
+    private String payableAmount;
     private String communityId;
     private String feeId;
     private String bId;
-
+    private String payerObjId;
+    private String payerObjName;
+    private String payerObjType;
 
     private Date createTime;
     private Date startTime;
@@ -33,7 +59,39 @@ public class FeeDetailDto extends PageDto implements Serializable {
     private String statusCd = "0";
     private String state;
     private String stateName;
+    private String curYear;
+    private String configId;
+    private String feeName;
+    private String importFeeName;
+    private String ownerId;
+    private String curDegrees;
+    private String preDegrees;
 
+    private Date preReadingTime;
+    private Date curReadingTime;
+    private String ardId;
+    private String[] states;
+
+    private String payOrderId;
+
+    private String cashierId;
+    private String cashierName;
+
+    private String openInvoice; // todo 默认 未开票
+
+
+    private List<FeeAccountDetailDto> feeAccountDetailDtoList;
+    private List<PayFeeDetailDiscountDto> payFeeDetailDiscountDtoList;
+
+    private String fadState;
+    private String fadStateName;
+    private String amount;
+
+    private String primeRateName;
+
+    private String feeFlag;
+
+    private String receiptCode;
 
     public String getPrimeRate() {
         return primeRate;
@@ -99,7 +157,6 @@ public class FeeDetailDto extends PageDto implements Serializable {
         this.feeId = feeId;
     }
 
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -154,5 +211,229 @@ public class FeeDetailDto extends PageDto implements Serializable {
 
     public void setbId(String bId) {
         this.bId = bId;
+    }
+
+    public String getPayerObjId() {
+        return payerObjId;
+    }
+
+    public void setPayerObjId(String payerObjId) {
+        this.payerObjId = payerObjId;
+    }
+
+    public String getPayerObjType() {
+        return payerObjType;
+    }
+
+    public void setPayerObjType(String payerObjType) {
+        this.payerObjType = payerObjType;
+    }
+
+    public String getCurYear() {
+        return curYear;
+    }
+
+    public void setCurYear(String curYear) {
+        this.curYear = curYear;
+    }
+
+    public String getConfigId() {
+        return configId;
+    }
+
+    public void setConfigId(String configId) {
+        this.configId = configId;
+    }
+
+    public String getFeeName() {
+        return feeName;
+    }
+
+    public void setFeeName(String feeName) {
+        this.feeName = feeName;
+    }
+
+    public String getImportFeeName() {
+        return importFeeName;
+    }
+
+    public void setImportFeeName(String importFeeName) {
+        this.importFeeName = importFeeName;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getCurDegrees() {
+        return curDegrees;
+    }
+
+    public void setCurDegrees(String curDegrees) {
+        this.curDegrees = curDegrees;
+    }
+
+    public String getPreDegrees() {
+        return preDegrees;
+    }
+
+    public void setPreDegrees(String preDegrees) {
+        this.preDegrees = preDegrees;
+    }
+
+    public Date getPreReadingTime() {
+        return preReadingTime;
+    }
+
+    public void setPreReadingTime(Date preReadingTime) {
+        this.preReadingTime = preReadingTime;
+    }
+
+    public Date getCurReadingTime() {
+        return curReadingTime;
+    }
+
+    public void setCurReadingTime(Date curReadingTime) {
+        this.curReadingTime = curReadingTime;
+    }
+
+    public String getArdId() {
+        return ardId;
+    }
+
+    public void setArdId(String ardId) {
+        this.ardId = ardId;
+    }
+
+    public String[] getStates() {
+        return states;
+    }
+
+    public void setStates(String[] states) {
+        this.states = states;
+    }
+
+    public String getFadState() {
+        return fadState;
+    }
+
+    public void setFadState(String fadState) {
+        this.fadState = fadState;
+    }
+
+    public String getFadStateName() {
+        return fadStateName;
+    }
+
+    public void setFadStateName(String fadStateName) {
+        this.fadStateName = fadStateName;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public List<FeeAccountDetailDto> getFeeAccountDetailDtoList() {
+        return feeAccountDetailDtoList;
+    }
+
+    public void setFeeAccountDetailDtoList(List<FeeAccountDetailDto> feeAccountDetailDtoList) {
+        this.feeAccountDetailDtoList = feeAccountDetailDtoList;
+    }
+
+    public List<PayFeeDetailDiscountDto> getPayFeeDetailDiscountDtoList() {
+        return payFeeDetailDiscountDtoList;
+    }
+
+    public void setPayFeeDetailDiscountDtoList(List<PayFeeDetailDiscountDto> payFeeDetailDiscountDtoList) {
+        this.payFeeDetailDiscountDtoList = payFeeDetailDiscountDtoList;
+    }
+
+    public String getPayableAmount() {
+        return payableAmount;
+    }
+
+    public void setPayableAmount(String payableAmount) {
+        this.payableAmount = payableAmount;
+    }
+
+    public String getPayOrderId() {
+        return payOrderId;
+    }
+
+    public void setPayOrderId(String payOrderId) {
+        this.payOrderId = payOrderId;
+    }
+
+    public String getPrimeRateName() {
+        return primeRateName;
+    }
+
+    public void setPrimeRateName(String primeRateName) {
+        this.primeRateName = primeRateName;
+    }
+
+    public String getPayerObjName() {
+        return payerObjName;
+    }
+
+    public void setPayerObjName(String payerObjName) {
+        this.payerObjName = payerObjName;
+    }
+
+    public String getCashierId() {
+        return cashierId;
+    }
+
+    public void setCashierId(String cashierId) {
+        this.cashierId = cashierId;
+    }
+
+    public String getCashierName() {
+        return cashierName;
+    }
+
+    public void setCashierName(String cashierName) {
+        this.cashierName = cashierName;
+    }
+
+    public String getFeeFlag() {
+        return feeFlag;
+    }
+
+    public void setFeeFlag(String feeFlag) {
+        this.feeFlag = feeFlag;
+    }
+
+    public String getReceiptCode() {
+        return receiptCode;
+    }
+
+    public void setReceiptCode(String receiptCode) {
+        this.receiptCode = receiptCode;
+    }
+
+    public String[] getDetailIds() {
+        return detailIds;
+    }
+
+    public void setDetailIds(String[] detailIds) {
+        this.detailIds = detailIds;
+    }
+
+    public String getOpenInvoice() {
+        return openInvoice;
+    }
+
+    public void setOpenInvoice(String openInvoice) {
+        this.openInvoice = openInvoice;
     }
 }

@@ -18,13 +18,16 @@ package com.java110.job.adapt.hcIot.car;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.dto.owner.OwnerCarDto;
+import com.java110.dto.owner.OwnerCarAttrDto;
 import com.java110.dto.parking.ParkingSpaceDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.Business;
 import com.java110.intf.community.IParkingSpaceInnerServiceSMO;
+import com.java110.intf.user.IOwnerCarAttrInnerServiceSMO;
 import com.java110.intf.user.IOwnerCarInnerServiceSMO;
 import com.java110.job.adapt.DatabusAdaptImpl;
 import com.java110.job.adapt.hcIot.asyn.IIotSendAsyn;
 import com.java110.po.car.OwnerCarPo;
+import com.java110.utils.constant.StatusConstant;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
@@ -50,6 +53,9 @@ public class ModifyCarToIotAdapt extends DatabusAdaptImpl {
     private IOwnerCarInnerServiceSMO ownerCarInnerServiceSMOImpl;
 
     @Autowired
+    private IOwnerCarAttrInnerServiceSMO ownerCarAttrInnerServiceSMOImpl;
+
+    @Autowired
     private IParkingSpaceInnerServiceSMO parkingSpaceInnerServiceSMOImpl;
 
 
@@ -68,22 +74,27 @@ public class ModifyCarToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray businessOwnerCars = new JSONArray();
         if (data.containsKey(OwnerCarPo.class.getSimpleName())) {
             Object bObj = data.get(OwnerCarPo.class.getSimpleName());
-            JSONArray businessOwnerCars = null;
             if (bObj instanceof JSONObject) {
-                businessOwnerCars = new JSONArray();
                 businessOwnerCars.add(bObj);
             } else if (bObj instanceof List) {
                 businessOwnerCars = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessOwnerCars = (JSONArray) bObj;
             }
-            //JSONObject businessOwnerCar = data.getJSONObject("businessOwnerCar");
-            for (int bOwnerCarIndex = 0; bOwnerCarIndex < businessOwnerCars.size(); bOwnerCarIndex++) {
-                JSONObject businessOwnerCar = businessOwnerCars.getJSONObject(bOwnerCarIndex);
-                doSendOwnerCar(business, businessOwnerCar);
+
+        }else {
+            if (data instanceof JSONObject) {
+                businessOwnerCars.add(data);
             }
+        }
+
+        //JSONObject businessOwnerCar = data.getJSONObject("businessOwnerCar");
+        for (int bOwnerCarIndex = 0; bOwnerCarIndex < businessOwnerCars.size(); bOwnerCarIndex++) {
+            JSONObject businessOwnerCar = businessOwnerCars.getJSONObject(bOwnerCarIndex);
+            doSendOwnerCar(business, businessOwnerCar);
         }
     }
 
@@ -94,10 +105,12 @@ public class ModifyCarToIotAdapt extends DatabusAdaptImpl {
         OwnerCarDto ownerCarDto = new OwnerCarDto();
         ownerCarDto.setCarNum(ownerCarPo.getCarNum());
         ownerCarDto.setCommunityId(ownerCarPo.getCommunityId());
+        ownerCarDto.setCarTypeCds(new String[]{OwnerCarDto.CAR_TYPE_PRIMARY,OwnerCarDto.CAR_TYPE_MEMBER});
         List<OwnerCarDto> ownerCarDtos = ownerCarInnerServiceSMOImpl.queryOwnerCars(ownerCarDto);
 
-        Assert.listOnlyOne(ownerCarDtos, "未找到停车场");
-
+        if(ownerCarDtos == null || ownerCarDtos.size() < 1){
+            throw new IllegalArgumentException("未找到车辆");
+        }
         //没有车位就不同步了
         if (StringUtil.isEmpty(ownerCarDtos.get(0).getPsId()) || "-1".equals(ownerCarDtos.get(0).getPsId())) {
             return;
@@ -115,6 +128,18 @@ public class ModifyCarToIotAdapt extends DatabusAdaptImpl {
         List<ParkingSpaceDto> parkingSpaceDtos = parkingSpaceInnerServiceSMOImpl.queryParkingSpaces(parkingSpaceDto);
         Assert.listOnlyOne(ownerCarDtos, "未找到车位");
 
+        ownerCarDto = new OwnerCarDto();
+        ownerCarDto.setOwnerId(ownerCarPo.getOwnerId());
+        ownerCarDto.setCommunityId(ownerCarPo.getCommunityId());
+        ownerCarDto.setStatusCd(StatusConstant.STATUS_CD_VALID);
+        long parkingSpaceCount = ownerCarInnerServiceSMOImpl.queryOwnerParkingSpaceCount(ownerCarDto);
+
+        //查询属性
+        OwnerCarAttrDto ownerCarAttrDto = new OwnerCarAttrDto();
+        ownerCarAttrDto.setCarId(ownerCarDtos.get(0).getCarId());
+        ownerCarAttrDto.setCommunityId(ownerCarDtos.get(0).getCommunityId());
+        List<OwnerCarAttrDto> parkingAreaAttrDtos = ownerCarAttrInnerServiceSMOImpl.queryOwnerCarAttrs(ownerCarAttrDto);
+
 
         JSONObject postParameters = new JSONObject();
 
@@ -124,8 +149,14 @@ public class ModifyCarToIotAdapt extends DatabusAdaptImpl {
         postParameters.put("extPaId", parkingSpaceDtos.get(0).getPaId());
         postParameters.put("personName", ownerCarDtos.get(0).getOwnerName());
         postParameters.put("personTel", ownerCarDtos.get(0).getLink());
-        postParameters.put("extCarId", ownerCarDtos.get(0).getCarId());
+        postParameters.put("personId", ownerCarDtos.get(0).getOwnerId());
+        postParameters.put("extCarId", ownerCarDtos.get(0).getMemberId());
+        postParameters.put("parkingNum", parkingSpaceCount);
+        postParameters.put("leaseType", ownerCarDtos.get(0).getLeaseType());
+        postParameters.put("primaryCarId", ownerCarDtos.get(0).getCarId());
+        postParameters.put("carType", ownerCarDtos.get(0).getCarType());
         postParameters.put("extCommunityId", ownerCarDtos.get(0).getCommunityId());
+        postParameters.put("attrs", parkingAreaAttrDtos);
         hcOwnerCarAsynImpl.updateOwnerCar(postParameters);
     }
 }

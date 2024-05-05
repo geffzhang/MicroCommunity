@@ -3,14 +3,15 @@ package com.java110.community.smo.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.community.dao.ICommunityServiceDao;
 import com.java110.core.base.smo.BaseServiceSMO;
-import com.java110.dto.CommunityMemberDto;
+import com.java110.dto.community.CommunityMemberDto;
 import com.java110.dto.PageDto;
 import com.java110.dto.community.CommunityAttrDto;
 import com.java110.dto.community.CommunityDto;
 import com.java110.intf.community.ICommunityInnerServiceSMO;
+import com.java110.po.community.CommunityAttrPo;
 import com.java110.utils.util.BeanConvertUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -100,6 +101,16 @@ public class CommunityInnerServiceSMOImpl extends BaseServiceSMO implements ICom
         return communityServiceDaoImpl.getCommunityAttrsCount(BeanConvertUtil.beanCovertMap(communityAttrDto));
     }
 
+    /**
+     * 保存小区属性
+     * @param communityAttrPo 数据对象分享
+     * @return
+     */
+    @Override
+    public int saveCommunityAttr(CommunityAttrPo communityAttrPo) {
+        return communityServiceDaoImpl.saveCommunityAttr(BeanConvertUtil.beanCovertMap(communityAttrPo));
+    }
+
     @Override
     public List<CommunityDto> queryCommunitys(@RequestBody CommunityDto communityDto) {
 
@@ -149,6 +160,12 @@ public class CommunityInnerServiceSMOImpl extends BaseServiceSMO implements ICom
     public int queryCommunitysCount(@RequestBody CommunityDto communityDto) {
         return communityServiceDaoImpl.queryCommunitysCount(BeanConvertUtil.beanCovertMap(communityDto));
     }
+
+//    @Override
+//    public int saveCommunity(@RequestBody CommunityPo communityPo) {
+//        return communityServiceDaoImpl.saveCommunity(BeanConvertUtil.beanCovertMap(communityPo));
+//    }
+
 
     public ICommunityServiceDao getCommunityServiceDaoImpl() {
         return communityServiceDaoImpl;

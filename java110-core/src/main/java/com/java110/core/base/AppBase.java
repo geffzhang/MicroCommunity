@@ -7,7 +7,7 @@ import com.java110.core.factory.CallApiServiceFactory;
 import com.java110.utils.cache.BaseCache;
 import com.java110.utils.log.LoggerEngine;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -115,15 +115,15 @@ public class AppBase extends BaseCache {
     public Map<String, Object> createReturnMap(String resultCode, String resultMsg, String info) {
         return null;
     }
-
-    /**
-     * 调用中心服务
-     *
-     * @return
-     */
-    protected ResponseEntity<String> callCenterService(RestTemplate restTemplate, IPageData pd, String param, String url, HttpMethod httpMethod) {
-        return CallApiServiceFactory.callCenterService(restTemplate, pd, param, url, httpMethod);
-
-    }
+//
+//    /**
+//     * 调用中心服务
+//     *
+//     * @return
+//     */
+//    protected ResponseEntity<String> callCenterService(RestTemplate restTemplate, IPageData pd, String param, String url, HttpMethod httpMethod) {
+//        return CallApiServiceFactory.callCenterService(restTemplate, pd, param, url, httpMethod);
+//
+//    }
 
 }

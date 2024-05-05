@@ -2,18 +2,18 @@ package com.java110.job.quartz;
 
 import com.java110.core.factory.GenerateCodeFactory;
 import com.java110.dto.community.CommunityDto;
-import com.java110.dto.logSystemError.LogSystemErrorDto;
+import com.java110.dto.log.LogSystemErrorDto;
 import com.java110.dto.store.StoreDto;
 import com.java110.dto.task.TaskDto;
-import com.java110.dto.taskAttr.TaskAttrDto;
+import com.java110.dto.task.TaskAttrDto;
 import com.java110.intf.community.ICommunityInnerServiceSMO;
 import com.java110.intf.store.IStoreInnerServiceSMO;
 import com.java110.job.dao.ITaskServiceDao;
-import com.java110.po.logSystemError.LogSystemErrorPo;
+import com.java110.po.log.LogSystemErrorPo;
 import com.java110.service.smo.ISaveSystemErrorSMO;
 import com.java110.utils.util.ExceptionUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -150,6 +150,9 @@ public abstract class TaskSystemQuartz {
      */
     protected TaskAttrDto getCurTaskAttr(TaskDto taskDto, String specCd) {
         List<TaskAttrDto> taskAttrDtos = taskDto.getTaskAttr();
+        if (taskAttrDtos == null) {
+            return null;
+        }
         for (TaskAttrDto taskAttrDto : taskAttrDtos) {
             if (specCd.equals(taskAttrDto.getSpecCd())) {
                 return taskAttrDto;

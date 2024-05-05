@@ -11,6 +11,7 @@ public class ApiAdvertDataVo implements Serializable {
     private String classify;
     private String classifyName;
     private String locationTypeCd;
+    private String communityId;
     private String locationObjId;
     private String locationObjName;
     private String state;
@@ -24,6 +25,12 @@ public class ApiAdvertDataVo implements Serializable {
     private String unitNum;
     private String roomId;
     private String roomNum;
+    private String createTime;
+
+    private String viewType;
+    private String advertType ;
+    private String pageUrl ;
+
 
     public String getAdvertId() {
         return advertId;
@@ -175,5 +182,45 @@ public class ApiAdvertDataVo implements Serializable {
 
     public void setRoomNum(String roomNum) {
         this.roomNum = roomNum;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getViewType() {
+        return viewType;
+    }
+
+    public void setViewType(String viewType) {
+        this.viewType = viewType;
+    }
+
+    public String getAdvertType() {
+        return advertType;
+    }
+
+    public void setAdvertType(String advertType) {
+        this.advertType = advertType;
+    }
+
+    public String getPageUrl() {
+        return pageUrl;
+    }
+
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
+    }
+
+    public String getCommunityId() {
+        return communityId;
+    }
+
+    public void setCommunityId(String communityId) {
+        this.communityId = communityId;
     }
 }

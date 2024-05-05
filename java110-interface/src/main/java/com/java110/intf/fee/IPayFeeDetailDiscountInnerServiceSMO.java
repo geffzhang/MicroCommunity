@@ -1,7 +1,7 @@
 package com.java110.intf.fee;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.payFeeDetailDiscount.PayFeeDetailDiscountDto;
+import com.java110.dto.payFee.PayFeeDetailDiscountDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ import java.util.List;
  * @Version 1.0
  * add by wuxw 2019/4/24
  **/
-@FeignClient(name = "community-service", configuration = {FeignConfiguration.class})
+@FeignClient(name = "fee-service", configuration = {FeignConfiguration.class})
 @RequestMapping("/payFeeDetailDiscountApi")
 public interface IPayFeeDetailDiscountInnerServiceSMO {
 
@@ -39,4 +39,7 @@ public interface IPayFeeDetailDiscountInnerServiceSMO {
      */
     @RequestMapping(value = "/queryPayFeeDetailDiscountsCount", method = RequestMethod.POST)
     int queryPayFeeDetailDiscountsCount(@RequestBody PayFeeDetailDiscountDto payFeeDetailDiscountDto);
+
+    @RequestMapping(value = "/computeDiscountFee", method = RequestMethod.POST)
+    List<PayFeeDetailDiscountDto> computeDiscountFee(@RequestBody PayFeeDetailDiscountDto payFeeDetailDiscountDto);
 }

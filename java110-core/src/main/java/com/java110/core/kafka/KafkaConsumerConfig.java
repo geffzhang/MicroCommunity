@@ -1,6 +1,7 @@
 package com.java110.core.kafka;
 
 
+import com.java110.core.factory.GenerateCodeFactory;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,8 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConsumerConfig {
 
+    public static final String GROUP_ID_GENERATE = "-1";
+
     @Value("${kafka.consumer.servers}")
     private String servers;
     @Value("${kafka.consumer.enable.auto.commit}")
@@ -34,6 +37,9 @@ public class KafkaConsumerConfig {
     private String autoOffsetReset;
     @Value("${kafka.consumer.concurrency}")
     private int concurrency;
+    @Value("${kafka.consumer.topic}")
+    public String topic;
+
     @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
@@ -56,9 +62,20 @@ public class KafkaConsumerConfig {
         propsMap.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
         propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        if (GROUP_ID_GENERATE.equals(groupId)) {
+            propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, GenerateCodeFactory.getUUID());
+        } else {
+            propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        }
         propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
         return propsMap;
     }
 
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 }

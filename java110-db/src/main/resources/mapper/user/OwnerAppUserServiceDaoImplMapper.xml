@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ownerAppUserServiceDaoImpl">
 
     <!-- 保存绑定业主信息 add by wuxw 2018-07-03 -->
     <insert id="saveBusinessOwnerAppUserInfo" parameterType="Map">
-        insert into business_owner_app_user(
-        id_card,open_id,link,remark,operate,app_user_name,community_name,state,app_user_id,community_id,app_type_cd,b_id,member_id,user_id,app_type
-        ) values (
-        #{idCard},#{openId},#{link},#{remark},#{operate},#{appUserName},#{communityName},#{state},#{appUserId},#{communityId},
-        #{appTypeCd},#{bId},#{memberId},#{userId},#{appType}
-        )
+        insert into business_owner_app_user(id_card, open_id, link, remark, operate, app_user_name, community_name,
+                                            state, app_user_id, community_id, app_type_cd, b_id, member_id, user_id,
+                                            app_type, nickname, headimgurl)
+        values (#{idCard}, #{openId}, #{link}, #{remark}, #{operate}, #{appUserName}, #{communityName}, #{state},
+                #{appUserId}, #{communityId},
+                #{appTypeCd}, #{bId}, #{memberId}, #{userId}, #{appType}, #{nickName}, #{headImgUrl})
     </insert>
-
 
     <!-- 查询绑定业主信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessOwnerAppUserInfo" parameterType="Map" resultType="Map">
@@ -21,7 +19,8 @@
         openId,t.link,t.remark,t.operate,t.app_user_name,t.app_user_name appUserName,t.community_name,t.community_name
         communityName,t.state,t.app_user_id,t.app_user_id appUserId,t.community_id,t.community_id
         communityId,t.app_type_cd,t.app_type_cd appTypeCd,t.b_id,t.b_id bId,t.member_id,t.member_id memberId,t.user_id,
-        t.user_id userId,t.app_type,t.app_type appType
+        t.user_id userId,t.app_type,t.app_type appType,t.nickname,t.nickname nickName,t.headimgurl,t.headimgurl
+        headImgUrl
         from business_owner_app_user t
         where 1 =1
         <if test="idCard !=null and idCard != ''">
@@ -66,18 +65,16 @@
         <if test="userId !=null and userId != ''">
             and t.user_id= #{userId}
         </if>
-
     </select>
-
 
     <!-- 保存绑定业主信息至 instance表中 add by wuxw 2018-07-03 -->
     <insert id="saveOwnerAppUserInfoInstance" parameterType="Map">
         insert into owner_app_user(
         id_card,open_id,link,remark,status_cd,app_user_name,community_name,state,app_user_id,community_id,app_type_cd,b_id,member_id,user_id,
-        app_type
+        app_type,nickname,headimgurl
         ) select
         t.id_card,t.open_id,t.link,t.remark,'0',t.app_user_name,t.community_name,t.state,t.app_user_id,t.community_id,t.app_type_cd,t.b_id,
-        t.member_id,t.user_id,t.app_type
+        t.member_id,t.user_id,t.app_type,t.nickname,t.headimgurl
         from business_owner_app_user t where 1=1
         <if test="idCard !=null and idCard != ''">
             and t.id_card= #{idCard}
@@ -119,26 +116,28 @@
         <if test="userId !=null and userId != ''">
             and t.user_id= #{userId}
         </if>
-
+        <if test="nickName !=null and nickName != ''">
+            and t.nickname= #{nickName}
+        </if>
+        <if test="headImgUrl !=null and headImgUrl != ''">
+            and t.headimgurl= #{headImgUrl}
+        </if>
     </insert>
-
 
     <!-- 查询绑定业主信息 add by wuxw 2018-07-03 -->
     <select id="getOwnerAppUserInfo" parameterType="Map" resultType="Map">
         select t.id_card,t.id_card idCard,t.open_id,t.open_id openId,t.link,t.remark,t.status_cd,t.status_cd
-        statusCd,t.app_user_name,t.app_user_name appUserName,t.community_name,t.community_name
+        statusCd,t.nickname,t.headimgurl,t.app_user_name,t.app_user_name appUserName,t.community_name,t.community_name
         communityName,t.state,t.app_user_id,t.app_user_id appUserId,t.community_id,t.community_id
         communityId,t.app_type_cd,t.app_type_cd appTypeCd,t.b_id,t.b_id bId,t.member_id,t.member_id memberId,
         td1.name stateName,t.user_id,t.user_id userId,t.app_type,t.app_type appType,t.create_time createTime,
-        bo.owner_id ownerId
-        from owner_app_user t,t_dict td1,building_owner bo
+        bo.owner_id ownerId,bo.owner_type_cd ownerTypeCd
+        from owner_app_user t
+        left join t_dict td1 on t.state = td1.status_cd and td1.table_name = 'owner_app_user' and td1.table_columns =
+        'state'
+        left join building_owner bo on t.member_id = bo.member_id and t.community_id = bo.community_id and bo.status_cd
+        = '0'
         where 1 =1
-        and t.state = td1.status_cd
-        and td1.table_name = 'owner_app_user'
-        and td1.table_columns = 'state'
-        and t.member_id = bo.member_id
-        and t.community_id = bo.community_id
-        and bo.status_cd = '0'
         <if test="idCard !=null and idCard != ''">
             and t.id_card= #{idCard}
         </if>
@@ -155,7 +154,7 @@
             and t.status_cd= #{statusCd}
         </if>
         <if test="appUserName !=null and appUserName != ''">
-            and t.app_user_name= #{appUserName}
+            and t.app_user_name like concat('%',#{appUserName},'%')
         </if>
         <if test="communityName !=null and communityName != ''">
             and t.community_name= #{communityName}
@@ -169,7 +168,6 @@
                 #{item}
             </foreach>
         </if>
-
         <if test="appUserId !=null and appUserId != ''">
             and t.app_user_id= #{appUserId}
         </if>
@@ -185,26 +183,23 @@
         <if test="memberId !=null and memberId != ''">
             and t.member_id= #{memberId}
         </if>
-        <if test="userId !=null and userId != ''">
-            and t.user_id = #{userId}
-        </if>
         <if test="appType !=null and appType != ''">
             and t.app_type = #{appType}
         </if>
         <if test="userIds !=null">
             and t.user_id in
             <foreach collection="userIds" open="(" close=")"
-                     separator=","  item="item">
-                #{item}
+                     separator="," item="item">#{item}
             </foreach>
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
         </if>
         order by t.create_time desc
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
     </select>
-
 
     <!-- 修改绑定业主信息 add by wuxw 2018-07-03 -->
     <update id="updateOwnerAppUserInfoInstance" parameterType="Map">
@@ -245,6 +240,12 @@
         <if test="appType !=null and appType != ''">
             , t.app_type = #{appType}
         </if>
+        <if test="nickName !=null and nickName != ''">
+            , t.nickname= #{nickName}
+        </if>
+        <if test="headImgUrl !=null and headImgUrl != ''">
+            , t.headimgurl= #{headImgUrl}
+        </if>
         where 1=1
         <if test="appUserId !=null and appUserId != ''">
             and t.app_user_id= #{appUserId}
@@ -258,17 +259,17 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-
     </update>
 
     <!-- 查询绑定业主数量 add by wuxw 2018-07-03 -->
     <select id="queryOwnerAppUsersCount" parameterType="Map" resultType="Map">
         select count(1) count
-        from owner_app_user t,t_dict td1
+        from owner_app_user t
+        left join t_dict td1 on t.state = td1.status_cd and td1.table_name = 'owner_app_user' and td1.table_columns =
+        'state'
+        left join building_owner bo on t.member_id = bo.member_id and t.community_id = bo.community_id and bo.status_cd
+        = '0'
         where 1 =1
-        and t.state = td1.status_cd
-        and td1.table_name = 'owner_app_user'
-        and td1.table_columns = 'state'
         and t.status_cd = '0'
         <if test="idCard !=null and idCard != ''">
             and t.id_card= #{idCard}
@@ -286,7 +287,7 @@
             and t.status_cd= #{statusCd}
         </if>
         <if test="appUserName !=null and appUserName != ''">
-            and t.app_user_name= #{appUserName}
+            and t.app_user_name like concat('%',#{appUserName},'%')
         </if>
         <if test="communityName !=null and communityName != ''">
             and t.community_name= #{communityName}
@@ -309,21 +310,17 @@
         <if test="memberId !=null and memberId != ''">
             and t.member_id= #{memberId}
         </if>
-        <if test="userId !=null and userId != ''">
-            and t.user_id= #{userId}
-        </if>
         <if test="appType !=null and appType != ''">
             and t.app_type = #{appType}
         </if>
         <if test="userIds !=null">
             and t.user_id in
             <foreach collection="userIds" open="(" close=")"
-                     separator=","  item="item">
-                #{item}
+                     separator="," item="item">#{item}
             </foreach>
         </if>
-
-
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
     </select>
-
 </mapper>

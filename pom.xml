@@ -25,9 +25,14 @@
         <module>service-job</module>
         <module>service-common</module>
         <module>service-report</module>
-        <module>service-front</module>
-        <module>service-goods</module>
-        <module>java110-generator</module>
+        <module>service-acct</module>
+        <module>service-oa</module>
+        <module>service-dev</module>
+        <module>service-scm</module>
+        <module>springboot</module>
+        <module>java110-boot</module>
+        <module>java110-doc</module>
+
 
     </modules>
 
@@ -42,14 +47,13 @@
         <maven.compile.target>1.8</maven.compile.target>
         <sourceEncoding>UTF-8</sourceEncoding>
         <spring-boot>2.0.4.RELEASE</spring-boot>
-        <mybatis.version>3.3.0</mybatis.version>
+        <mybatis.version>3.5.6</mybatis.version>
         <microcommunity.version>1.0-SNAPSHOT</microcommunity.version>
         <dubbo.version>2.5.4-SNAPSHOT</dubbo.version>
-        <logback.vaersion>1.2.3</logback.vaersion>
+        <logback.vaersion>1.2.9</logback.vaersion>
 
         <apache.common.lang3.version>3.4</apache.common.lang3.version>
-        <mybatis.version>3.4.1</mybatis.version>
-        <log4j.version>2.13.2</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         <tomcat.servlet.version>6.0.37</tomcat.servlet.version>
         <druid.version>1.1.10</druid.version>
         <mybatis-spring.version>1.3.1</mybatis-spring.version>
@@ -62,7 +66,7 @@
         <commons-lang.version>2.5</commons-lang.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <logback.version>1.1.2</logback.version>
+        <logback.version>1.2.9</logback.version>
         <activemq.version>5.7.0</activemq.version>
         <xbean.version>3.18</xbean.version>
         <axis.version>1.4</axis.version>
@@ -99,7 +103,7 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
-                <version>1.2.28</version>
+                <version>1.2.83</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
@@ -114,11 +118,11 @@
                 <version>1.1.0</version>
             </dependency>
             <!--pagehelper-->
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>1.1.0</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.github.pagehelper</groupId>-->
+<!--                <artifactId>pagehelper-spring-boot-starter</artifactId>-->
+<!--                <version>1.1.0</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>com.auth0</groupId>
@@ -159,6 +163,12 @@
             <dependency>
                 <groupId>com.java110</groupId>
                 <artifactId>java110-db</artifactId>
+                <version>${microcommunity.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.java110</groupId>
+                <artifactId>java110-doc</artifactId>
                 <version>${microcommunity.version}</version>
             </dependency>
             <!-- logback 日志组件支持  -->
@@ -212,6 +222,11 @@
                 <version>${log4j.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j -->
+<!--            <dependency>-->
+<!--                <groupId>io.github.openfeign</groupId>-->
+<!--                <artifactId>feign-okhttp</artifactId>-->
+<!--                <version>10.1.0</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
@@ -341,7 +356,9 @@
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>
                 <version>4.0.0-RC1</version>
+
             </dependency>
+
 
 
             <dependency>
@@ -431,7 +448,7 @@
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
-                <version>1.11.3</version>
+                <version>1.15.3</version>
             </dependency>
 
             <!-- 引入poi，解析workbook视图 -->
@@ -490,6 +507,27 @@
                 <artifactId>aliyun-sdk-oss</artifactId>
                 <version>${oss.aliyun}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>4.10.111.ALL</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos_api</artifactId>
+                <version>5.6.69</version>
+            </dependency>
+
+
+
         </dependencies>
 
     </dependencyManagement>
@@ -498,7 +536,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -529,7 +566,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -540,7 +576,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
                 <configuration>
                     <attach>true</attach>
                 </configuration>

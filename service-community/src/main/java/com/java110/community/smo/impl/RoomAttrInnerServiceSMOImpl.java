@@ -2,13 +2,14 @@
 package com.java110.community.smo.impl;
 
 
+import com.java110.po.room.RoomAttrPo;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.community.dao.IRoomAttrServiceDao;
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.intf.community.IRoomAttrInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.dto.PageDto;
-import com.java110.dto.RoomAttrDto;
+import com.java110.dto.room.RoomAttrDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,6 +54,16 @@ public class RoomAttrInnerServiceSMOImpl extends BaseServiceSMO implements IRoom
     @Override
     public int queryRoomAttrsCount(@RequestBody RoomAttrDto roomAttrDto) {
         return roomAttrServiceDaoImpl.queryRoomAttrsCount(BeanConvertUtil.beanCovertMap(roomAttrDto));
+    }
+
+    @Override
+    public int saveRoomAttr(@RequestBody RoomAttrPo roomAttrPo) {
+        return roomAttrServiceDaoImpl.saveRoomAttr(BeanConvertUtil.beanCovertMap(roomAttrPo));
+    }
+
+    @Override
+    public int updateRoomAttrInfoInstance(@RequestBody RoomAttrPo roomAttrPo) {
+        return roomAttrServiceDaoImpl.updateRoomAttrInfoInstance(BeanConvertUtil.beanCovertMap(roomAttrPo));
     }
 
     public IRoomAttrServiceDao getRoomAttrServiceDaoImpl() {

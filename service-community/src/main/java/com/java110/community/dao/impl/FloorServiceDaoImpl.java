@@ -7,7 +7,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.community.dao.IFloorServiceDao;
 import com.java110.core.base.dao.BaseServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -145,6 +145,15 @@ public class FloorServiceDaoImpl extends BaseServiceDao implements IFloorService
         }
 
         return Integer.parseInt(businessFloorInfos.get(0).get("count").toString());
+    }
+
+    @Override
+    public List<Map> queryFloorAndUnits(Map info) {
+        logger.debug("查询queryFloorAndUnits信息 入参 floorMap : {}", info);
+
+        List<Map> businessFloorInfos = sqlSessionTemplate.selectList("floorServiceDaoImpl.queryFloorAndUnits", info);
+
+        return businessFloorInfos;
     }
 
 

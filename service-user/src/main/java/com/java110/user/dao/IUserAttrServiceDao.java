@@ -2,10 +2,6 @@ package com.java110.user.dao;
 
 
 import com.java110.utils.exception.DAOException;
-import com.java110.entity.merchant.BoMerchant;
-import com.java110.entity.merchant.BoMerchantAttr;
-import com.java110.entity.merchant.Merchant;
-import com.java110.entity.merchant.MerchantAttr;
 
 
 import java.util.List;
@@ -67,7 +63,7 @@ public interface IUserAttrServiceDao {
      * @param info 修改信息
      * @throws DAOException DAO异常
      */
-    void updateUserAttrInfoInstance(Map info) throws DAOException;
+    int updateUserAttrInfoInstance(Map info) throws DAOException;
 
 
     /**
@@ -78,4 +74,10 @@ public interface IUserAttrServiceDao {
      */
     int queryUserAttrsCount(Map info);
 
+    /**
+     * 保存用户属性
+     * @param beanCovertMap
+     * @return
+     */
+    int saveUserAttr(Map beanCovertMap);
 }

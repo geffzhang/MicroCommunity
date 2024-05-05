@@ -1,18 +1,21 @@
 package com.java110.user.smo.impl;
 
-
 import com.java110.core.base.smo.BaseServiceSMO;
-import com.java110.dto.CommunityMemberDto;
+import com.java110.dto.community.CommunityMemberDto;
 import com.java110.dto.PageDto;
+import com.java110.dto.file.FileRelDto;
 import com.java110.dto.owner.OwnerAttrDto;
 import com.java110.dto.owner.OwnerDto;
 import com.java110.dto.user.UserDto;
+import com.java110.intf.common.IFileRelInnerServiceSMO;
 import com.java110.intf.community.ICommunityInnerServiceSMO;
 import com.java110.intf.user.IOwnerAttrInnerServiceSMO;
 import com.java110.intf.user.IOwnerInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.po.owner.OwnerPo;
 import com.java110.user.dao.IOwnerServiceDao;
+import com.java110.utils.cache.MappingCache;
+import com.java110.utils.constant.MappingConstant;
 import com.java110.utils.constant.OwnerTypeConstant;
 import com.java110.utils.constant.StatusConstant;
 import com.java110.utils.util.BeanConvertUtil;
@@ -48,6 +51,9 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
     @Autowired
     private ICommunityInnerServiceSMO communityInnerServiceSMOImpl;
 
+    @Autowired
+    private IFileRelInnerServiceSMO fileRelInnerServiceSMOImpl;
+
     @Override
     public List<OwnerDto> queryOwners(@RequestBody OwnerDto ownerDto) {
 
@@ -62,7 +68,7 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
         ownerInfo.put("ownerTypeCd", OwnerTypeConstant.OWNER);
         // ownerInfo.put("ownerIds", getOwnerIds(communityMemberDtos));
         //ownerInfo.put("ownerTypeCd", ownerDto.getOwnerTypeCd());
-        ownerInfo.put("statusCd", StatusConstant.STATUS_CD_VALID);
+        // ownerInfo.put("statusCd", StatusConstant.STATUS_CD_VALID);
 
         List<OwnerDto> owners = BeanConvertUtil.covertBeanList(ownerServiceDaoImpl.getOwnerInfo(ownerInfo), OwnerDto.class);
 
@@ -82,11 +88,59 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
         for (OwnerDto owner : owners) {
             refreshOwner(owner, users, ownerAttrDtos);
         }
+
+        updateOwnerPhone(owners);
         return owners;
+    }
+
+    private boolean updateOwnerPhone(List<OwnerDto> owners) {
+        if (owners.size() > 50) {
+            return true;
+        }
+
+        List<String> memberIds = new ArrayList<>();
+
+        for (OwnerDto tmpOwnerDto : owners) {
+            memberIds.add(tmpOwnerDto.getMemberId());
+        }
+
+        FileRelDto fileRelDto = new FileRelDto();
+        //fileRelDto.setObjId(owners.get(0).getMemberId());
+        fileRelDto.setObjIds(memberIds.toArray(new String[memberIds.size()]));
+        List<FileRelDto> fileRelDtos = fileRelInnerServiceSMOImpl.queryFileRels(fileRelDto);
+
+        if (fileRelDtos == null || fileRelDtos.size() < 1) {
+            return true;
+        }
+
+        String imgUrl = MappingCache.getValue(MappingConstant.FILE_DOMAIN, "IMG_PATH");
+
+        for (OwnerDto tmpOwnerDto : owners) {
+            for (FileRelDto tmpFileRelDto : fileRelDtos) {
+                if (!tmpOwnerDto.getMemberId().equals(tmpFileRelDto.getObjId())) {
+                    continue;
+                }
+
+                if (tmpFileRelDto.getFileSaveName().startsWith("http")) {
+                    tmpOwnerDto.setUrl(tmpFileRelDto.getFileSaveName());
+                } else {
+                    tmpOwnerDto.setUrl(imgUrl + tmpFileRelDto.getFileSaveName());
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
     public List<OwnerDto> queryOwnerMembers(@RequestBody OwnerDto ownerDto) {
+
+        int page = ownerDto.getPage();
+
+        if (page != PageDto.DEFAULT_PAGE) {
+            ownerDto.setPage((page - 1) * ownerDto.getRow());
+        }
+
         List<OwnerDto> owners = BeanConvertUtil.covertBeanList(ownerServiceDaoImpl.getOwnerInfo(BeanConvertUtil.beanCovertMap(ownerDto)), OwnerDto.class);
         if (owners == null || owners.size() == 0) {
             return owners;
@@ -104,7 +158,14 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
         for (OwnerDto owner : owners) {
             refreshOwner(owner, users, ownerAttrDtos);
         }
+
+        updateOwnerPhone(owners);
         return owners;
+    }
+
+    @Override
+    public int queryOwnersMemberCount(@RequestBody OwnerDto ownerDto) {
+        return ownerServiceDaoImpl.getOwnerInfoCount(BeanConvertUtil.beanCovertMap(ownerDto));
     }
 
     /**
@@ -183,17 +244,6 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
     @Override
     public int queryOwnersCount(@RequestBody OwnerDto ownerDto) {
 
-        //调用 小区服务查询 小区成员业主信息
-        /*CommunityMemberDto communityMemberDto = new CommunityMemberDto();
-        communityMemberDto.setCommunityId(ownerDto.getCommunityId());
-        communityMemberDto.setMemberTypeCd(CommunityMemberTypeConstant.OWNER);
-        return communityInnerServiceSMOImpl.getCommunityMemberCount(communityMemberDto);*/
-        int page = ownerDto.getPage();
-
-        if (page != PageDto.DEFAULT_PAGE) {
-            ownerDto.setPage((page - 1) * ownerDto.getRow());
-        }
-
         Map ownerInfo = BeanConvertUtil.beanCovertMap(ownerDto);
         ownerInfo.put("communityId", ownerDto.getCommunityId());
         ownerInfo.put("ownerTypeCd", OwnerTypeConstant.OWNER);
@@ -210,11 +260,11 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
 
         //校验是否传了 分页信息
 
-        int page = ownerDto.getPage();
-
-        if (page != PageDto.DEFAULT_PAGE) {
-            ownerDto.setPage((page - 1) * ownerDto.getRow());
-        }
+//        int page = ownerDto.getPage();
+//
+//        if (page != PageDto.DEFAULT_PAGE) {
+//            ownerDto.setPage((page - 1) * ownerDto.getRow());
+//        }
         return ownerServiceDaoImpl.queryOwnersCount(BeanConvertUtil.beanCovertMap(ownerDto));
     }
 
@@ -246,6 +296,7 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
         for (OwnerDto owner : owners) {
             refreshOwner(owner, users, ownerAttrDtos);
         }
+        updateOwnerPhone(owners);
         return owners;
     }
 
@@ -268,7 +319,7 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
     @Override
     public int updateOwnerMember(OwnerPo ownerPo) {
         Map info = BeanConvertUtil.beanCovertMap(ownerPo);
-        info.put("statusCd","0");
+        info.put("statusCd", "0");
         ownerServiceDaoImpl.updateOwnerInfoInstance(info);
         return 1;
     }
@@ -286,6 +337,12 @@ public class OwnerInnerServiceSMOImpl extends BaseServiceSMO implements IOwnerIn
             ownerDto.setPage((page - 1) * ownerDto.getRow());
         }
         return BeanConvertUtil.covertBeanList(ownerServiceDaoImpl.queryOwnerLogsByRoom(BeanConvertUtil.beanCovertMap(ownerDto)), OwnerDto.class);
+    }
+
+    @Override
+    public List<OwnerDto> queryAllOwners(@RequestBody OwnerDto ownerDto) {
+        List<OwnerDto> allOwners = BeanConvertUtil.covertBeanList(ownerServiceDaoImpl.getOwnerInfo(BeanConvertUtil.beanCovertMap(ownerDto)), OwnerDto.class);
+        return allOwners;
     }
 
     public IUserInnerServiceSMO getUserInnerServiceSMOImpl() {

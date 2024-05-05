@@ -14,7 +14,6 @@ import java.util.Date;
  * add by wuxw 2019/4/24
  **/
 public class AdvertDto extends PageDto implements Serializable {
-
     private String classify;
     private String classifyName;
     private String adName;
@@ -35,12 +34,15 @@ public class AdvertDto extends PageDto implements Serializable {
     private String unitNum;
     private String roomId;
     private String roomNum;
+    private String bId;
+    private String viewType ;
+    private String advertType ;
+    private String pageUrl ;
 
 
-    private Date createTime;
+    private String createTime;
 
     private String statusCd = "0";
-
 
     public String getClassify() {
         return classify;
@@ -130,12 +132,11 @@ public class AdvertDto extends PageDto implements Serializable {
         this.seq = seq;
     }
 
-
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
@@ -217,5 +218,37 @@ public class AdvertDto extends PageDto implements Serializable {
 
     public void setRoomNum(String roomNum) {
         this.roomNum = roomNum;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getViewType() {
+        return viewType;
+    }
+
+    public void setViewType(String viewType) {
+        this.viewType = viewType;
+    }
+
+    public String getAdvertType() {
+        return advertType;
+    }
+
+    public void setAdvertType(String advertType) {
+        this.advertType = advertType;
+    }
+
+    public String getPageUrl() {
+        return pageUrl;
+    }
+
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
     }
 }

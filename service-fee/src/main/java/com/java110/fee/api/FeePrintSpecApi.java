@@ -1,12 +1,12 @@
 package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.feePrintSpec.FeePrintSpecDto;
+import com.java110.dto.fee.FeePrintSpecDto;
 import com.java110.fee.bmo.feePrintSpec.IDeleteFeePrintSpecBMO;
 import com.java110.fee.bmo.feePrintSpec.IGetFeePrintSpecBMO;
 import com.java110.fee.bmo.feePrintSpec.ISaveFeePrintSpecBMO;
 import com.java110.fee.bmo.feePrintSpec.IUpdateFeePrintSpecBMO;
-import com.java110.po.feePrintSpec.FeePrintSpecPo;
+import com.java110.po.fee.feePrintSpec.FeePrintSpecPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping(value = "/feePrintSpec")
 public class FeePrintSpecApi {
 
     @Autowired
     private ISaveFeePrintSpecBMO saveFeePrintSpecBMOImpl;
+
     @Autowired
     private IUpdateFeePrintSpecBMO updateFeePrintSpecBMOImpl;
+
     @Autowired
     private IDeleteFeePrintSpecBMO deleteFeePrintSpecBMOImpl;
 
@@ -42,12 +43,8 @@ public class FeePrintSpecApi {
      */
     @RequestMapping(value = "/saveFeePrintSpec", method = RequestMethod.POST)
     public ResponseEntity<String> saveFeePrintSpec(@RequestBody JSONObject reqJson) {
-
         Assert.hasKeyAndValue(reqJson, "communityId", "请求报文中未包含communityId");
-        Assert.hasKeyAndValue(reqJson, "content", "请求报文中未包含content");
         Assert.hasKeyAndValue(reqJson, "specCd", "请求报文中未包含specCd");
-
-
         FeePrintSpecPo feePrintSpecPo = BeanConvertUtil.covertBean(reqJson, FeePrintSpecPo.class);
         return saveFeePrintSpecBMOImpl.save(feePrintSpecPo);
     }
@@ -62,13 +59,9 @@ public class FeePrintSpecApi {
      */
     @RequestMapping(value = "/updateFeePrintSpec", method = RequestMethod.POST)
     public ResponseEntity<String> updateFeePrintSpec(@RequestBody JSONObject reqJson) {
-
         Assert.hasKeyAndValue(reqJson, "communityId", "请求报文中未包含communityId");
-        Assert.hasKeyAndValue(reqJson, "content", "请求报文中未包含content");
         Assert.hasKeyAndValue(reqJson, "specCd", "请求报文中未包含specCd");
         Assert.hasKeyAndValue(reqJson, "printId", "printId不能为空");
-
-
         FeePrintSpecPo feePrintSpecPo = BeanConvertUtil.covertBean(reqJson, FeePrintSpecPo.class);
         return updateFeePrintSpecBMOImpl.update(feePrintSpecPo);
     }
@@ -84,10 +77,7 @@ public class FeePrintSpecApi {
     @RequestMapping(value = "/deleteFeePrintSpec", method = RequestMethod.POST)
     public ResponseEntity<String> deleteFeePrintSpec(@RequestBody JSONObject reqJson) {
         Assert.hasKeyAndValue(reqJson, "communityId", "小区ID不能为空");
-
         Assert.hasKeyAndValue(reqJson, "printId", "printId不能为空");
-
-
         FeePrintSpecPo feePrintSpecPo = BeanConvertUtil.covertBean(reqJson, FeePrintSpecPo.class);
         return deleteFeePrintSpecBMOImpl.delete(feePrintSpecPo);
     }

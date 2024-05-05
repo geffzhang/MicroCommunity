@@ -7,7 +7,7 @@ import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -488,5 +488,15 @@ public class CommunityServiceDaoImpl extends BaseServiceDao implements ICommunit
 
         return businessCommunityInfos;
     }
+
+    @Override
+    public int saveCommunityAttr(Map info) {
+        logger.debug("小区成员加入Instance 入参 info : {}", info);
+
+        int saveFlag = sqlSessionTemplate.insert("communityServiceDaoImpl.saveCommunityAttr", info);
+
+        return saveFlag;
+    }
+
 
 }

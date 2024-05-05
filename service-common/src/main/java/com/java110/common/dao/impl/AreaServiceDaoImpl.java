@@ -5,7 +5,7 @@ import com.java110.common.dao.IFileServiceDao;
 import com.java110.core.base.dao.BaseServiceDao;
 import com.java110.utils.exception.DAOException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,6 +53,21 @@ public class AreaServiceDaoImpl extends BaseServiceDao implements IAreaServiceDa
         return businessAppInfos;
     }
 
+    /**
+     * 查询完整省份 城市 区域
+     * @param info bId 信息
+     * @return 应用信息
+     * @throws DAOException DAO异常
+     */
+    @Override
+    public List<Map> getWholeArea(Map info) throws DAOException {
+
+        logger.debug("getWholeArea 入参 info : {}",info);
+
+        List<Map> businessAppInfos = sqlSessionTemplate.selectList("areaServiceDaoImpl.getWholeArea",info);
+
+        return businessAppInfos;
+    }
 
 
 }

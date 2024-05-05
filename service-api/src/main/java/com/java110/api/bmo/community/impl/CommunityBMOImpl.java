@@ -6,16 +6,16 @@ import com.java110.api.bmo.ApiBaseBMO;
 import com.java110.api.bmo.community.ICommunityBMO;
 import com.java110.core.context.DataFlowContext;
 import com.java110.core.factory.GenerateCodeFactory;
-import com.java110.dto.CommunityMemberDto;
+import com.java110.dto.community.CommunityMemberDto;
 import com.java110.dto.community.CommunityDto;
-import com.java110.dto.workflow.WorkflowDto;
+import com.java110.dto.oaWorkflow.WorkflowDto;
 import com.java110.intf.common.IWorkflowInnerServiceSMO;
 import com.java110.intf.community.ICommunityInnerServiceSMO;
 import com.java110.po.community.CommunityAttrPo;
 import com.java110.po.community.CommunityMemberPo;
 import com.java110.po.community.CommunityPo;
 import com.java110.po.fee.PayFeeConfigPo;
-import com.java110.po.workflow.WorkflowPo;
+import com.java110.po.oaWorkflow.WorkflowPo;
 import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.*;
 import com.java110.utils.exception.ListenerExecuteException;
@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -40,10 +41,8 @@ import java.util.Map;
 @Service("communityBMOImpl")
 public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
 
-
     @Autowired
     private ICommunityInnerServiceSMO communityInnerServiceSMOImpl;
-
 
     @Autowired
     private IWorkflowInnerServiceSMO workflowInnerServiceSMOImpl;
@@ -102,6 +101,13 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
      */
     public JSONObject addCommunityMember(JSONObject paramInJson) {
 
+        //查询小区是否存在
+        CommunityDto communityDto = new CommunityDto();
+        communityDto.setCommunityId(paramInJson.getString("communityId"));
+        List<CommunityDto> communityDtos = communityInnerServiceSMOImpl.queryCommunitys(communityDto);
+
+        Assert.listOnlyOne(communityDtos, "小区不存在");
+
         JSONObject business = JSONObject.parseObject("{\"datas\":{}}");
         business.put(CommonConstant.HTTP_BUSINESS_TYPE_CD, BusinessTypeConstant.BUSINESS_TYPE_MEMBER_JOINED_COMMUNITY);
         business.put(CommonConstant.HTTP_SEQ, 2);
@@ -111,6 +117,10 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         businessCommunityMember.put("communityId", paramInJson.getString("communityId"));
         businessCommunityMember.put("memberId", paramInJson.getString("memberId"));
         businessCommunityMember.put("memberTypeCd", paramInJson.getString("memberTypeCd"));
+        businessCommunityMember.put("startTime", DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
+        Calendar endTime = Calendar.getInstance();
+        endTime.add(Calendar.MONTH, Integer.parseInt(communityDtos.get(0).getPayFeeMonth()));
+        businessCommunityMember.put("endTime", DateUtil.getFormatTimeString(endTime.getTime(), DateUtil.DATE_FORMATE_STRING_A));
         String auditStatusCd = MappingCache.getValue(MappingConstant.DOMAIN_COMMUNITY_MEMBER_AUDIT, paramInJson.getString("memberTypeCd"));
         auditStatusCd = StringUtils.isEmpty(auditStatusCd) ? StateConstant.AGREE_AUDIT : auditStatusCd;
         businessCommunityMember.put("auditStatusCd", auditStatusCd);
@@ -125,15 +135,55 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
      * @param paramInJson 接口请求数据封装
      * @return 封装好的 data数据
      */
-    public JSONObject updateComplaint(JSONObject paramInJson) {
+    public JSONObject updateWorkflow(JSONObject paramInJson,String flowType) {
         WorkflowDto workflowDto = new WorkflowDto();
         workflowDto.setCommunityId(paramInJson.getString("communityId"));
-        workflowDto.setFlowType(WorkflowDto.FLOW_TYPE_COMPLAINT);
+        workflowDto.setFlowType(flowType);
         List<WorkflowDto> workflowDtos = workflowInnerServiceSMOImpl.queryWorkflows(workflowDto);
 
         if (workflowDtos == null || workflowDtos.size() < 1) {
             return null;
         }
+        return getBusiness(paramInJson, workflowDtos);
+    }
+
+    /**
+     * 修改物品领用
+     *
+     * @param paramInJson
+     * @return
+     */
+    public JSONObject updateComplaint2(JSONObject paramInJson) {
+        WorkflowDto workflowDto = new WorkflowDto();
+        workflowDto.setCommunityId(paramInJson.getString("communityId"));
+        workflowDto.setFlowType(WorkflowDto.FLOW_TYPE_COLLECTION);
+        List<WorkflowDto> workflowDtos = workflowInnerServiceSMOImpl.queryWorkflows(workflowDto);
+
+        if (workflowDtos == null || workflowDtos.size() < 1) {
+            return null;
+        }
+        return getBusiness(paramInJson, workflowDtos);
+    }
+
+    /**
+     * 修改物品被调拨
+     *
+     * @param paramInJson
+     * @return
+     */
+    public JSONObject updateComplaint3(JSONObject paramInJson) {
+        WorkflowDto workflowDto = new WorkflowDto();
+        workflowDto.setCommunityId(paramInJson.getString("communityId"));
+        workflowDto.setFlowType(WorkflowDto.FLOW_TYPE_ALLOCATION_STOREHOUSE_GO);
+        List<WorkflowDto> workflowDtos = workflowInnerServiceSMOImpl.queryWorkflows(workflowDto);
+
+        if (workflowDtos == null || workflowDtos.size() < 1) {
+            return null;
+        }
+        return getBusiness(paramInJson, workflowDtos);
+    }
+
+    public JSONObject getBusiness(JSONObject paramInJson, List<WorkflowDto> workflowDtos) {
         JSONObject business = JSONObject.parseObject("{\"datas\":{}}");
         business.put(CommonConstant.HTTP_BUSINESS_TYPE_CD, BusinessTypeConstant.BUSINESS_TYPE_UPDATE_WORKFLOW);
         business.put(CommonConstant.HTTP_SEQ, 2);
@@ -147,6 +197,7 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         business.getJSONObject(CommonConstant.HTTP_BUSINESS_DATAS).put(WorkflowPo.class.getSimpleName(), data);
         return business;
     }
+
 
     /**
      * 添加小区成员
@@ -302,6 +353,7 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         businessFeeConfig.putAll(paramInJson);
         businessFeeConfig.put("feeTypeCd", FeeTypeConstant.FEE_TYPE_REPAIR);
         businessFeeConfig.put("feeName", "报修费[系统默认]");
+        businessFeeConfig.put("deductFrom", "Y");
         businessFeeConfig.put("feeFlag", "2006012"); //一次性费用
         businessFeeConfig.put("startTime", DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
         businessFeeConfig.put("endTime", DateUtil.LAST_TIME);
@@ -453,6 +505,7 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         businessFeeConfig.putAll(paramInJson);
         businessFeeConfig.put("feeTypeCd", FeeTypeConstant.FEE_TYPE_TEMP_DOWN_PARKING_SPACE);
         businessFeeConfig.put("feeName", "临时车费用[系统默认]");
+        businessFeeConfig.put("deductFrom", "Y");
         businessFeeConfig.put("feeFlag", "2006012");
         businessFeeConfig.put("startTime", DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
         businessFeeConfig.put("endTime", DateUtil.LAST_TIME);
@@ -477,6 +530,7 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
      * @return 小区成员信息
      */
     public void addCommunityMembers(JSONObject paramInJson, DataFlowContext dataFlowContext) {
+
 
         JSONObject businessCommunityMember = new JSONObject();
         businessCommunityMember.put("communityMemberId", "-1");
@@ -525,6 +579,7 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         super.insert(dataFlowContext, communityPo, BusinessTypeConstant.BUSINESS_TYPE_SAVE_COMMUNITY_INFO);
 
     }
+
     /**
      * 添加小区信息
      *
@@ -539,6 +594,7 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         super.insert(dataFlowContext, communityAttrPo, BusinessTypeConstant.BUSINESS_TYPE_SAVE_COMMUNITY_INFO);
 
     }
+
     /**
      * 添加小区信息
      *
@@ -565,6 +621,5 @@ public class CommunityBMOImpl extends ApiBaseBMO implements ICommunityBMO {
         CommunityPo communityPo = BeanConvertUtil.covertBean(paramInJson, CommunityPo.class);
 
         super.update(dataFlowContext, communityPo, BusinessTypeConstant.BUSINESS_TYPE_UPDATE_COMMUNITY_INFO);
-
     }
 }

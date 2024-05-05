@@ -7,7 +7,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.community.dao.IAppServiceDao;
 import com.java110.core.base.dao.BaseServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -119,6 +119,13 @@ public class AppServiceDaoImpl extends BaseServiceDao implements IAppServiceDao 
         }
 
         return Integer.parseInt(businessAppInfos.get(0).get("count").toString());
+    }
+
+    @Override
+    public List<Map> queryAppsServiceData(Map info) {
+        List<Map> infos = sqlSessionTemplate.selectList("appServiceDaoImpl.queryAppsServiceData",info);
+
+        return infos;
     }
 
 

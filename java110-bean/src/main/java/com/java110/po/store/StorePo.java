@@ -1,6 +1,7 @@
 package com.java110.po.store;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @ClassName StorePo
@@ -18,10 +19,13 @@ public class StorePo implements Serializable {
     private String address;
     private String tel;
     private String storeTypeCd;
-    private String nearbyLandmarks;
+    private String nearByLandmarks;
     private String mapX;
     private String mapY;
     private String state;
+    private String statusCd = "0";
+
+    private Date createTime;
 
     public String getStoreId() {
         return storeId;
@@ -71,12 +75,12 @@ public class StorePo implements Serializable {
         this.storeTypeCd = storeTypeCd;
     }
 
-    public String getNearbyLandmarks() {
-        return nearbyLandmarks;
+    public String getNearByLandmarks() {
+        return nearByLandmarks;
     }
 
-    public void setNearbyLandmarks(String nearbyLandmarks) {
-        this.nearbyLandmarks = nearbyLandmarks;
+    public void setNearByLandmarks(String nearByLandmarks) {
+        this.nearByLandmarks = nearByLandmarks;
     }
 
     public String getMapX() {
@@ -101,5 +105,21 @@ public class StorePo implements Serializable {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

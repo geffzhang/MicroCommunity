@@ -130,6 +130,7 @@
             t.obj_id,t.obj_id objId,
             t.obj_type,t.obj_type objType,
             t.mch_id,t.mch_id mchId,
+        t.mch_name mchName,
             t.wechat_type, t.wechat_type weChatType,
             d.name objTypeName
         from small_wechat t left join t_dict d on t.obj_type = d.status_cd and d.table_name = 'small_wechat' and d.table_columns = 'obj_type'
@@ -172,6 +173,9 @@
         </if>
         <if test="objId !=null and objId != ''">
             and t.obj_id= #{objId}
+        </if>
+        <if test="mchId !=null and mchId != ''">
+            and t.mch_id= #{mchId}
         </if>
         order by t.create_time desc
         <if test="page != -1 and page != null ">

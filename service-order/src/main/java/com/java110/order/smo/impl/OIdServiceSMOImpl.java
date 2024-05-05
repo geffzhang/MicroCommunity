@@ -3,17 +3,23 @@ package com.java110.order.smo.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.core.client.RestTemplate;
+import com.java110.core.context.Environment;
 import com.java110.core.factory.GenerateCodeFactory;
+import com.java110.core.log.LoggerFactory;
+import com.java110.dto.app.AppDto;
+import com.java110.dto.system.BusinessTableHisDto;
 import com.java110.dto.order.OrderDto;
 import com.java110.dto.order.OrderItemDto;
 import com.java110.order.dao.ICenterServiceDAO;
+import com.java110.order.smo.IAsynNotifySubService;
 import com.java110.order.smo.IOIdServiceSMO;
+import com.java110.utils.cache.BusinessTableHisCache;
+import com.java110.utils.constant.StatusConstant;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
 import com.java110.utils.util.StringUtil;
 import com.java110.vo.ResultVo;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -36,6 +42,8 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
 
     public static final String FALLBACK_URL = "http://SERVICE_NAME/businessApi/fallBack";
 
+    public static final String BOOT_FALLBACK_URL = "http://127.0.0.1:8008/businessApi/fallBack";
+
     public static final String SERVICE_NAME = "SERVICE_NAME";
 
 
@@ -43,7 +51,13 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
     private ICenterServiceDAO centerServiceDAOImpl;
 
     @Autowired
+    private RestTemplate outRestTemplate;
+
+    @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private IAsynNotifySubService asynNotifySubServiceImpl;
 
 
     @Override
@@ -51,23 +65,24 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
 
         orderDto.setoId(GenerateCodeFactory.getOId());
         if (StringUtil.isEmpty(orderDto.getAppId())) {
-            throw new IllegalArgumentException("未包含appId");
+            orderDto.setAppId(AppDto.WEB_APP_ID);
         }
 
         if (StringUtil.isEmpty(orderDto.getExtTransactionId())) {
-            throw new IllegalArgumentException("未包含交互日志");
+            orderDto.setExtTransactionId(GenerateCodeFactory.getTransactionId());
         }
 
         if (StringUtil.isEmpty(orderDto.getRequestTime())) {
-            throw new IllegalArgumentException("未包含请求时间");
+            orderDto.setRequestTime(DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_DEFAULT));
         }
 
         if (StringUtil.isEmpty(orderDto.getUserId())) {
-            throw new IllegalArgumentException("未包含用户ID");
+            orderDto.setUserId("-1");
         }
 
         //保存订单信息
         centerServiceDAOImpl.saveOrder(BeanConvertUtil.beanCovertMap(orderDto));
+
         return new ResponseEntity<String>(JSONObject.toJSONString(orderDto), HttpStatus.OK);
     }
 
@@ -100,7 +115,12 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
             try {
                 JSONArray params = generateParam(orderItemDto);
                 httpEntity = new HttpEntity<String>(params.toJSONString(), header);
-                restTemplate.exchange(FALLBACK_URL.replace(SERVICE_NAME, orderItemDto.getServiceName()), HttpMethod.POST, httpEntity, String.class);
+
+                if (Environment.isStartBootWay()) {
+                    outRestTemplate.exchange(BOOT_FALLBACK_URL, HttpMethod.POST, httpEntity, String.class);
+                } else if (!StringUtil.isEmpty(orderItemDto.getActionObj()) && !orderItemDto.getActionObj().equals("meter_water")) {
+                    restTemplate.exchange(FALLBACK_URL.replace(SERVICE_NAME, orderItemDto.getServiceName()), HttpMethod.POST, httpEntity, String.class);
+                }
 
                 //标记为订单项失败
                 Map info = new HashMap();
@@ -155,6 +175,7 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
 
         return params;
     }
+
 
     /**
      * 生成insert语句
@@ -309,7 +330,73 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
         }
         centerServiceDAOImpl.saveOrderItem(BeanConvertUtil.beanCovertMap(orderItemDto));
 
+        //获取action
+        String action = getOrderItemAction(orderItemDto);
+
+        //判断是否配置了 轨迹
+        BusinessTableHisDto businessTableHisDto = BusinessTableHisCache.getBusinessTableHisDto(action, orderItemDto.getActionObj());
+        if (businessTableHisDto == null) {
+            return ResultVo.createResponseEntity(ResultVo.CODE_OK, ResultVo.MSG_OK);
+        }
+
+        //补充 c_business  #{bId},#{oId},#{businessTypeCd},#{remark},#{statusCd}
+        Map business = new HashMap();
+        business.put("oId", orderItemDto.getoId());
+        business.put("businessTypeCd", businessTableHisDto.getBusinessTypeCd());
+        business.put("remark", "");
+        business.put("statusCd", StatusConstant.STATUS_CD_SAVE);
+        business.put("bId", orderItemDto.getbId());
+        centerServiceDAOImpl.saveBusiness(business);
+
+        //通知子服务生成 business 数据,如果配置NO 不通知生成 business 数据
+        if (BusinessTableHisDto.ACTION_OBJ_HIS_NO.equals(businessTableHisDto.getActionObjHis())) {
+            return ResultVo.createResponseEntity(ResultVo.CODE_OK, ResultVo.MSG_OK);
+        }
+
+        doNoticeServiceGeneratorBusiness(orderItemDto, businessTableHisDto);
         return ResultVo.createResponseEntity(ResultVo.CODE_OK, ResultVo.MSG_OK);
+    }
+
+    /**
+     * 这里 兼容性处理
+     * 因为我们不涉及 物理删除 都是逻辑删除 所以 status_cd 为 1 时强行设置为DEL 为逻辑删除
+     *
+     * @param orderItemDto
+     * @return
+     */
+    private String getOrderItemAction(OrderItemDto orderItemDto) {
+
+        if (StringUtil.isEmpty(orderItemDto.getLogText())) {
+            return orderItemDto.getAction();
+        }
+
+        if ("ADD".equals(orderItemDto.getAction()) || "DEL".equals(orderItemDto.getAction())) {
+            return orderItemDto.getAction();
+        }
+
+        if (!StringUtil.isJsonObject(orderItemDto.getLogText())) {
+            return orderItemDto.getAction();
+        }
+        JSONObject logTextObj = JSONObject.parseObject(orderItemDto.getLogText());
+        if (!logTextObj.containsKey("afterValue")) {
+            return orderItemDto.getAction();
+        }
+        JSONArray afterValues = logTextObj.getJSONArray("afterValue");
+        if (afterValues == null || afterValues.size() < 1) {
+            return orderItemDto.getAction();
+        }
+
+        for (int afterValueIndex = 0; afterValueIndex < afterValues.size(); afterValueIndex++) {
+            JSONObject keyValue = afterValues.getJSONObject(afterValueIndex);
+            if (keyValue.containsKey("status_cd") && "'1'".equals(keyValue.getString("status_cd"))) {
+                return "DEL";
+            }
+        }
+        return orderItemDto.getAction();
+    }
+
+    private void doNoticeServiceGeneratorBusiness(OrderItemDto orderItemDto, BusinessTableHisDto businessTableHisDto) {
+        asynNotifySubServiceImpl.notifySubService(orderItemDto, businessTableHisDto);
     }
 
     /**
@@ -331,9 +418,6 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
         info.put("oId", orderDto.getoId());
         centerServiceDAOImpl.updateOrderItem(info);
 
-        //删除 事务日志
-        //centerServiceDAOImpl.deleteUnItemLog(info);
-
         //完成订单
         info = new HashMap();
         info.put("finishTime", DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
@@ -341,6 +425,27 @@ public class OIdServiceSMOImpl implements IOIdServiceSMO {
         info.put("oId", orderDto.getoId());
         centerServiceDAOImpl.updateOrder(info);
 
+        //将c_business 修改为完成
+        //完成订单项
+        info = new HashMap();
+        info.put("finishTime", DateUtil.getNow(DateUtil.DATE_FORMATE_STRING_A));
+        info.put("statusCd", "C");
+        info.put("oId", orderDto.getoId());
+        centerServiceDAOImpl.updateBusiness(info);
+
+        //触发databug
+        //查询 事务项
+        Map orderItem = new HashMap();
+        orderItem.put("oId", orderDto.getoId());
+        List<Map> orderItemMaps = centerServiceDAOImpl.getOrderItems(orderItem);
+
+        //删除 事务日志
+        //centerServiceDAOImpl.deleteUnItemLog(info);
+
+        asynNotifySubServiceImpl.notifyDatabus(orderItemMaps, orderDto);
+
         return ResultVo.createResponseEntity(ResultVo.CODE_OK, ResultVo.MSG_OK);
     }
+
+
 }

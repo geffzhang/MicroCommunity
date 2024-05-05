@@ -17,9 +17,9 @@ package com.java110.order;
 
 import com.java110.config.properties.code.ZookeeperProperties;
 import com.java110.core.annotation.Java110ListenerDiscovery;
+import com.java110.core.trace.Java110RestTemplateInterceptor;
 import com.java110.core.client.RestTemplate;
 import com.java110.core.event.center.DataFlowEventPublishing;
-import com.java110.order.smo.ICenterServiceCacheSMO;
 import com.java110.service.init.ServiceInfoListener;
 import com.java110.service.init.ServiceStartInit;
 import com.java110.utils.cache.MappingCache;
@@ -32,7 +32,7 @@ import com.java110.utils.util.StringUtil;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -42,7 +42,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -72,9 +74,13 @@ import java.util.List;
         "com.java110.intf.community",
         "com.java110.intf.fee"
 })
+@EnableAsync
 public class OrderServiceApplicationStart {
 
     private static Logger logger = LoggerFactory.getLogger(OrderServiceApplicationStart.class);
+
+    @Resource
+    private Java110RestTemplateInterceptor java110RestTemplateInterceptor;
 
     /**
      * 实例化RestTemplate，通过@LoadBalanced注解开启均衡负载能力.
@@ -86,6 +92,7 @@ public class OrderServiceApplicationStart {
     public RestTemplate restTemplate() {
         StringHttpMessageConverter m = new StringHttpMessageConverter(Charset.forName("UTF-8"));
         RestTemplate restTemplate = new RestTemplateBuilder().additionalMessageConverters(m).build(RestTemplate.class);
+        restTemplate.getInterceptors().add(java110RestTemplateInterceptor);
         return restTemplate;
     }
 
@@ -103,6 +110,8 @@ public class OrderServiceApplicationStart {
 
     public static void main(String[] args) throws Exception {
         try {
+            ServiceStartInit.preInitSystemConfig();
+
             ApplicationContext context = SpringApplication.run(OrderServiceApplicationStart.class, args);
 
             //服务启动加载
@@ -111,45 +120,17 @@ public class OrderServiceApplicationStart {
             //加载事件数据
             //EventConfigInit.initSystemConfig();
 
-            //刷新缓存
-            flushMainCache(args);
 
             //加载workId
             loadWorkId();
+
+            //服务启动完成
+            ServiceStartInit.printStartSuccessInfo();
         } catch (Throwable e) {
             logger.error("系统启动失败", e);
         }
     }
 
-
-    /**
-     * 刷新主要的缓存
-     *
-     * @param args
-     */
-    private static void flushMainCache(String[] args) {
-
-        logger.debug("判断是否需要刷新日志，参数 args 为 {}", args);
-
-        //因为好多朋友启动时 不加 参数-Dcache 所以启动时检测 redis 中是否存在 java110_hc_version
-        String mapping = MappingCache.getValue("java110_hc_version");
-        if (StringUtil.isEmpty(mapping)) {
-            ICenterServiceCacheSMO centerServiceCacheSMO = (ICenterServiceCacheSMO) ApplicationContextFactory.getBean("centerServiceCacheSMOImpl");
-            centerServiceCacheSMO.startFlush();
-            return;
-        }
-
-        if (args == null || args.length == 0) {
-            return;
-        }
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equalsIgnoreCase("-Dcache")) {
-                logger.debug("开始刷新日志，入参为：{}", args[i]);
-                ICenterServiceCacheSMO centerServiceCacheSMO = (ICenterServiceCacheSMO) ApplicationContextFactory.getBean("centerServiceCacheSMOImpl");
-                centerServiceCacheSMO.startFlush();
-            }
-        }
-    }
 
     /**
      * 加载 workId

@@ -17,7 +17,7 @@ import java.util.Date;
  * add by wuxw 2020/1/28
  **/
 public class Java110Converter implements Converter {
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     @Override
     public Object convert(Object value, Class target, Object context) {
@@ -26,6 +26,8 @@ public class Java110Converter implements Converter {
     }
 
     public static Object getValue(Object value, Class target) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         if (value == null) {
             return value;
@@ -76,7 +78,7 @@ public class Java110Converter implements Converter {
             return newDate;
         }
 
-        if (value instanceof BigDecimal) {
+        if (value instanceof BigDecimal && target == String.class) {
             BigDecimal bd = (BigDecimal) value;
             return bd.toPlainString();
         }
@@ -85,19 +87,37 @@ public class Java110Converter implements Converter {
         }
 
         if (target == int.class || target == Integer.class) {
+            if(StringUtil.isNullOrNone(value)){
+                return 0;
+            }
             return Integer.parseInt(String.valueOf(value));
         }
 
         if (target == long.class || target == Long.class) {
+            if(StringUtil.isNullOrNone(value)){
+                return 0;
+            }
             return Long.parseLong(String.valueOf(value));
         }
 
         if (target == double.class || target == Double.class) {
+            if(StringUtil.isNullOrNone(value)){
+                return 0;
+            }
             return Double.parseDouble(String.valueOf(value));
         }
 
         if (target == String[].class) {
             return String.valueOf(value).split(",");
+        }
+
+        //1.0 String 转 Date
+        if (value instanceof String && target == boolean.class) {
+            String bl = (String) value;
+            if ("true".equals(bl)) {
+                return true;
+            }
+            return false;
         }
 
         return value;

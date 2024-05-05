@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="resourceStoreTypeServiceDaoImpl">
+
+    <!-- 保存物品类型信息 add by wuxw 2018-07-03 -->
+    <insert id="saveBusinessResourceStoreTypeInfo" parameterType="Map">
+        insert into business_resource_store_type(rst_id, name, description, b_id, store_id, create_time, operate,
+                                                 parent_id)
+        values (#{rstId}, #{name}, #{description}, #{bId}, #{storeId}, #{createTime}, #{operate}, #{parentId})
+    </insert>
+
+    <!-- 查询物品类型信息（Business） add by wuxw 2018-07-03 -->
+    <select id="getBusinessResourceStoreTypeInfo" parameterType="Map" resultType="Map">
+        select t.rst_id,t.rst_id rstId,t.name,t.description,t.b_id,t.b_id bId,t.store_id,t.store_id
+        storeId,t.parent_id,t.parent_id parentId
+        from business_resource_store_type t
+        where 1 =1
+        <if test="rstId !=null and rstId != ''">
+            and t.rst_id= #{rstId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="description !=null and description != ''">
+            and t.description= #{description}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="parentId !=null and parentId != ''">
+            and t.parent_id= #{parentId}
+        </if>
+    </select>
+
+    <!-- 保存物品类型信息至 instance表中 add by wuxw 2018-07-03 -->
+    <insert id="saveResourceStoreTypeInfoInstance" parameterType="Map">
+        insert into resource_store_type(
+        rst_id,name,description,status_cd,b_id,store_id,create_time,parent_id
+        ) select t.rst_id,t.name,t.description,'0',t.b_id,t.store_id,t.create_time,t.parent_id from
+        business_resource_store_type t
+        where 1=1
+        <if test="rstId !=null and rstId != ''">
+            and t.rst_id= #{rstId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name= #{name}
+        </if>
+        <if test="description !=null and description != ''">
+            and t.description= #{description}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="parentId !=null and parentId != ''">
+            and t.parent_id= #{parentId}
+        </if>
+    </insert>
+
+    <!-- 查询物品类型信息 add by wuxw 2018-07-03 -->
+    <select id="getResourceStoreTypeInfo" parameterType="Map" resultType="Map">
+        select t.rst_id,t.rst_id rstId,t.name,t.description,t.status_cd,t.status_cd statusCd,t.b_id,t.b_id
+        bId,t.store_id,t.store_id storeId,t.create_time,t.create_time createTime,t.parent_id,t.parent_id parentId,
+        t.name from resource_store_type t
+        where 1 =1
+        <if test="rstId !=null and rstId != ''">
+            and t.rst_id= #{rstId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name like '%${name}%'
+        </if>
+        <if test="description !=null and description != ''">
+            and t.description= #{description}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="parentId !=null and parentId != ''">
+            and t.parent_id= #{parentId}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 修改物品类型信息 add by wuxw 2018-07-03 -->
+    <update id="updateResourceStoreTypeInfoInstance" parameterType="Map">
+        update resource_store_type t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="name !=null and name != ''">
+            , t.name= #{name}
+        </if>
+        <if test="description !=null and description != ''">
+            , t.description= #{description}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            , t.store_id= #{storeId}
+        </if>
+        <if test="parentId !=null and parentId != ''">
+            , t.parent_id= #{parentId}
+        </if>
+        where 1=1
+        <if test="rstId !=null and rstId != ''">
+            and t.rst_id= #{rstId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+    </update>
+
+    <!-- 查询物品类型数量 add by wuxw 2018-07-03 -->
+    <select id="queryResourceStoreTypesCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from resource_store_type t
+        where 1 =1
+        <if test="rstId !=null and rstId != ''">
+            and t.rst_id= #{rstId}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name like '%${name}%'
+        </if>
+        <if test="description !=null and description != ''">
+            and t.description= #{description}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="parentId !=null and parentId != ''">
+            and t.parent_id= #{parentId}
+        </if>
+    </select>
+
+    <select id="queryResourceStoreTypeTree" parameterType="Map" resultType="Map">
+        select t.rst_id rstId,t.name,t.description ,rst.rst_id parentRstId,rst.name parentName,rst.description parentDescription
+        from resource_store_type t
+        left join resource_store_type rst on t.parent_id = rst.rst_id and rst.status_cd = '0'
+        where 1=1
+        and t.status_cd = '0'
+        and t.store_id= #{storeId}
+    </select>
+</mapper>

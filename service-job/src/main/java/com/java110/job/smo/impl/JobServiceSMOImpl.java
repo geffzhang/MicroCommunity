@@ -6,8 +6,8 @@ import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.core.context.BusinessServiceDataFlow;
 import com.java110.core.event.service.BusinessServiceDataFlowEventPublishing;
 import com.java110.core.factory.DataFlowFactory;
-import com.java110.entity.center.DataFlowLinksCost;
-import com.java110.entity.center.DataFlowLog;
+import com.java110.dto.system.DataFlowLinksCost;
+import com.java110.dto.system.DataFlowLog;
 import com.java110.job.smo.IJobServiceSMO;
 import com.java110.utils.cache.MappingCache;
 import com.java110.utils.constant.KafkaConstant;
@@ -18,7 +18,7 @@ import com.java110.utils.kafka.KafkaFactory;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +85,7 @@ public class JobServiceSMOImpl extends BaseServiceSMO implements IJobServiceSMO 
     private void saveLogMessage(BusinessServiceDataFlow businessServiceDataFlow) {
 
         try {
-            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_LOG_ON_OFF))) {
+            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_LOG_ON_OFF))) {
                 for (DataFlowLog dataFlowLog : businessServiceDataFlow.getLogDatas()) {
                     KafkaFactory.sendKafkaMessage(KafkaConstant.TOPIC_LOG_NAME, "", JSONObject.toJSONString(dataFlowLog));
                 }
@@ -102,7 +102,7 @@ public class JobServiceSMOImpl extends BaseServiceSMO implements IJobServiceSMO 
      */
     private void saveCostTimeLogMessage(BusinessServiceDataFlow businessServiceDataFlow) {
         try {
-            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.KEY_COST_TIME_ON_OFF))) {
+            if (MappingConstant.VALUE_ON.equals(MappingCache.getValue(MappingConstant.DOMAIN_SYSTEM_SWITCH,MappingConstant.KEY_COST_TIME_ON_OFF))) {
                 List<DataFlowLinksCost> dataFlowLinksCosts = businessServiceDataFlow.getLinksCostDates();
                 JSONObject costDate = new JSONObject();
                 JSONArray costDates = new JSONArray();

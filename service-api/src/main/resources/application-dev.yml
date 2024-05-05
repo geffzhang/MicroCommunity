@@ -1,14 +1,3 @@
-jedis:
-  pool:
-    config:
-      maxTotal: 100
-      maxIdle: 20
-      maxWaitMillis: 20000
-    host: dev.redis.java110.com
-    port: 6379
-    timeout: 3000
-    password: hc
-
 eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
@@ -25,6 +14,10 @@ server:
     uri-encoding: UTF-8
 
 spring:
+  servlet:
+    multipart:
+      maxFileSize: 50MB
+      maxRequestSize: 50MB
   http:
     encoding:
       charset: UTF-8
@@ -43,6 +36,8 @@ spring:
       max-idle: 100
       min-idle: 0
       timeout: 0
+
+
 
 feign:
   client:
@@ -70,7 +65,7 @@ kafka:
         reset: latest
     topic: test
     group:
-      id: notifyBusinessStatus
+      id: -1  # -1 表示自己生成 走广播模式
     concurrency: 10
 
   producer:

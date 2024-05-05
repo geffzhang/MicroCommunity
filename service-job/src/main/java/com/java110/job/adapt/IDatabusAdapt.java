@@ -16,7 +16,11 @@
 package com.java110.job.adapt;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.entity.order.Business;
+import com.java110.dto.data.DatabusDataDto;
+import com.java110.dto.machine.CarInoutDto;
+import com.java110.dto.machine.MachineDto;
+import com.java110.dto.fee.TempCarPayOrderDto;
+import com.java110.dto.system.Business;
 import com.java110.vo.ResultVo;
 
 import java.util.List;
@@ -34,7 +38,7 @@ public interface IDatabusAdapt {
      * @param business   当前处理业务
      * @param businesses 所有业务信息
      */
-    public void execute(Business business, List<Business> businesses);
+     void execute(Business business, List<Business> businesses) throws Exception;
 
     /**
      * 开门接口
@@ -42,7 +46,15 @@ public interface IDatabusAdapt {
      * @param paramIn 业务信息
      */
     ResultVo openDoor(JSONObject paramIn);
+    /**
+     * 开门接口
+     *
+     * @param paramIn 业务信息
+     */
+    ResultVo closeDoor(JSONObject paramIn);
 
+
+    ResultVo getQRcode(JSONObject reqJson);
     /**
      * 重启设备
      *
@@ -53,4 +65,24 @@ public interface IDatabusAdapt {
     ResultVo restartMachine(JSONObject reqJson);
 
     ResultVo reSendToIot(JSONObject reqJson);
+
+    ResultVo getTempCarFeeOrder(TempCarPayOrderDto tempCarPayOrderDto);
+
+    ResultVo notifyTempCarFeeOrder(TempCarPayOrderDto tempCarPayOrderDto);
+
+
+
+    ResultVo customCarInOut(JSONObject reqJson);
+
+    ResultVo payVideo(MachineDto machineDto);
+
+    ResultVo heartbeatVideo(JSONObject reqJson);
+
+    ResultVo updateCarInoutCarNum(CarInoutDto carInoutDto);
+
+    ResultVo getManualOpenDoorLogs(JSONObject reqJson);
+
+    ResultVo tempCarAuth(JSONObject reqJson);
+
+    ResultVo getTempCarAuths(JSONObject reqJson);
 }

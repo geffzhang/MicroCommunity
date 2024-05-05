@@ -1,7 +1,7 @@
 package com.java110.fee.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.meterWater.MeterWaterDto;
+import com.java110.dto.meter.MeterWaterDto;
 import com.java110.fee.bmo.meterWater.IQueryPreMeterWater;
 import com.java110.utils.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +27,8 @@ public class MeterWaterApi {
      */
     @RequestMapping(value = "/queryPreMeterWater", method = RequestMethod.GET)
     public ResponseEntity<String> queryPreMeterWater(@RequestParam(value = "communityId") String communityId,
-                                                     @RequestParam(value = "objId") String objId,
-                                                     @RequestParam(value = "objType") String objType,
+                                                     @RequestParam(value = "objId", required = false) String objId,
+                                                     @RequestParam(value = "objType", required = false) String objType,
                                                      @RequestParam(value = "roomNum", required = false) String roomNum,
                                                      @RequestParam(value = "meterType", required = false) String meterType) {
         MeterWaterDto meterWaterDto = new MeterWaterDto();
@@ -70,6 +70,8 @@ public class MeterWaterApi {
         Assert.hasKeyAndValue(reqJson, "configId", "请求信息中未包含费用项");
         Assert.hasKeyAndValue(reqJson, "storeId", "请求信息中未包含商户信息");
         Assert.hasKeyAndValue(reqJson, "feeTypeCd", "请求信息中未包含费用类型");
+        Assert.hasKeyAndValue(reqJson, "batchId", "请求信息中未包含批次号");
+        Assert.hasKeyAndValue(reqJson, "meterType", "请求信息中未包含抄表类型");
         return queryPreMeterWaterImpl.importMeterWater(reqJson);
     }
 

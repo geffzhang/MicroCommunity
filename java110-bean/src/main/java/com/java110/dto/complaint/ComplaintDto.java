@@ -17,6 +17,9 @@ public class ComplaintDto extends PageDto implements Serializable {
 
     public static final String STATE_AGREE = "";
 
+    public static final String STATE_WAIT = "10001";
+    public static final String STATE_FINISH = "10002";
+
     //工作流实例ID
     private String processInstanceId;
 
@@ -41,19 +44,18 @@ public class ComplaintDto extends PageDto implements Serializable {
     private String currentUserId;
     private String currentUserName;
     private String currentUserTel;
+    private String startTime;
+    private String endTime;
 
     private String startUserId;
 
-    //
     private String auditCode;
 
     private String auditMessage;
 
-
     private Date createTime;
 
     private String statusCd = "0";
-
 
     public String getComplaintId() {
         return complaintId;
@@ -118,7 +120,6 @@ public class ComplaintDto extends PageDto implements Serializable {
     public void setRoomId(String roomId) {
         this.roomId = roomId;
     }
-
 
     public Date getCreateTime() {
         return createTime;
@@ -262,5 +263,21 @@ public class ComplaintDto extends PageDto implements Serializable {
 
     public void setRoomIds(String[] roomIds) {
         this.roomIds = roomIds;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

@@ -1,11 +1,14 @@
 package com.java110.community.smo.impl;
 
+import com.java110.community.dao.IFloorAttrServiceDao;
+import com.java110.dto.unit.UnitDto;
+import com.java110.dto.floor.FloorAttrDto;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.community.dao.IFloorServiceDao;
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.intf.community.IFloorInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
-import com.java110.dto.FloorDto;
+import com.java110.dto.floor.FloorDto;
 import com.java110.dto.PageDto;
 import com.java110.dto.user.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,9 @@ public class FloorInnerServiceSMOImpl extends BaseServiceSMO implements IFloorIn
 
     @Autowired
     private IUserInnerServiceSMO userInnerServiceSMOImpl;
+
+    @Autowired
+    private IFloorAttrServiceDao floorAttrServiceDaoImpl;
 
     /**
      * 查询 信息
@@ -101,15 +107,47 @@ public class FloorInnerServiceSMOImpl extends BaseServiceSMO implements IFloorIn
         //根据 userId 查询用户信息
         List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
 
+        List<String> floorIds = new ArrayList<>();
         for (FloorDto floor : floors) {
+            floorIds.add(floor.getFloorId());
             refreshFloor(floor, users);
         }
+
+        Map info = new HashMap();
+        info.put("floorIds", floorIds.toArray(new String[floorIds.size()]));
+        info.put("communityId", floors.get( 0 ).getCommunityId());
+        List<FloorAttrDto> floorAttrDtos = BeanConvertUtil.covertBeanList(floorAttrServiceDaoImpl.getFloorAttrInfo(info), FloorAttrDto.class);
+
+        if (floorAttrDtos == null || floorAttrDtos.size() < 1) {
+            return floors;
+        }
+
+
+        for (FloorDto tmpFloorDto : floors) {
+            List<FloorAttrDto> tmpCommunityAttrDtos = new ArrayList<>();
+            for (FloorAttrDto floorAttrDto : floorAttrDtos) {
+                if (tmpFloorDto.getCommunityId().equals(floorAttrDto.getCommunityId()) && tmpFloorDto.getFloorId().equals( floorAttrDto.getFloorId() )) {
+                    tmpCommunityAttrDtos.add(floorAttrDto);
+                }
+            }
+            tmpFloorDto.setFloorAttrDto(tmpCommunityAttrDtos);
+
+        }
+
+
+
         return floors;
     }
 
     @Override
     public int queryFloorsCount(@RequestBody FloorDto floorDto) {
         return floorServiceDaoImpl.queryFloorsCount(BeanConvertUtil.beanCovertMap(floorDto));
+    }
+
+    @Override
+    public List<UnitDto> queryFloorAndUnits(@RequestBody UnitDto unitDto) {
+
+        return BeanConvertUtil.covertBeanList(floorServiceDaoImpl.queryFloorAndUnits(BeanConvertUtil.beanCovertMap(unitDto)),UnitDto.class);
     }
 
 

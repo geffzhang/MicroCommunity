@@ -18,7 +18,9 @@ package com.java110.job.adapt.hcIot.parkingArea;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.dto.parking.ParkingAreaDto;
-import com.java110.entity.order.Business;
+import com.java110.dto.parking.ParkingAreaAttrDto;
+import com.java110.dto.system.Business;
+import com.java110.intf.community.IParkingAreaAttrInnerServiceSMO;
 import com.java110.intf.community.IParkingAreaInnerServiceSMO;
 import com.java110.intf.user.IOwnerInnerServiceSMO;
 import com.java110.job.adapt.DatabusAdaptImpl;
@@ -49,6 +51,10 @@ public class AddParkingAreaToIotAdapt extends DatabusAdaptImpl {
     private IParkingAreaInnerServiceSMO parkingAreaInnerServiceSMOImpl;
 
     @Autowired
+    private IParkingAreaAttrInnerServiceSMO parkingAreaAttrInnerServiceSMOImpl;
+
+
+    @Autowired
     private IOwnerInnerServiceSMO ownerInnerServiceSMOImpl;
 
 
@@ -67,11 +73,10 @@ public class AddParkingAreaToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray businessParkingAreas = new JSONArray();
         if (data.containsKey(ParkingAreaPo.class.getSimpleName())) {
             Object bObj = data.get(ParkingAreaPo.class.getSimpleName());
-            JSONArray businessParkingAreas = null;
             if (bObj instanceof JSONObject) {
-                businessParkingAreas = new JSONArray();
                 businessParkingAreas.add(bObj);
             } else if (bObj instanceof List) {
                 businessParkingAreas = JSONArray.parseArray(JSONObject.toJSONString(bObj));
@@ -79,10 +84,16 @@ public class AddParkingAreaToIotAdapt extends DatabusAdaptImpl {
                 businessParkingAreas = (JSONArray) bObj;
             }
             //JSONObject businessParkingArea = data.getJSONObject("businessParkingArea");
-            for (int bParkingAreaIndex = 0; bParkingAreaIndex < businessParkingAreas.size(); bParkingAreaIndex++) {
-                JSONObject businessParkingArea = businessParkingAreas.getJSONObject(bParkingAreaIndex);
-                doSendParkingArea(business, businessParkingArea);
+
+        }else {
+            if (data instanceof JSONObject) {
+                businessParkingAreas = new JSONArray();
+                businessParkingAreas.add(data);
             }
+        }
+        for (int bParkingAreaIndex = 0; bParkingAreaIndex < businessParkingAreas.size(); bParkingAreaIndex++) {
+            JSONObject businessParkingArea = businessParkingAreas.getJSONObject(bParkingAreaIndex);
+            doSendParkingArea(business, businessParkingArea);
         }
     }
 
@@ -97,11 +108,18 @@ public class AddParkingAreaToIotAdapt extends DatabusAdaptImpl {
 
         Assert.listOnlyOne(parkingAreaDtos, "未找到停车场");
 
+        //查询属性
+        ParkingAreaAttrDto parkingAreaAttrDto = new ParkingAreaAttrDto();
+        parkingAreaAttrDto.setPaId(parkingAreaDtos.get(0).getPaId());
+        parkingAreaAttrDto.setCommunityId(parkingAreaDtos.get(0).getCommunityId());
+        List<ParkingAreaAttrDto> parkingAreaAttrDtos = parkingAreaAttrInnerServiceSMOImpl.queryParkingAreaAttrs(parkingAreaAttrDto);
+
         JSONObject postParameters = new JSONObject();
 
         postParameters.put("num", parkingAreaDtos.get(0).getNum());
         postParameters.put("extPaId", parkingAreaDtos.get(0).getPaId());
         postParameters.put("extCommunityId", parkingAreaDtos.get(0).getCommunityId());
+        postParameters.put("attrs", parkingAreaAttrDtos);
         hcParkingAreaAsynImpl.addParkingArea(postParameters);
     }
 }

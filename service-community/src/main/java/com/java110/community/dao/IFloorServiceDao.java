@@ -93,5 +93,5 @@ public interface IFloorServiceDao {
     int queryFloorsCount(Map info) throws DAOException;
 
 
-
+    List<Map> queryFloorAndUnits(Map info);
 }

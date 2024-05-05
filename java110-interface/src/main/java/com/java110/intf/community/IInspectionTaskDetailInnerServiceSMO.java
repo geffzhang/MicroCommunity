@@ -1,7 +1,7 @@
 package com.java110.intf.community;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.inspectionTaskDetail.InspectionTaskDetailDto;
+import com.java110.dto.inspection.InspectionTaskDetailDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,4 +38,13 @@ public interface IInspectionTaskDetailInnerServiceSMO {
      */
     @RequestMapping(value = "/queryInspectionTaskDetailsCount", method = RequestMethod.POST)
     int queryInspectionTaskDetailsCount(@RequestBody InspectionTaskDetailDto inspectionTaskDetailDto);
+
+    /**
+     * 更新巡检任务详情表
+     *
+     * @param inspectionTaskDetailDto
+     * @return
+     */
+    @RequestMapping(value = "/updateInspectionTaskDetail", method = RequestMethod.POST)
+    void updateInspectionTaskDetail(@RequestBody InspectionTaskDetailDto inspectionTaskDetailDto);
 }

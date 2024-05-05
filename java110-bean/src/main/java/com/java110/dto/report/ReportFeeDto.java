@@ -28,7 +28,9 @@ public class ReportFeeDto extends PageDto implements Serializable {
     private String configId;
 
     private String squarePrice;
+    private String mwPrice;
     private String additionalAmount;
+    private String additionalAmountText;
     private String state;
     private String stateName;
     private String feeFlag;
@@ -40,6 +42,7 @@ public class ReportFeeDto extends PageDto implements Serializable {
     private double feePrice;
     private String payerObjType;
     private String computingFormula;
+    private String computingFormulaText;
     private String isDefault;
     private double oweFee; // 欠费金额
     private String billType;
@@ -59,7 +62,6 @@ public class ReportFeeDto extends PageDto implements Serializable {
 
     private String ownerTel;
 
-
     private Date createTime;
 
     /**
@@ -75,7 +77,6 @@ public class ReportFeeDto extends PageDto implements Serializable {
 
     private Date importFeeEndTime;
 
-
     private String curDegrees;
     private String preDegrees;
 
@@ -90,8 +91,25 @@ public class ReportFeeDto extends PageDto implements Serializable {
     private String storeName;
     private String storeTypeCd;
 
+    private String roomSubType;
+    private String roomRent;
+    private String roomArea;
 
+    private String payOnline;
+    private String scale;
+    private String decimalPlace;
+    private String units;
 
+    private Date newStartTime;
+    private Date newEndTime;
+
+    private String rateCycle;
+
+    private String rate;
+
+    private String rateStartTime;
+
+    private String prepaymentPeriod;
 
     public String getAmount() {
         return amount;
@@ -491,5 +509,132 @@ public class ReportFeeDto extends PageDto implements Serializable {
 
     public void setStoreTypeCd(String storeTypeCd) {
         this.storeTypeCd = storeTypeCd;
+    }
+
+    public String getAdditionalAmountText() {
+        return additionalAmountText;
+    }
+
+    public void setAdditionalAmountText(String additionalAmountText) {
+        this.additionalAmountText = additionalAmountText;
+    }
+
+    public String getMwPrice() {
+        return mwPrice;
+    }
+
+    public void setMwPrice(String mwPrice) {
+        this.mwPrice = mwPrice;
+    }
+
+    public String getRoomSubType() {
+        return roomSubType;
+    }
+
+    public void setRoomSubType(String roomSubType) {
+        this.roomSubType = roomSubType;
+    }
+
+    public String getRoomRent() {
+        return roomRent;
+    }
+
+    public void setRoomRent(String roomRent) {
+        this.roomRent = roomRent;
+    }
+
+    public String getRoomArea() {
+        return roomArea;
+    }
+
+    public void setRoomArea(String roomArea) {
+        this.roomArea = roomArea;
+    }
+
+    public String getPayOnline() {
+        return payOnline;
+    }
+
+    public void setPayOnline(String payOnline) {
+        this.payOnline = payOnline;
+    }
+
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getDecimalPlace() {
+        return decimalPlace;
+    }
+
+    public void setDecimalPlace(String decimalPlace) {
+        this.decimalPlace = decimalPlace;
+    }
+
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+    public String getComputingFormulaText() {
+        return computingFormulaText;
+    }
+
+    public void setComputingFormulaText(String computingFormulaText) {
+        this.computingFormulaText = computingFormulaText;
+    }
+    public Date getNewStartTime() {
+        return newStartTime;
+    }
+
+    public void setNewStartTime(Date newStartTime) {
+        this.newStartTime = newStartTime;
+    }
+
+    public Date getNewEndTime() {
+        return newEndTime;
+    }
+
+    public void setNewEndTime(Date newEndTime) {
+        this.newEndTime = newEndTime;
+    }
+
+    public String getRateCycle() {
+        return rateCycle;
+    }
+
+    public void setRateCycle(String rateCycle) {
+        this.rateCycle = rateCycle;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getRateStartTime() {
+        return rateStartTime;
+    }
+
+    public void setRateStartTime(String rateStartTime) {
+        this.rateStartTime = rateStartTime;
+    }
+
+    public String getPrepaymentPeriod() {
+        return prepaymentPeriod;
+    }
+
+    public void setPrepaymentPeriod(String prepaymentPeriod) {
+        this.prepaymentPeriod = prepaymentPeriod;
     }
 }

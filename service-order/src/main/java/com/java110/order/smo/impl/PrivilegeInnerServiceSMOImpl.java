@@ -16,7 +16,7 @@
 package com.java110.order.smo.impl;
 
 import com.java110.core.base.smo.BaseServiceSMO;
-import com.java110.dto.basePrivilege.BasePrivilegeDto;
+import com.java110.dto.privilege.BasePrivilegeDto;
 import com.java110.dto.user.UserDto;
 import com.java110.intf.order.IPrivilegeInnerServiceSMO;
 import com.java110.order.dao.IPrivilegeDAO;
@@ -45,4 +45,6 @@ public class PrivilegeInnerServiceSMOImpl extends BaseServiceSMO implements IPri
         List<Map> userIds = privilegeDAOImpl.queryPrivilegeUsers(BeanConvertUtil.beanCovertMap(privilegeDto));
         return BeanConvertUtil.covertBeanList(userIds, UserDto.class);
     }
+
+
 }

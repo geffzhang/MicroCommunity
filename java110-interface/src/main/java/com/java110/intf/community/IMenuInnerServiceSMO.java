@@ -1,9 +1,10 @@
 package com.java110.intf.community;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.basePrivilege.BasePrivilegeDto;
+import com.java110.dto.privilege.BasePrivilegeDto;
+import com.java110.dto.privilege.HasPrivilegeDto;
 import com.java110.dto.menu.MenuDto;
-import com.java110.dto.menuGroup.MenuGroupDto;
+import com.java110.dto.menu.MenuGroupDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +73,18 @@ public interface IMenuInnerServiceSMO {
 
 
 
+
+
+    /**
+     * 查询<p>小区楼</p>总记录数
+     *
+     * @param routeDto 数据对象分享
+     * @return 小区下的小区楼记录数
+     */
+    @RequestMapping(value = "/checkUserHasResource", method = RequestMethod.POST)
+    List<Map> checkUserHasResource(@RequestBody BasePrivilegeDto routeDto);
+
+
     /**
      * <p>查询小区楼信息</p>
      *
@@ -89,17 +102,6 @@ public interface IMenuInnerServiceSMO {
      */
     @RequestMapping(value = "/queryBasePrivilegesCount", method = RequestMethod.POST)
     int queryBasePrivilegesCount(@RequestBody BasePrivilegeDto routeDto);
-
-
-    /**
-     * 查询<p>小区楼</p>总记录数
-     *
-     * @param routeDto 数据对象分享
-     * @return 小区下的小区楼记录数
-     */
-    @RequestMapping(value = "/checkUserHasResource", method = RequestMethod.POST)
-    List<Map> checkUserHasResource(@RequestBody BasePrivilegeDto routeDto);
-
 
     /**
      * <p>修改APP信息</p>
@@ -178,5 +180,6 @@ public interface IMenuInnerServiceSMO {
     @RequestMapping(value = "/deleteMenu", method = RequestMethod.POST)
     int deleteMenu(@RequestBody MenuDto routeDto);
 
-
+    @RequestMapping(value = "/hasPrivilege", method = RequestMethod.POST)
+    List<HasPrivilegeDto> hasPrivilege(@RequestBody HasPrivilegeDto hasPrivilegeDto);
 }

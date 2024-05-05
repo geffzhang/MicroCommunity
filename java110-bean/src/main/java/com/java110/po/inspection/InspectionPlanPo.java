@@ -18,12 +18,20 @@ public class InspectionPlanPo implements Serializable {
     private String communityId;
     private String startTime;
     private String endTime;
+    private String startDate;
+    private String endDate;
     private String inspectionPlanPeriod;
     private String signType;
     private String state;
     private String remark;
     private String createUserId;
     private String createUserName;
+    private String statusCd ="0";
+    private String inspectionMonth;
+    private String inspectionDay;
+    private String inspectionWorkday;
+    private String beforeTime;
+    private String canReexamine;
 
     public String getInspectionPlanId() {
         return inspectionPlanId;
@@ -119,5 +127,69 @@ public class InspectionPlanPo implements Serializable {
 
     public void setCreateUserName(String createUserName) {
         this.createUserName = createUserName;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getInspectionMonth() {
+        return inspectionMonth;
+    }
+
+    public void setInspectionMonth(String inspectionMonth) {
+        this.inspectionMonth = inspectionMonth;
+    }
+
+    public String getInspectionDay() {
+        return inspectionDay;
+    }
+
+    public void setInspectionDay(String inspectionDay) {
+        this.inspectionDay = inspectionDay;
+    }
+
+    public String getInspectionWorkday() {
+        return inspectionWorkday;
+    }
+
+    public void setInspectionWorkday(String inspectionWorkday) {
+        this.inspectionWorkday = inspectionWorkday;
+    }
+
+    public String getBeforeTime() {
+        return beforeTime;
+    }
+
+    public void setBeforeTime(String beforeTime) {
+        this.beforeTime = beforeTime;
+    }
+
+    public String getCanReexamine() {
+        return canReexamine;
+    }
+
+    public void setCanReexamine(String canReexamine) {
+        this.canReexamine = canReexamine;
     }
 }

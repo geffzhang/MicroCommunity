@@ -1,7 +1,7 @@
 package com.java110.store.bmo.collection.impl;
 
-import com.java110.dto.purchaseApply.PurchaseApplyDto;
-import com.java110.entity.audit.AuditUser;
+import com.java110.dto.purchase.PurchaseApplyDto;
+import com.java110.dto.audit.AuditUser;
 import com.java110.intf.common.IGoodCollectionUserInnerServiceSMO;
 import com.java110.intf.store.IPurchaseApplyInnerServiceSMO;
 import com.java110.store.bmo.collection.IGetCollectionAuditOrderBMO;
@@ -29,7 +29,7 @@ public class GetCollectionAuditOrderBMOImpl implements IGetCollectionAuditOrderB
 
     @Override
     public ResponseEntity<String> auditOrder(AuditUser auditUser) {
-
+        //物品领用待办 （默认只查询和当前登录用户相关并且是审批或者结束待办事项）
         long count = goodCollectionUserInnerServiceSMOImpl.getUserTaskCount(auditUser);
 
         List<ApiResourceOrderDataVo> auditOrders = null;
@@ -40,7 +40,7 @@ public class GetCollectionAuditOrderBMOImpl implements IGetCollectionAuditOrderB
             for (ApiResourceOrderDataVo apiResourceOrderDataVo : auditOrders) {
                 switch (apiResourceOrderDataVo.getState()) {
                     case "1000":
-                        apiResourceOrderDataVo.setStateName("待审核");
+                        apiResourceOrderDataVo.setStateName("未审核");
                         break;
                     case "1001":
                         apiResourceOrderDataVo.setStateName("审核中");
@@ -55,10 +55,7 @@ public class GetCollectionAuditOrderBMOImpl implements IGetCollectionAuditOrderB
             auditOrders = new ArrayList<>();
         }
 
-
-
         return ResultVo.createResponseEntity((int) Math.ceil((double) count / (double) auditUser.getRow()),(int) count,auditOrders);
-
 
     }
 }

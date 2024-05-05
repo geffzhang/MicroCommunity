@@ -1,14 +1,3 @@
-jedis:
-  pool:
-    config:
-      maxTotal: 100
-      maxIdle: 20
-      maxWaitMillis: 20000
-    host: dev.redis.java110.com
-    port: 6379
-    timeout: 3000
-    password: hc
-
 eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
@@ -23,6 +12,8 @@ server:
   port: 8001
   tomcat:
     uri-encoding: UTF-8
+
+
 
 spring:
   http:
@@ -63,6 +54,13 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     maxActive: 20
     username: TT
+
+  feign:
+    client:
+      config:
+        default:
+          connect-timeout: 30000
+          read-timeout: 30000
 
 #============== kafka ===================
 kafka:

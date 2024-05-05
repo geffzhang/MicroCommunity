@@ -1,14 +1,15 @@
 package com.java110.user.smo.impl;
 
 
-import com.java110.utils.util.BeanConvertUtil;
 import com.java110.core.base.smo.BaseServiceSMO;
+import com.java110.dto.PageDto;
+import com.java110.dto.owner.OwnerRoomRelDto;
+import com.java110.dto.user.UserDto;
 import com.java110.intf.user.IOwnerRoomRelInnerServiceSMO;
 import com.java110.intf.user.IUserInnerServiceSMO;
-import com.java110.dto.owner.OwnerRoomRelDto;
-import com.java110.dto.PageDto;
-import com.java110.dto.user.UserDto;
+import com.java110.po.owner.OwnerRoomRelPo;
 import com.java110.user.dao.IOwnerRoomRelServiceDao;
+import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class OwnerRoomRelInnerServiceSMOImpl extends BaseServiceSMO implements I
     private IUserInnerServiceSMO userInnerServiceSMOImpl;
 
     @Override
-    public List<OwnerRoomRelDto> queryOwnerRoomRels(@RequestBody  OwnerRoomRelDto ownerRoomRelDto) {
+    public List<OwnerRoomRelDto> queryOwnerRoomRels(@RequestBody OwnerRoomRelDto ownerRoomRelDto) {
 
         //校验是否传了 分页信息
 
@@ -46,17 +47,17 @@ public class OwnerRoomRelInnerServiceSMOImpl extends BaseServiceSMO implements I
 
         List<OwnerRoomRelDto> ownerRoomRels = BeanConvertUtil.covertBeanList(ownerRoomRelServiceDaoImpl.getOwnerRoomRelInfo(BeanConvertUtil.beanCovertMap(ownerRoomRelDto)), OwnerRoomRelDto.class);
 
-        if (ownerRoomRels == null || ownerRoomRels.size() == 0) {
-            return ownerRoomRels;
-        }
-
-        String[] userIds = getUserIds(ownerRoomRels);
-        //根据 userId 查询用户信息
-        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
-
-        for (OwnerRoomRelDto ownerRoomRel : ownerRoomRels) {
-            refreshOwnerRoomRel(ownerRoomRel, users);
-        }
+//        if (ownerRoomRels == null || ownerRoomRels.size() == 0) {
+//            return ownerRoomRels;
+//        }
+//
+//        String[] userIds = getUserIds(ownerRoomRels);
+//        //根据 userId 查询用户信息
+//        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
+//
+//        for (OwnerRoomRelDto ownerRoomRel : ownerRoomRels) {
+//            refreshOwnerRoomRel(ownerRoomRel, users);
+//        }
         return ownerRoomRels;
     }
 
@@ -64,7 +65,7 @@ public class OwnerRoomRelInnerServiceSMOImpl extends BaseServiceSMO implements I
      * 从用户列表中查询用户，将用户中的信息 刷新到 floor对象中
      *
      * @param ownerRoomRel 小区业主房屋信息
-     * @param users 用户列表
+     * @param users        用户列表
      */
     private void refreshOwnerRoomRel(OwnerRoomRelDto ownerRoomRel, List<UserDto> users) {
         for (UserDto user : users) {
@@ -91,7 +92,26 @@ public class OwnerRoomRelInnerServiceSMOImpl extends BaseServiceSMO implements I
 
     @Override
     public int queryOwnerRoomRelsCount(@RequestBody OwnerRoomRelDto ownerRoomRelDto) {
-        return ownerRoomRelServiceDaoImpl.queryOwnerRoomRelsCount(BeanConvertUtil.beanCovertMap(ownerRoomRelDto));    }
+        return ownerRoomRelServiceDaoImpl.queryOwnerRoomRelsCount(BeanConvertUtil.beanCovertMap(ownerRoomRelDto));
+    }
+
+    @Override
+    public int saveOwnerRoomRels(@RequestBody OwnerRoomRelPo ownerRoomRelPo) {
+        return ownerRoomRelServiceDaoImpl.saveOwnerRoomRels(BeanConvertUtil.beanCovertMap(ownerRoomRelPo));
+    }
+
+    @Override
+    public int saveBusinessOwnerRoomRels(@RequestBody OwnerRoomRelPo ownerRoomRelPo) {
+        ownerRoomRelServiceDaoImpl.saveBusinessOwnerRoomRelInfo(BeanConvertUtil.beanCovertMap(ownerRoomRelPo));
+        return 1;
+    }
+
+
+    @Override
+    public int updateOwnerRoomRels(@RequestBody OwnerRoomRelPo ownerRoomRelPo) {
+        return ownerRoomRelServiceDaoImpl.updateOwnerRoomRels(BeanConvertUtil.beanCovertMap(ownerRoomRelPo));
+    }
+
 
     public IOwnerRoomRelServiceDao getOwnerRoomRelServiceDaoImpl() {
         return ownerRoomRelServiceDaoImpl;

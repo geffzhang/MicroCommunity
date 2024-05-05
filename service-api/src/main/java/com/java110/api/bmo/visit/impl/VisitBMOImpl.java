@@ -6,7 +6,6 @@ import com.java110.api.bmo.visit.IVisitBMO;
 import com.java110.core.context.DataFlowContext;
 import com.java110.po.owner.VisitPo;
 import com.java110.utils.constant.BusinessTypeConstant;
-import com.java110.utils.constant.CommonConstant;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +30,7 @@ public class VisitBMOImpl extends ApiBaseBMO implements IVisitBMO {
     public void deleteVisit(JSONObject paramInJson, DataFlowContext dataFlowContext) {
 
         VisitPo visitPo = BeanConvertUtil.covertBean(paramInJson, VisitPo.class);
+        visitPo.setStatusCd("1");
         super.delete(dataFlowContext, visitPo, BusinessTypeConstant.BUSINESS_TYPE_DELETE_VISIT);
 
     }
@@ -59,8 +59,6 @@ public class VisitBMOImpl extends ApiBaseBMO implements IVisitBMO {
      * @return 订单服务能够接受的报文
      */
     public void updateVisit(JSONObject paramInJson, DataFlowContext dataFlowContext) {
-
-
         VisitPo visitPo = BeanConvertUtil.covertBean(paramInJson, VisitPo.class);
         super.update(dataFlowContext, visitPo, BusinessTypeConstant.BUSINESS_TYPE_UPDATE_VISIT);
     }

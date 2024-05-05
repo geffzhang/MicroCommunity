@@ -61,4 +61,25 @@ public interface IStoreBMO extends IApiBaseBMO {
 
     public JSONObject addCollection(JSONObject paramInJson);
 
+     JSONObject contractApply(JSONObject paramInJson);
+
+
+    /**
+     * 合同变更
+     *
+     * @param paramInJson
+     * @return
+     */
+     JSONObject contractChange(JSONObject paramInJson);
+
+    /**
+     * 调拨审核
+     *
+     * @param paramInJson
+     * @return
+     */
+    JSONObject allocationStorehouse(JSONObject paramInJson);
+
+    JSONObject addAccount(JSONObject paramInJson,String acctType);
+
 }

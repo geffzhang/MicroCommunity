@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="attendanceClassesV1ServiceDaoImpl">
+
+
+    <!-- 保存申请钥匙信息 add by wuxw 2018-07-03 -->
+    <insert id="saveAttendanceClassesInfo" parameterType="Map">
+        insert into attendance_classes(
+        time_offset,clock_count,store_id,clock_type,classes_name,classes_id,leave_offset,late_offset,clock_type_value,max_last_offset
+        ) values (
+        #{timeOffset},#{clockCount},#{storeId},#{clockType},#{classesName},#{classesId},#{leaveOffset},#{lateOffset},#{clockTypeValue},#{maxLastOffset}
+        )
+    </insert>
+
+
+    <!-- 查询申请钥匙信息 add by wuxw 2018-07-03 -->
+    <select id="getAttendanceClassesInfo" parameterType="Map" resultType="Map">
+        select t.time_offset,t.time_offset
+        timeOffset,t.clock_count,t.clock_count clockCount,t.status_cd,t.status_cd statusCd,t.store_id,t.store_id storeId,t.clock_type,t.clock_type
+        clockType,t.classes_name,t.classes_name
+        classesName,t.classes_id,t.classes_id classesId,t.leave_offset,t.leave_offset
+        leaveOffset,t.late_offset,t.late_offset lateOffset,t.clock_type_value,t.clock_type_value clockTypeValue,
+        t.max_last_offset maxLastOffset
+        from attendance_classes t
+        where 1 =1
+
+        <if test="timeOffset !=null and timeOffset != ''">
+            and t.time_offset= #{timeOffset}
+        </if>
+        <if test="clockCount !=null and clockCount != ''">
+            and t.clock_count= #{clockCount}
+        </if>
+        <if test="maxLastOffset !=null and maxLastOffset != ''">
+            and t.max_last_offset= #{maxLastOffset}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="clockType !=null and clockType != ''">
+            and t.clock_type= #{clockType}
+        </if>
+
+        <if test="classesName !=null and classesName != ''">
+            and t.classes_name= #{classesName}
+        </if>
+        <if test="classesId !=null and classesId != ''">
+            and t.classes_id= #{classesId}
+        </if>
+        <if test="leaveOffset !=null and leaveOffset != ''">
+            and t.leave_offset= #{leaveOffset}
+        </if>
+        <if test="lateOffset !=null and lateOffset != ''">
+            and t.late_offset= #{lateOffset}
+        </if>
+        <if test="clockTypeValue !=null and clockTypeValue != ''">
+            and t.clock_type_value= #{clockTypeValue}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+
+    <!-- 修改申请钥匙信息 add by wuxw 2018-07-03 -->
+    <update id="updateAttendanceClassesInfo" parameterType="Map">
+        update attendance_classes t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+
+        <if test="timeOffset !=null and timeOffset != ''">
+            , t.time_offset= #{timeOffset}
+        </if>
+        <if test="clockCount !=null and clockCount != ''">
+            , t.clock_count= #{clockCount}
+        </if>
+
+
+        <if test="clockType !=null and clockType != ''">
+            , t.clock_type= #{clockType}
+        </if>
+
+        <if test="classesName !=null and classesName != ''">
+            , t.classes_name= #{classesName}
+        </if>
+        <if test="leaveOffset !=null and leaveOffset != ''">
+            , t.leave_offset= #{leaveOffset}
+        </if>
+        <if test="lateOffset !=null and lateOffset != ''">
+            , t.late_offset= #{lateOffset}
+        </if>
+        <if test="maxLastOffset !=null and maxLastOffset != ''">
+            , t.max_last_offset= #{maxLastOffset}
+        </if>
+        <if test="clockTypeValue !=null and clockTypeValue != ''">
+            , t.clock_type_value= #{clockTypeValue}
+        </if>
+        where 1=1
+        <if test="classesId !=null and classesId != ''">
+            and t.classes_id= #{classesId}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+
+    </update>
+
+    <!-- 查询申请钥匙数量 add by wuxw 2018-07-03 -->
+    <select id="queryAttendanceClassessCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from attendance_classes t
+        where 1 =1
+
+        <if test="timeOffset !=null and timeOffset != ''">
+            and t.time_offset= #{timeOffset}
+        </if>
+        <if test="clockCount !=null and clockCount != ''">
+            and t.clock_count= #{clockCount}
+        </if>
+
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="clockType !=null and clockType != ''">
+            and t.clock_type= #{clockType}
+        </if>
+
+        <if test="classesName !=null and classesName != ''">
+            and t.classes_name= #{classesName}
+        </if>
+        <if test="classesId !=null and classesId != ''">
+            and t.classes_id= #{classesId}
+        </if>
+        <if test="leaveOffset !=null and leaveOffset != ''">
+            and t.leave_offset= #{leaveOffset}
+        </if>
+        <if test="maxLastOffset !=null and maxLastOffset != ''">
+            and t.max_last_offset= #{maxLastOffset}
+        </if>
+        <if test="lateOffset !=null and lateOffset != ''">
+            and t.late_offset= #{lateOffset}
+        </if>
+        <if test="clockTypeValue !=null and clockTypeValue != ''">
+            and t.clock_type_value= #{clockTypeValue}
+        </if>
+
+
+    </select>
+
+</mapper>

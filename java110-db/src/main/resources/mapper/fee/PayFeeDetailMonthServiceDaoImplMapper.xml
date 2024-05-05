@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="payFeeDetailMonthServiceDaoImpl">
+
+    <!-- 保存月缴费表信息 add by wuxw 2018-07-03 -->
+    <insert id="savePayFeeDetailMonthInfo" parameterType="Map">
+        insert into pay_fee_detail_month(
+        detail_month,detail_year,detail_id,receivable_amount,discount_amount,remark,received_amount,community_id,fee_id,month_id,
+        obj_name,obj_id,owner_name,owner_id,link,state,pay_fee_time,cur_month_time,
+        fee_name,config_id,obj_fpc_id,fee_type_cd
+        ) values (
+        #{detailMonth},#{detailYear},#{detailId},#{receivableAmount},#{discountAmount},#{remark},#{receivedAmount},#{communityId},#{feeId},#{monthId},
+        #{objName},#{objId},#{ownerName},#{ownerId},#{link},#{state},#{payFeeTime},#{curMonthTime},
+        #{feeName},#{configId},#{objFpcId},#{feeTypeCd}
+        )
+    </insert>
+
+    <!-- 保存月缴费表信息 add by wuxw 2018-07-03 -->
+    <insert id="savePayFeeDetailMonthInfos" parameterType="Map">
+        insert into pay_fee_detail_month(
+        detail_month,detail_year,detail_id,receivable_amount,discount_amount,remark,received_amount,community_id,fee_id,month_id,
+        obj_name,obj_id,owner_name,owner_id,link,state,pay_fee_time,cur_month_time,
+        fee_name,config_id,deadline_time,obj_fpc_id,fee_type_cd
+        ) values
+        <foreach collection="payFeeDetailMonthPos" item="item" index="index" separator=",">
+            (
+            #{item.detailMonth},#{item.detailYear},#{item.detailId},#{item.receivableAmount},#{item.discountAmount},
+            #{item.remark},#{item.receivedAmount},#{item.communityId},#{item.feeId},#{item.monthId},
+            #{item.objName},#{item.objId},#{item.ownerName},#{item.ownerId},#{item.link},#{item.state},#{item.payFeeTime},#{item.curMonthTime},
+            #{item.feeName},#{item.configId},#{item.deadlineTime},#{item.objFpcId},#{item.feeTypeCd}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 查询月缴费表信息 add by wuxw 2018-07-03 -->
+    <select id="getPayFeeDetailMonthInfo" parameterType="Map" resultType="Map">
+        select t.detail_month,t.detail_month detailMonth,t.detail_year,t.detail_year detailYear,t.detail_id,t.detail_id
+        detailId,t.receivable_amount,t.receivable_amount receivableAmount,t.discount_amount,t.discount_amount
+        discountAmount,t.remark,t.status_cd,t.status_cd statusCd,t.received_amount,t.received_amount
+        receivedAmount,t.community_id,t.community_id communityId,t.fee_id,t.fee_id feeId,t.month_id,t.month_id monthId,
+        t.obj_name objName,t.obj_id objId,t.owner_name ownerName,t.owner_id ownerId,t.link,t.state,t.pay_fee_time
+        payFeeTime,
+        t.cur_month_time curMonthTime,t.deadline_time deadlineTime,pf.fee_flag feeFlag,pf.end_time endTime
+        from pay_fee_detail_month t
+        left join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '0'
+        where 1 =1
+        <if test="detailMonth !=null and detailMonth != ''">
+            and t.detail_month= #{detailMonth}
+        </if>
+        <if test="detailYear !=null and detailYear != ''">
+            and t.detail_year= #{detailYear}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and t.detail_id= #{detailId}
+        </if>
+        <if test="receivableAmount !=null and receivableAmount != ''">
+            and t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="discountAmount !=null and discountAmount != ''">
+            and t.discount_amount= #{discountAmount}
+        </if>
+        <if test="remark !=null and remark != ''">
+            and t.remark= #{remark}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="receivedAmount !=null and receivedAmount != ''">
+            and t.received_amount= #{receivedAmount}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="monthId !=null and monthId != ''">
+            and t.month_id= #{monthId}
+        </if>
+        <if test="monthIds !=null ">
+            and t.month_id in
+            <foreach collection="monthIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="objName !=null and objName != ''">
+            and t.obj_name= #{objName}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and t.owner_name= #{ownerName}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="payFeeTime !=null and payFeeTime != ''">
+            and t.pay_fee_time= #{payFeeTime}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+
+    <!-- 修改月缴费表信息 add by wuxw 2018-07-03 -->
+    <update id="updatePayFeeDetailMonthInfo" parameterType="Map">
+        update pay_fee_detail_month t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="detailMonth !=null and detailMonth != ''">
+            , t.detail_month= #{detailMonth}
+        </if>
+        <if test="detailYear !=null and detailYear != ''">
+            , t.detail_year= #{detailYear}
+        </if>
+        <if test="receivableAmount !=null and receivableAmount != ''">
+            , t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="discountAmount !=null and discountAmount != ''">
+            , t.discount_amount= #{discountAmount}
+        </if>
+        <if test="remark !=null and remark != ''">
+            , t.remark= #{remark}
+        </if>
+        <if test="receivedAmount !=null and receivedAmount != ''">
+            , t.received_amount= #{receivedAmount}
+        </if>
+        <if test="objName !=null and objName != ''">
+            , t.obj_name= #{objName}
+        </if>
+        <if test="objId !=null and objId != ''">
+            , t.obj_id= #{objId}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            , t.owner_name= #{ownerName}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            , t.owner_id= #{ownerId}
+        </if>
+        <if test="state !=null and state != ''">
+            , t.state= #{state}
+        </if>
+        <if test="payFeeTime !=null and payFeeTime != ''">
+            , t.pay_fee_time= #{payFeeTime}
+        </if>
+        where 1=1
+        <if test="monthId !=null and monthId != ''">
+            and t.month_id= #{monthId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and t.detail_id= #{detailId}
+        </if>
+        <if test="curMonthStartTime !=null and curMonthStartTime != ''">
+            and t.cur_month_time &gt;= #{curMonthStartTime}
+            and t.cur_month_time &lt;= #{curMonthEndTime}
+        </if>
+    </update>
+
+    <!-- 删除离散数据 -->
+    <delete id="deletePayFeeDetailMonthInfo" parameterType="Map">
+        delete from pay_fee_detail_month
+        where 1=1
+        and community_id= #{communityId}
+        <if test="monthId !=null and monthId != ''">
+            and month_id= #{monthId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and fee_id= #{feeId}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and detail_id= #{detailId}
+        </if>
+    </delete>
+
+    <!-- 查询月缴费表数量 add by wuxw 2018-07-03 -->
+    <select id="queryPayFeeDetailMonthsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from pay_fee_detail_month t
+        where 1 =1
+        <if test="detailMonth !=null and detailMonth != ''">
+            and t.detail_month= #{detailMonth}
+        </if>
+        <if test="detailYear !=null and detailYear != ''">
+            and t.detail_year= #{detailYear}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and t.detail_id= #{detailId}
+        </if>
+        <if test="receivableAmount !=null and receivableAmount != ''">
+            and t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="discountAmount !=null and discountAmount != ''">
+            and t.discount_amount= #{discountAmount}
+        </if>
+        <if test="remark !=null and remark != ''">
+            and t.remark= #{remark}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="receivedAmount !=null and receivedAmount != ''">
+            and t.received_amount= #{receivedAmount}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="monthId !=null and monthId != ''">
+            and t.month_id= #{monthId}
+        </if>
+        <if test="monthIds !=null ">
+            and t.month_id in
+            <foreach collection="monthIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="objName !=null and objName != ''">
+            and t.obj_name= #{objName}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and t.owner_name= #{ownerName}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="payFeeTime !=null and payFeeTime != ''">
+            and t.pay_fee_time= #{payFeeTime}
+        </if>
+    </select>
+
+    <select id="queryPayFeeDetailMaxMonths" parameterType="Map" resultType="Map">
+        select t.detail_month,t.detail_month detailMonth,t.detail_year,t.detail_year detailYear,t.detail_id,t.detail_id
+        detailId,t.receivable_amount,t.receivable_amount receivableAmount,t.discount_amount,t.discount_amount
+        discountAmount,t.remark,t.status_cd,t.status_cd statusCd,t.received_amount,t.received_amount
+        receivedAmount,t.community_id,t.community_id communityId,t.fee_id,t.fee_id feeId,t.month_id,t.month_id monthId,
+        t.obj_name objName,t.obj_id objId,t.owner_name ownerName,t.owner_id ownerId,t.link,t.state,t.pay_fee_time
+        payFeeTime,
+        t.cur_month_time curMonthTime
+        from pay_fee_detail_month t
+        where 1 =1
+        <if test="detailMonth !=null and detailMonth != ''">
+            and t.detail_month= #{detailMonth}
+        </if>
+        <if test="detailYear !=null and detailYear != ''">
+            and t.detail_year= #{detailYear}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and t.detail_id= #{detailId}
+        </if>
+        <if test="receivableAmount !=null and receivableAmount != ''">
+            and t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="discountAmount !=null and discountAmount != ''">
+            and t.discount_amount= #{discountAmount}
+        </if>
+        <if test="remark !=null and remark != ''">
+            and t.remark= #{remark}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="receivedAmount !=null and receivedAmount != ''">
+            and t.received_amount= #{receivedAmount}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="monthId !=null and monthId != ''">
+            and t.month_id= #{monthId}
+        </if>
+        <if test="objName !=null and objName != ''">
+            and t.obj_name= #{objName}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and t.owner_name= #{ownerName}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="payFeeTime !=null and payFeeTime != ''">
+            and t.pay_fee_time= #{payFeeTime}
+        </if>
+        order by t.detail_year desc,t.detail_month desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+    <!-- 查询需要离散的缴费记录 -->
+    <select id="getWaitDispersedFeeDetail" parameterType="Map" resultType="Map">
+        select t.prime_rate,t.prime_rate primeRate,
+        t.detail_id,t.detail_id detailId,
+        t.receivable_amount,t.receivable_amount receivableAmount,
+        t.cycles,t.remark,t.status_cd,t.status_cd statusCd,t.received_amount,t.received_amount receivedAmount,
+        t.community_id,t.community_id communityId,t.b_id,t.b_id bId,t.fee_id,t.fee_id feeId ,t.create_time createTime,
+        t.state,d.name stateName,t.start_time,t.end_time,t.start_time startTime,t.end_time endTime,pfa.`value`
+        importFeeName,pfc.fee_name feeName,t.payable_amount,t.payable_amount payableAmount,
+        mw.cur_degrees curDegrees,mw.pre_degrees preDegrees, mw.pre_reading_time preReadingTime,mw.cur_reading_time
+        curReadingTime,t.pay_order_id payOrderId,pfc.config_id configId,td.`name` primeRateName,pfao1.`value`
+        payerObjName,
+        t.cashier_id cashierId,t.cashier_name cashierName
+        from pay_fee_detail t
+        left join pay_fee_detail_month pfdm on t.fee_id = pfdm.fee_id and pfdm.detail_id = t.detail_id and
+        pfdm.status_cd = '0' and t.community_id = pfdm.community_id
+        left join pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.spec_cd = '390002'
+        left join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '0'
+        left join pay_fee_config pfc on pf.config_id = pfc.config_id and pfc.status_cd = '0'
+        LEFT JOIN meter_water mw on t.fee_id = mw.fee_id and mw.status_cd = '0' and mw.community_id = t.community_id
+        left join pay_fee_attrs pfao1 on pfao1.fee_id = t.fee_id and pfao1.spec_cd = '390012' and pfao1.status_cd = '0'
+        left join t_dict d on t.state = d.status_cd and d.table_name = 'pay_fee_detail' and d.table_columns = 'state'
+        left join t_dict td on t.prime_rate = td.status_cd and td.table_name = 'pay_fee_detail' and td.table_columns =
+        'prime_rate'
+        where t.status_cd = '0'
+        and t.state in ('1000','1400')
+        and t.community_id = #{communityId}
+        and t.fee_id = #{feeId}
+        and pfdm.detail_id is null
+    </select>
+
+    <!-- 查询月数据 -->
+    <select id="queryPagePayFeeDetailMonths" parameterType="Map" resultType="Map">
+        select t.detail_month detailMonth,t.detail_year detailYear,t.detail_id
+        detailId,t.receivable_amount receivableAmount,t.discount_amount discountAmount,t.remark,t.received_amount receivedAmount,
+        t.community_id communityId,t.fee_id feeId,t.month_id monthId,
+        t.obj_name objName,t.obj_id objId,t.owner_name ownerName,t.owner_id ownerId,t.link,t.state,t.pay_fee_time
+        payFeeTime,t.cur_month_time curMonthTime,pfc.square_price squarePrice,pfc.additional_amount
+        additionalAmount,pf.fee_flag,pf.fee_flag feeFlag,
+        pfc.fee_name feeName,td1.name feeTypeCdName,td3.name feeFlagName,pfc.computing_formula
+        computingFormula,pfc.computing_formula_text computingFormulaText,
+        pfc.bill_type billType,pf.payer_obj_type payerObjType,pfc.is_default isDefault,pfc.start_time
+        configStartTime,pfc.end_time configEndTime,pfc.payment_cd paymentCd,pfc.payment_cycle paymentCycle,td4.name
+        billTypeName,pfa.value importFeeName,mw.cur_degrees curDegrees,mw.pre_degrees
+        preDegrees,
+        mw.pre_reading_time preReadingTime,mw.cur_reading_time curReadingTime,pfa1.`value` deadlineTime,pfa1.`value` maxEndTime,mw.price
+        mwPrice,
+        pfa2.`value` ownerName,pf.batch_id batchId,
+        pfc.pay_online payOnline,pfc.scale,pfc.decimal_place decimalPlace,pfc.units,pfc.prepayment_period prepaymentPeriod
+        from pay_fee_detail_month t
+        inner join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '0'
+        INNER join pay_fee_config pfc on t.config_id = pfc.config_id and
+        pfc.status_cd = '0'
+        left join t_dict td1 on pfc.fee_type_cd = td1.status_cd and td1.table_name = 'pay_fee_config' and
+        td1.table_columns = 'fee_type_cd'
+        left join t_dict td3 on pfc.fee_flag = td3.status_cd and td3.table_name = 'pay_fee' and td3.table_columns =
+        'fee_flag'
+        left join t_dict td4 on pfc.bill_type = td4.status_cd and td4.table_name = 'pay_fee_config' and
+        td4.table_columns = 'bill_type'
+        LEFT JOIN pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.spec_cd = '390002' and pfa.status_cd = '0'
+        LEFT JOIN pay_fee_attrs pfa1 on t.fee_id = pfa1.fee_id and pfa1.spec_cd = '390010' and pfa1.status_cd = '0'
+        LEFT JOIN pay_fee_attrs pfa2 on t.fee_id = pfa2.fee_id and pfa2.spec_cd = '390008' and pfa2.status_cd = '0'
+        LEFT JOIN meter_water mw on t.fee_id = mw.fee_id and mw.status_cd = '0' and mw.community_id = t.community_id
+        <if test="ownerId != null and ownerId != ''">
+            LEFT JOIN pay_fee_attrs pfao on t.fee_id = pfao.fee_id and pfao.spec_cd = '390007' and pfao.status_cd = '0'
+        </if>
+        where 1 =1
+        <if test="ownerId !=null and ownerId != ''">
+            and pfao.value= #{ownerId}
+        </if>
+        <if test="detailMonth !=null and detailMonth != ''">
+            and t.detail_month= #{detailMonth}
+        </if>
+        <if test="feeState !=null and feeState != ''">
+            and pf.state= #{feeState}
+        </if>
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and pf.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="feeTypeCds != null ">
+            and pf.fee_type_cd in
+            <foreach collection="feeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="detailYear !=null and detailYear != ''">
+            and t.detail_year= #{detailYear}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and t.detail_id= #{detailId}
+        </if>
+        <if test="receivableAmount !=null and receivableAmount != ''">
+            and t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="discountAmount !=null and discountAmount != ''">
+            and t.discount_amount= #{discountAmount}
+        </if>
+        <if test="remark !=null and remark != ''">
+            and t.remark= #{remark}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="receivedAmount !=null and receivedAmount != ''">
+            and t.received_amount= #{receivedAmount}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="monthId !=null and monthId != ''">
+            and t.month_id= #{monthId}
+        </if>
+        <if test="monthIds !=null ">
+            and t.month_id in
+            <foreach collection="monthIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="objName !=null and objName != ''">
+            and t.obj_name= #{objName}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and t.owner_name= #{ownerName}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="payFeeTime !=null and payFeeTime != ''">
+            and t.pay_fee_time= #{payFeeTime}
+        </if>
+        order by pfc.fee_name, t.detail_year,t.detail_month
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 查询月缴费表数量 add by wuxw 2018-07-03 -->
+    <select id="queryPagePayFeeDetailMonthsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from pay_fee_detail_month t
+        inner join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '0'
+        INNER join pay_fee_config pfc on t.config_id = pfc.config_id and pfc.status_cd = '0'
+        left join t_dict td1 on pfc.fee_type_cd = td1.status_cd and td1.table_name = 'pay_fee_config' and
+        td1.table_columns = 'fee_type_cd'
+        left join t_dict td3 on pfc.fee_flag = td3.status_cd and td3.table_name = 'pay_fee' and td3.table_columns =
+        'fee_flag'
+        left join t_dict td4 on pfc.bill_type = td4.status_cd and td4.table_name = 'pay_fee_config' and
+        td4.table_columns = 'bill_type'
+        LEFT JOIN pay_fee_attrs pfa on t.fee_id = pfa.fee_id and pfa.spec_cd = '390002' and pfa.status_cd = '0'
+        LEFT JOIN pay_fee_attrs pfa1 on t.fee_id = pfa1.fee_id and pfa1.spec_cd = '390010' and pfa1.status_cd = '0'
+        LEFT JOIN pay_fee_attrs pfa2 on t.fee_id = pfa2.fee_id and pfa2.spec_cd = '390008' and pfa2.status_cd = '0'
+        LEFT JOIN meter_water mw on t.fee_id = mw.fee_id and mw.status_cd = '0' and mw.community_id = t.community_id
+        <if test="ownerId != null and ownerId != ''">
+            LEFT JOIN pay_fee_attrs pfao on t.fee_id = pfao.fee_id and pfao.spec_cd = '390007' and pfao.status_cd = '0'
+        </if>
+        where 1 =1
+        <if test="ownerId !=null and ownerId != ''">
+            and pfao.value= #{ownerId}
+        </if>
+        <if test="detailMonth !=null and detailMonth != ''">
+            and t.detail_month= #{detailMonth}
+        </if>
+        <if test="feeState !=null and feeState != ''">
+            and pf.state= #{feeState}
+        </if>
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and pf.fee_type_cd= #{feeTypeCd}
+        </if>
+
+        <if test="feeTypeCds != null ">
+            and pf.fee_type_cd in
+            <foreach collection="feeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="detailYear !=null and detailYear != ''">
+            and t.detail_year= #{detailYear}
+        </if>
+        <if test="detailId !=null and detailId != ''">
+            and t.detail_id= #{detailId}
+        </if>
+        <if test="receivableAmount !=null and receivableAmount != ''">
+            and t.receivable_amount= #{receivableAmount}
+        </if>
+        <if test="discountAmount !=null and discountAmount != ''">
+            and t.discount_amount= #{discountAmount}
+        </if>
+        <if test="remark !=null and remark != ''">
+            and t.remark= #{remark}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="receivedAmount !=null and receivedAmount != ''">
+            and t.received_amount= #{receivedAmount}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="feeId !=null and feeId != ''">
+            and t.fee_id= #{feeId}
+        </if>
+        <if test="monthId !=null and monthId != ''">
+            and t.month_id= #{monthId}
+        </if>
+        <if test="objName !=null and objName != ''">
+            and t.obj_name= #{objName}
+        </if>
+        <if test="objId !=null and objId != ''">
+            and t.obj_id= #{objId}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and t.owner_name= #{ownerName}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="payFeeTime !=null and payFeeTime != ''">
+            and t.pay_fee_time= #{payFeeTime}
+        </if>
+    </select>
+
+</mapper>

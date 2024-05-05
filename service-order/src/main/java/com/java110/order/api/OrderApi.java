@@ -1,7 +1,8 @@
 package com.java110.order.api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.entity.order.Orders;
+import com.java110.core.trace.Java110TraceLog;
+import com.java110.dto.system.Orders;
 import com.java110.order.smo.IOrderProcessServiceSMO;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.BusinessException;
@@ -12,7 +13,7 @@ import com.java110.order.smo.IOrderServiceSMO;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,7 @@ public class OrderApi extends BaseController {
     @RequestMapping(path = "/service", method = RequestMethod.POST)
     @ApiOperation(value = "中心服务订单受理", notes = "test: 返回 200 表示服务受理成功，其他表示失败")
     @ApiImplicitParam(paramType = "query", name = "orderInfo", value = "订单受理信息", required = true, dataType = "String")
+    @Java110TraceLog
     public ResponseEntity<String> servicePost(@RequestBody String orderInfo, HttpServletRequest request) {
 
         ResponseEntity<String> responseEntity = null;
@@ -79,10 +81,9 @@ public class OrderApi extends BaseController {
             logger.error("请求订单异常", e);
             responseEntity = new ResponseEntity<String>("请求中心服务发生异常，" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
-
             logger.debug("订单服务返回报文为: {}", responseEntity);
-            return responseEntity;
         }
+        return responseEntity;
     }
 
     /**

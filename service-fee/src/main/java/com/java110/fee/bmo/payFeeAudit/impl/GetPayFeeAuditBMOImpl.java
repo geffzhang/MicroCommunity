@@ -1,12 +1,12 @@
 package com.java110.fee.bmo.payFeeAudit.impl;
 
 import com.java110.core.smo.IComputeFeeSMO;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 import com.java110.dto.fee.FeeDto;
 import com.java110.dto.order.BusinessDto;
 import com.java110.dto.order.OrderDto;
 import com.java110.dto.owner.OwnerCarDto;
-import com.java110.dto.payFeeAudit.PayFeeAuditDto;
+import com.java110.dto.payFee.PayFeeAuditDto;
 import com.java110.fee.bmo.payFeeAudit.IGetPayFeeAuditBMO;
 import com.java110.intf.fee.IPayFeeAuditInnerServiceSMO;
 import com.java110.intf.community.IRoomInnerServiceSMO;
@@ -46,33 +46,24 @@ public class GetPayFeeAuditBMOImpl implements IGetPayFeeAuditBMO {
      * @return 订单服务能够接受的报文
      */
     public ResponseEntity<String> get(PayFeeAuditDto payFeeAuditDto) {
-
         if (!refreshRoomPayObjId(payFeeAuditDto)) {
             ResponseEntity<String> responseEntity = new ResponseEntity<String>("[]", HttpStatus.OK);
             return responseEntity;
         }
-
         if (!refreshCarPayObjId(payFeeAuditDto)) {
             ResponseEntity<String> responseEntity = new ResponseEntity<String>("[]", HttpStatus.OK);
             return responseEntity;
         }
-
-
         int count = payFeeAuditInnerServiceSMOImpl.queryPayFeeAuditsCount(payFeeAuditDto);
-
         List<PayFeeAuditDto> payFeeAuditDtos = null;
         if (count > 0) {
             payFeeAuditDtos = payFeeAuditInnerServiceSMOImpl.queryPayFeeAudits(payFeeAuditDto);
-
             frashRoomAndStaff(payFeeAuditDtos);
         } else {
             payFeeAuditDtos = new ArrayList<>();
         }
-
         ResultVo resultVo = new ResultVo((int) Math.ceil((double) count / (double) payFeeAuditDto.getRow()), count, payFeeAuditDtos);
-
         ResponseEntity<String> responseEntity = new ResponseEntity<String>(resultVo.toString(), HttpStatus.OK);
-
         return responseEntity;
     }
 
@@ -162,14 +153,15 @@ public class GetPayFeeAuditBMOImpl implements IGetPayFeeAuditBMO {
 
         for (PayFeeAuditDto payFeeAuditDto : payFeeAuditDtos) {
             for (OrderDto orderDto : orderDtos) {
+                if (StringUtil.isEmpty(payFeeAuditDto.getbId())) {
+                    continue;
+                }
                 if (payFeeAuditDto.getbId().equals(orderDto.getbId())) {
                     payFeeAuditDto.setUserId(orderDto.getUserId());
                     payFeeAuditDto.setUserName(orderDto.getUserName());
                 }
             }
         }
-
-
     }
 
 }

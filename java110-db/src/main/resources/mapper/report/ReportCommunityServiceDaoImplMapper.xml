@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="reportCommunityServiceDaoImpl">
 
@@ -23,7 +22,9 @@
         select t.apartment,t.built_up_area builtUpArea,t.community_id communityId,t.create_time createTime,
         t.fee_coefficient feeCoefficient,t.layer,t.room_id roomId,t.room_num roomNum,t.section,
         t.state,bu.unit_id unitId,bu.unit_num unitNum,ff.floor_id floorId,ff.floor_num floorNum,
-        bo.age,bo.id_card idCard,bo.link,bo.member_id memberId,bo.`name`,bo.owner_id ownerId,t.room_type roomType
+        bo.age,bo.id_card idCard,bo.link,bo.member_id memberId,bo.`name`,bo.`name` ownerName,bo.owner_id
+        ownerId,t.room_type roomType,
+        t.room_sub_type roomSubType,t.room_rent roomRent,t.room_area roomArea
         from building_room t
         INNER JOIN building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
         inner join f_floor ff on bu.floor_id = ff.floor_id and ff.status_cd = '0'
@@ -41,6 +42,90 @@
         </if>
     </select>
 
+    <select id="queryRoomStructures" parameterType="Map" resultType="Map">
+        select t.apartment,
+               t.built_up_area   builtUpArea,
+               t.community_id    communityId,
+               t.create_time     createTime,
+               t.fee_coefficient feeCoefficient,
+               t.layer,
+               t.room_id         roomId,
+               t.room_num        roomNum,
+               t.section,
+               t.state,
+               bu.unit_id        unitId,
+               bu.unit_num       unitNum,
+               ff.floor_id       floorId,
+               ff.floor_num      floorNum,
+               bo.age,
+               bo.id_card        idCard,
+               bo.link,
+               bo.member_id      memberId,
+               bo.`name`,
+               bo.`name`         ownerName,
+               bo.owner_id       ownerId,
+               t.room_type       roomType,
+               t.room_sub_type   roomSubType,
+               t.room_rent       roomRent,
+               t.room_area       roomArea,
+               td.name           stateName,
+               (
+                   select if(SUM(rof.amount_owed)!='', SUM(rof.amount_owed), 0)
+                   from report_owe_fee rof
+                   where rof.payer_obj_id = t.room_id
+                     and rof.payer_obj_type = '3333'
+               )                 oweAmount
+        from building_room t
+                 INNER JOIN building_unit bu on t.unit_id = bu.unit_id and bu.status_cd = '0'
+                 inner join f_floor ff on bu.floor_id = ff.floor_id and ff.status_cd = '0'
+                 LEFT JOIN building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+                 left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+                 left join t_dict td
+                           on t.state = td.status_cd and td.table_name = 'building_room' and td.table_columns = 'state'
+        where t.status_cd = '0'
+          and t.community_id = #{communityId}
+          and bu.unit_id = #{unitId}
+        order by CONVERT(t.layer, SIGNED), CONVERT(t.room_num, SIGNED) asc
+    </select>
+
+    <select id="queryCarStructures" parameterType="Map" resultType="Map">
+        select pa.num       areaNum,
+               ps.num,
+               t.car_num    carNum,
+               br.room_id   roomId,
+               br.room_num  roomNum,
+               br.section,
+               br.state,
+               bu.unit_id   unitId,
+               bu.unit_num  unitNum,
+               ff.floor_id  floorId,
+               ff.floor_num floorNum,
+               bo.age,
+               bo.id_card   idCard,
+               bo.link,
+               bo.member_id memberId,
+               bo.`name`,
+               bo.`name`    ownerName,
+               bo.owner_id  ownerId,
+               (
+                   select if(SUM(rof.amount_owed)!='', SUM(rof.amount_owed), 0)
+                   from report_owe_fee rof
+                   where rof.payer_obj_id = t.car_id
+                     and rof.payer_obj_type = '6666'
+               )            oweAmount
+        from owner_car t
+                 INNER join building_owner bo on t.owner_id = bo.member_id and bo.status_cd = '0'
+                 INNER JOIN building_owner_room_rel borr on bo.owner_id = borr.owner_id and borr.status_cd = '0'
+                 INNER join building_room br on borr.room_id = br.room_id and br.status_cd = '0'
+                 INNER JOIN building_unit bu on br.unit_id = bu.unit_id and bu.status_cd = '0'
+                 inner join f_floor ff on bu.floor_id = ff.floor_id and ff.status_cd = '0'
+                 LEFT JOIN parking_space ps on t.ps_id = ps.ps_id and ps.status_cd = '0'
+                 LEFT JOIN parking_area pa on ps.pa_id = pa.pa_id and pa.status_cd = '0'
+        where t.status_cd = '0'
+          and t.community_id = #{communityId}
+          and bu.unit_id = #{unitId}
+        order by t.car_num
+    </select>
 
     <!-- 查询房屋个数 add by wuxw 2018-07-03 -->
     <select id="getCarCount" parameterType="com.java110.dto.report.ReportCarDto" resultType="Map">
@@ -50,11 +135,16 @@
         <if test="state !=null and state != ''">
             and t.state= #{state}
         </if>
+        <if test="leaseTypes !=null ">
+            and t.lease_type in
+            <foreach collection="leaseTypes" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
         </if>
     </select>
-
 
     <!-- 查询 房屋 楼栋 单元 业主 -->
     <select id="getCarParkingSpace" parameterType="com.java110.dto.report.ReportCarDto"
@@ -64,11 +154,17 @@
         ps.num,pa.pa_id paId,pa.num areaNum,ps.state,t.start_time startTime,t.end_time endTime
         from owner_car t
         INNER JOIN building_owner bo on t.owner_id = bo.member_id and t.status_cd = '0'
-        left join parking_space ps on t.ps_id = t.ps_id and ps.status_cd = '0'
+        left join parking_space ps on t.ps_id = ps.ps_id and ps.status_cd = '0'
         left join parking_area pa on ps.pa_id = pa.pa_id and pa.status_cd = '0'
         where t.status_cd = '0'
         <if test="state !=null and state != ''">
             and t.state= #{state}
+        </if>
+        <if test="leaseTypes !=null ">
+            and t.lease_type in
+            <foreach collection="leaseTypes" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
         </if>
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
@@ -78,5 +174,482 @@
         </if>
     </select>
 
+    <!-- 查询小区信息 add by wuxw 2018-07-03 -->
+    <select id="getCommunitys" parameterType="Map" resultType="Map">
+        select t.address,t.nearby_landmarks,t.nearby_landmarks nearbyLandmarks,
+        t.city_code,t.city_code cityCode,t.name,t.status_cd,t.status_cd statusCd,t.tel,
+        t.community_id,t.community_id communityId,t.b_id,t.b_id bId,t.map_y,t.map_y mapY,
+        t.map_x,t.map_x mapX,t.state,ca.area_code areaCode,ca.area_name areaName,
+        ca.parent_area_code parentAreaCode,ca.parent_area_name parentAreaName,
+        t.community_area communityArea
+        from s_community t,city_area ca
+        where t.status_cd = '0'
+        and t.city_code = ca.area_code
+        and ca.status_cd = '0'
+        <if test="address !=null and address != ''">
+            and t.address= #{address}
+        </if>
+        <if test="nearbyLandmarks !=null and nearbyLandmarks != ''">
+            and t.nearby_landmarks= #{nearbyLandmarks}
+        </if>
+        <if test="cityCode !=null and cityCode != ''">
+            and t.city_code= #{cityCode}
+        </if>
+        <if test="name !=null and name != ''">
+            and t.name like concat('%',#{name},'%')
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="communityIds !=null">
+            and t.community_id in
+            <foreach collection="communityIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="mapY !=null and mapY != ''">
+            and t.map_y= #{mapY}
+        </if>
+        <if test="mapX !=null and mapX != ''">
+            and t.map_x= #{mapX}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        order by t.create_time ASC
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
 
+    <!-- 查询无效费用 add by wuxw 2018-07-03 -->
+    <select id="queryInvalidFeeMonthStatistics" parameterType="Map" resultType="Map">
+        select t.fee_id feeId
+        from pay_fee t
+                 inner join pay_fee_config pfc on t.config_id = pfc.config_id
+                 inner join report_fee_year_collection rfyc on t.fee_id = rfyc.fee_id and rfyc.status_cd = '0'
+        where (t.status_cd = '1' or pfc.status_cd = '1')
+          and t.community_id = #{communityId}
+    </select>
+
+    <!--清理报表 无效数据-->
+    <update id="deleteInvalidFee" parameterType="Map">
+        delete from report_fee_year_collection where fee_id in
+        <foreach collection="feeIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        and community_id = #{communityId}
+    </update>
+
+    <!-- 查询无效费用 add by wuxw 2018-07-03 -->
+    <select id="queryRoomsTree" parameterType="Map" resultType="Map">
+        SELECT distinct t.room_id,
+               t.room_id        roomId,
+               t.layer,
+               t.room_num,
+               t.room_num       roomNum,
+               t.unit_id,
+               u.`unit_num`     unitNum,
+               u.unit_id        unitId,
+               f.floor_id       floorId,
+               f.floor_num      floorNum,
+               t.`community_id` communityId,
+               bo.owner_id      ownerId
+                ,
+               bo.`name`        ownerName,
+               bo.link          link
+        FROM building_room t
+                 inner join building_unit u on t.`unit_id` = u.`unit_id` and u.`status_cd` = '0'
+                 inner JOIN f_floor f
+                            on u.`floor_id` = f.`floor_id` AND f.`community_id` = t.`community_id` AND f.`status_cd` =
+                                                                                                       '0'
+                 left join building_owner_room_rel borr on t.room_id = borr.room_id and borr.status_cd = '0'
+                 left join building_owner bo on borr.owner_id = bo.member_id and bo.status_cd = '0'
+        WHERE 1 = 1
+          and t.status_cd = '0'
+          and u.unit_id = #{unitId}
+          and t.community_id = #{communityId}
+        order by CONVERT(t.layer, SIGNED), CONVERT(t.room_num, SIGNED)
+    </select>
+
+    <select id="queryHisOwnerCarCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from business_owner_car t
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        left join t_dict t1 on t.car_type=t1.status_cd and t1.table_name='owner_car' and t1.table_columns = 'car_type'
+        left join t_dict t2 on t.state=t2.status_cd and t2.table_name='owner_car' and t2.table_columns = 'state'
+        left join t_dict t3 on t.lease_type = t3.status_cd and t3.table_name = 'owner_car' and t3.table_columns =
+        'lease_type'
+        left join t_dict t4 on t.car_type_cd=t4.status_cd and t4.table_name='owner_car' and t4.table_columns =
+        'car_type_cd'
+        left join building_owner bo on t.owner_id = bo.member_id and bo.status_cd = '0'
+        where 1=1
+        <if test="carNum != null and carNum != ''">
+            and t.car_num = #{carNum}
+        </if>
+        <if test="carNumLike != null and carNumLike != ''">
+            and t.car_num like concat('%',#{carNumLike},'%')
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and t.start_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and t.end_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id= #{communityId}
+    </select>
+
+    <select id="queryHisOwnerCars" parameterType="Map" resultType="Map">
+        select t.car_color carColor,t.car_brand carBrand,t.car_type carType,t1.name
+        carTypeName,
+        t.car_num carNum,t.ps_id psId,t.remark,
+        t.owner_id ownerId,t.b_id bId,t.user_id userId,t.car_id carId ,t.create_time
+        createTime,t.community_id communityId,t2.name stateName,
+        t.start_time startTime,t.end_time endTime,t.state,
+        t.car_type_cd carTypeCd,t.member_id memberId,t.lease_type leaseType,
+        t3.name leaseTypeName,t4.name carTypeCdName,t.operate,uu.`name` userName,bo.`name` ownerName,bo.link
+        from business_owner_car t
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        left join t_dict t1 on t.car_type=t1.status_cd and t1.table_name='owner_car' and t1.table_columns = 'car_type'
+        left join t_dict t2 on t.state=t2.status_cd and t2.table_name='owner_car' and t2.table_columns = 'state'
+        left join t_dict t3 on t.lease_type = t3.status_cd and t3.table_name = 'owner_car' and t3.table_columns =
+        'lease_type'
+        left join t_dict t4 on t.car_type_cd=t4.status_cd and t4.table_name='owner_car' and t4.table_columns =
+        'car_type_cd'
+        left join building_owner bo on t.owner_id = bo.member_id and bo.status_cd = '0'
+        where 1=1
+        <if test="carNum != null and carNum != ''">
+            and t.car_num = #{carNum}
+        </if>
+        <if test="carNumLike != null and carNumLike != ''">
+            and t.car_num like concat('%',#{carNumLike},'%')
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and t.start_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and t.end_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id= #{communityId}
+        order by t.create_time desc,t.operate
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <select id="queryHisOwnerCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from business_building_owner t
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        where 1=1
+        <if test="memberId != null and memberId != ''">
+            and t.member_id = #{memberId}
+        </if>
+        <if test="ownerNameLike != null and ownerNameLike != ''">
+            and t.name like concat('%',#{ownerNameLike},'%')
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and co.create_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and co.create_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+    </select>
+
+    <select id="queryHisOwners" parameterType="Map" resultType="Map">
+        select t.operate,t.sex,t.name,t.link,t.remark,t.owner_id ownerId,t.b_id bId,
+        t.age,t.member_id memberId,
+        t.owner_type_cd ownerTypeCd,t.community_id communityId,t.owner_flag ownerFlag,
+        t.id_card idCard,t.state,t.address,co.create_time createTime,uu.`name` userName,t.operate
+        from business_building_owner t
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        where 1=1
+        <if test="memberId != null and memberId != ''">
+            and t.member_id = #{memberId}
+        </if>
+        <if test="ownerNameLike != null and ownerNameLike != ''">
+            and t.name like concat('%',#{ownerNameLike},'%')
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and co.create_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and co.create_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+        order by t.create_time desc,t.operate
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <select id="queryHisFeeCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from business_pay_fee t
+        left join pay_fee_config pfc on t.config_id = pfc.config_id and pfc.status_cd = '0'
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        <if test="payerObjName != null and payerObjName != ''">
+            left join pay_fee_attrs pfa on pfa.fee_id = t.fee_id and pfa.spec_cd = '390012'
+        </if>
+        <if test="deleteFlag != null and deleteFlag != ''">
+            inner join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '1' and pf.b_id = t.b_id
+        </if>
+        where 1=1
+        <if test="feeId != null and feeId != ''">
+            and t.fee_id = #{feeId}
+        </if>
+        <if test="deleteFlag != null and deleteFlag != ''">
+            and t.operate = 'DEL'
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="feeNameLike != null and feeNameLike != ''">
+            and pfc.fee_name like concat('%',#{feeNameLike},'%')
+        </if>
+        <if test="payerObjName != null and payerObjName != ''">
+            and pfa.value = #{payerObjName}
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and t.start_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and t.end_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+    </select>
+
+    <select id="queryHisFees" parameterType="Map" resultType="Map">
+        select t.operate,t.start_time startTime,t.end_time endTime,t.create_time createTime,pfc.fee_name feeName,
+        t.amount,
+        uu.`name` userName,pfa.`value` payerObjName,pfa1.value ownerName,t.b_id bId,co.create_time createTime
+        from business_pay_fee t
+        left join pay_fee_config pfc on t.config_id = pfc.config_id
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        left join pay_fee_attrs pfa on pfa.fee_id = t.fee_id and pfa.spec_cd = '390012'
+        left join pay_fee_attrs pfa1 on pfa1.fee_id = t.fee_id and pfa1.spec_cd = '390008'
+        <if test="deleteFlag != null and deleteFlag != ''">
+            inner join pay_fee pf on t.fee_id = pf.fee_id and pf.status_cd = '1' and pf.b_id = t.b_id
+        </if>
+        where 1=1
+        <if test="feeId != null and feeId != ''">
+            and t.fee_id = #{feeId}
+        </if>
+        <if test="deleteFlag != null and deleteFlag != ''">
+            and t.operate = 'DEL'
+        </if>
+        <if test="payerObjName != null and payerObjName != ''">
+            and pfa.value = #{payerObjName}
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="feeNameLike != null and feeNameLike != ''">
+            and pfc.fee_name like concat('%',#{feeNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and t.start_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and t.end_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+        order by t.create_time desc,t.operate
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <select id="queryHisFeeConfigCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from business_pay_fee_config t
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        <if test="deleteFlag != null and deleteFlag != ''">
+            inner join pay_fee_config pfc on t.config_id = pfc.config_id and pfc.status_cd = '1' and pfc.b_id = t.b_id
+        </if>
+        where 1=1
+        <if test="configId != null and configId != ''">
+            and t.config_id = #{configId}
+        </if>
+        <if test="deleteFlag != null and deleteFlag != ''">
+            and t.operate = 'DEL'
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="feeNameLike != null and feeNameLike != ''">
+            and t.fee_name like concat('%',#{feeNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and t.start_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and t.end_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+    </select>
+
+    <select id="queryHisFeeConfigs" parameterType="Map" resultType="Map">
+        select t.operate,t.fee_type_cd feeTypeCd,t.computing_formula
+        computingFormula,t.additional_amount additionalAmount,t.bill_type
+        billType,t.computing_formula_text computingFormulaText,t.square_price squarePrice,t.payment_cd
+        paymentCd,t.is_default
+        isDefault,t.config_id configId,t.fee_flag feeFlag,t.fee_name
+        feeName,t.payment_cycle paymentCycle,t.start_time startTime,t.end_time
+        endTime,t.community_id communityId,t.deduct_from deductFrom,
+        t.pay_online payOnline,t.scale,t.decimal_place decimalPlace,t.units,t.b_id bId,
+        td1.name feeTypeCdName,td2.name feeFlagName,td3.name billTypeName,td4.name computingFormulaName,
+        uu.`name` userName,co.create_time createTime,t.b_id bId
+        from business_pay_fee_config t
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        left join t_dict td1 on t.fee_type_cd = td1.status_cd and td1.table_name = 'pay_fee_config' and
+        td1.table_columns = 'fee_type_cd'
+        left join t_dict td2 on t.fee_flag = td2.status_cd and td2.table_name = 'pay_fee_config' and td2.table_columns =
+        'fee_flag'
+        left join t_dict td3 on t.bill_type = td3.status_cd and td3.table_name = 'pay_fee_config' and td3.table_columns
+        = 'bill_type'
+        left join t_dict td4 on t.computing_formula = td4.status_cd and td4.table_name = 'pay_fee_config' and
+        td4.table_columns = 'computing_formula'
+        <if test="deleteFlag != null and deleteFlag != ''">
+            inner join pay_fee_config pfc on t.config_id = pfc.config_id and pfc.status_cd = '1' and pfc.b_id = t.b_id
+        </if>
+        where 1=1
+        <if test="configId != null and configId != ''">
+            and t.config_id = #{configId}
+        </if>
+        <if test="deleteFlag != null and deleteFlag != ''">
+            and t.operate = 'DEL'
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="feeNameLike != null and feeNameLike != ''">
+            and t.fee_name like concat('%',#{feeNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and t.start_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and t.end_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+        order by t.create_time desc,t.operate
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+
+    <select id="queryHisRoomCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from business_building_room t
+        left join building_unit bu on t.unit_id = bu.unit_id
+        left join f_floor f on f.floor_id = bu.floor_id
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        where 1=1
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and co.create_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and co.create_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+    </select>
+
+    <select id="queryHisRooms" parameterType="Map" resultType="Map">
+        select t.operate,co.create_time createTime,uu.`name` userName,t.section,t.remark,t.room_sub_type
+        roomSubType,td1.name roomSubTypeName, t.room_area roomArea,t.room_id
+        roomId,t.layer,t.fee_coefficient feeCoefficient,t.built_up_area
+        builtUpArea,t.room_num roomNum,t.unit_id unitId,t.state,td.name stateName,t.community_id
+        communityId,t.apartment,t.room_type roomType,t.room_rent roomRent,f.floor_num floorNum,bu.unit_num
+        unitNum,t.b_id bId
+        from business_building_room t
+        left join building_unit bu on t.unit_id = bu.unit_id
+        left join f_floor f on f.floor_id = bu.floor_id
+        left join c_business cb on t.b_id = cb.b_id
+        left join c_orders co on cb.o_id = co.o_id
+        left join u_user uu on co.user_id = uu.user_id
+        left join t_dict td on t.state = td.status_cd and td.table_name = 'building_room' and td.table_columns = 'state'
+        left join t_dict td1 on t.room_sub_type = td1.status_cd and td1.table_name = 'building_room' and
+        td1.table_columns = 'room_sub_type'
+        where 1=1
+        <if test="roomId != null and roomId != ''">
+            and t.room_id = #{roomId}
+        </if>
+        <if test="floorNum != null and floorNum != ''">
+            and f.floor_num = #{floorNum}
+        </if>
+        <if test="unitNum != null and unitNum != ''">
+            and bu.unit_num = #{unitNum}
+        </if>
+        <if test="roomNum != null and roomNum != ''">
+            and t.room_num = #{roomNum}
+        </if>
+        <if test="staffNameLike != null and staffNameLike != ''">
+            and uu.name like concat('%',#{staffNameLike},'%')
+        </if>
+        <if test="logStartTime != null and logStartTime != ''">
+            and co.create_time &gt;= #{logStartTime}
+        </if>
+        <if test="logEndTime != null and logEndTime != ''">
+            and co.create_time &lt;= #{logEndTime}
+        </if>
+        and t.community_id = #{communityId}
+        order by t.create_time desc,t.operate
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
 </mapper>

@@ -1,7 +1,10 @@
 package com.java110.intf.fee;
 
 import com.java110.config.feign.FeignConfiguration;
-import com.java110.dto.tempCarFeeConfig.TempCarFeeConfigDto;
+import com.java110.dto.machine.CarInoutDetailDto;
+import com.java110.dto.machine.CarInoutDto;
+import com.java110.dto.fee.TempCarFeeConfigDto;
+import com.java110.dto.fee.TempCarFeeRuleDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +27,6 @@ public interface ITempCarFeeConfigInnerServiceSMO {
     /**
      * <p>查询小区楼信息</p>
      *
-     *
      * @param tempCarFeeConfigDto 数据对象分享
      * @return TempCarFeeConfigDto 对象数据
      */
@@ -39,4 +41,25 @@ public interface ITempCarFeeConfigInnerServiceSMO {
      */
     @RequestMapping(value = "/queryTempCarFeeConfigsCount", method = RequestMethod.POST)
     int queryTempCarFeeConfigsCount(@RequestBody TempCarFeeConfigDto tempCarFeeConfigDto);
+
+    /**
+     * 查询临时车收费规则
+     *
+     * @param tempCarFeeRuleDto
+     * @return
+     */
+    @RequestMapping(value = "/queryTempCarFeeRules", method = RequestMethod.POST)
+    List<TempCarFeeRuleDto> queryTempCarFeeRules(@RequestBody TempCarFeeRuleDto tempCarFeeRuleDto);
+
+    /**
+     * 计算临时车费用
+     *
+     * @param carInoutDtos
+     * @return
+     */
+    @RequestMapping(value = "/computeTempCarFee", method = RequestMethod.POST)
+    List<CarInoutDto> computeTempCarFee(@RequestBody List<CarInoutDto> carInoutDtos);
+
+    @RequestMapping(value = "/computeTempCarInoutDetailFee", method = RequestMethod.POST)
+    List<CarInoutDetailDto> computeTempCarInoutDetailFee(@RequestBody List<CarInoutDetailDto> carInoutDtos);
 }

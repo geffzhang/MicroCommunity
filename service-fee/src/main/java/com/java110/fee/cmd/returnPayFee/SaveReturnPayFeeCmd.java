@@ -1,0 +1,156 @@
+/*
+ * Copyright 2017-2020 吴学文 and java110 team.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.java110.fee.cmd.returnPayFee;
+
+import com.alibaba.fastjson.JSONObject;
+import com.java110.core.annotation.Java110Cmd;
+import com.java110.core.annotation.Java110Transactional;
+import com.java110.core.context.ICmdDataFlowContext;
+import com.java110.core.event.cmd.Cmd;
+import com.java110.core.event.cmd.CmdEvent;
+import com.java110.core.factory.GenerateCodeFactory;
+import com.java110.dto.fee.FeeDetailDto;
+import com.java110.dto.fee.FeeDto;
+import com.java110.dto.payFee.ReturnPayFeeDto;
+import com.java110.dto.user.UserDto;
+import com.java110.intf.fee.IFeeDetailInnerServiceSMO;
+import com.java110.intf.fee.IFeeInnerServiceSMO;
+import com.java110.intf.fee.IPayFeeDetailV1InnerServiceSMO;
+import com.java110.intf.fee.IReturnPayFeeV1InnerServiceSMO;
+import com.java110.intf.user.IUserV1InnerServiceSMO;
+import com.java110.po.fee.PayFeeDetailPo;
+import com.java110.po.payFee.ReturnPayFeePo;
+import com.java110.utils.exception.CmdException;
+import com.java110.utils.util.Assert;
+import com.java110.utils.util.BeanConvertUtil;
+import com.java110.vo.ResultVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+/**
+ * 类表述：保存
+ * 服务编码：returnPayFee.saveReturnPayFee
+ * 请求路劲：/app/returnPayFee.SaveReturnPayFee
+ * add by 吴学文 at 2022-02-21 12:20:03 mail: 928255095@qq.com
+ * open source address: https://gitee.com/wuxw7/MicroCommunity
+ * 官网：http://www.homecommunity.cn
+ * 温馨提示：如果您对此文件进行修改 请不要删除原有作者及注释信息，请补充您的 修改的原因以及联系邮箱如下
+ * // modify by 张三 at 2021-09-12 第10行在某种场景下存在某种bug 需要修复，注释10至20行 加入 20行至30行
+ */
+@Java110Cmd(serviceCode = "returnPayFee.saveReturnPayFee")
+public class SaveReturnPayFeeCmd extends Cmd {
+
+    private static Logger logger = LoggerFactory.getLogger(SaveReturnPayFeeCmd.class);
+
+    public static final String CODE_PREFIX_ID = "10";
+
+    @Autowired
+    private IReturnPayFeeV1InnerServiceSMO returnPayFeeV1InnerServiceSMOImpl;
+
+    @Autowired
+    private IFeeInnerServiceSMO feeInnerServiceSMOImpl;
+
+    @Autowired
+    private IPayFeeDetailV1InnerServiceSMO payFeeDetailNewV1InnerServiceSMOImpl;
+
+
+    @Autowired
+    private IFeeDetailInnerServiceSMO feeDetailInnerServiceSMOImpl;
+
+    @Autowired
+    private IUserV1InnerServiceSMO userV1InnerServiceSMOImpl;
+
+    @Override
+    public void validate(CmdEvent event, ICmdDataFlowContext cmdDataFlowContext, JSONObject reqJson) {
+        //Assert.hasKeyAndValue(reqJson, "configId", "请求报文中未包含configId");
+        Assert.hasKeyAndValue(reqJson, "feeId", "请求报文中未包含feeId");
+        Assert.hasKeyAndValue(reqJson, "communityId", "请求报文中未包含communityId");
+        Assert.hasKeyAndValue(reqJson, "detailId", "请求报文中未包含detailId");
+        Assert.hasKeyAndValue(reqJson, "reason", "请求报文中未包含reason");
+
+        FeeDetailDto feeDetailDto = new FeeDetailDto();
+        feeDetailDto.setCommunityId(reqJson.getString("communityId"));
+        feeDetailDto.setDetailId(reqJson.getString("detailId"));
+        feeDetailDto.setFeeId(reqJson.getString("feeId"));
+        List<FeeDetailDto> feeDetailDtos = feeDetailInnerServiceSMOImpl.queryFeeDetails(feeDetailDto);
+
+        Assert.listOnlyOne(feeDetailDtos, "不存在该缴费记录");
+    }
+
+    @Override
+    @Java110Transactional
+    public void doCmd(CmdEvent event, ICmdDataFlowContext cmdDataFlowContext, JSONObject reqJson) throws CmdException {
+
+        String userId = cmdDataFlowContext.getReqHeaders().get("user-id");
+
+        UserDto userDto = new UserDto();
+        userDto.setUserId(userId);
+        List<UserDto> userDtos = userV1InnerServiceSMOImpl.queryUsers(userDto);
+
+        Assert.listOnlyOne(userDtos, "用户不存在");
+
+        FeeDto feeDto = new FeeDto();
+        feeDto.setCommunityId(reqJson.getString("communityId"));
+        feeDto.setFeeId(reqJson.getString("feeId"));
+
+        List<FeeDto> feeDtos = feeInnerServiceSMOImpl.queryFees(feeDto);
+
+        Assert.listOnlyOne(feeDtos, "不存在该费用");
+
+        FeeDetailDto feeDetailDto = new FeeDetailDto();
+        feeDetailDto.setDetailId(reqJson.getString("detailId"));
+        List<FeeDetailDto> feeDetailDtos = feeDetailInnerServiceSMOImpl.queryFeeDetails(feeDetailDto);
+        Assert.listOnlyOne(feeDetailDtos, "未找到需要修改的活动 或多条数据");
+
+        reqJson.put("configId", feeDtos.get(0).getConfigId());
+        reqJson.put("feeTypeCd", feeDtos.get(0).getFeeTypeCd());
+
+        ReturnPayFeePo returnPayFeePo = BeanConvertUtil.covertBean(reqJson, ReturnPayFeePo.class);
+        returnPayFeePo.setReturnFeeId(GenerateCodeFactory.getGeneratorId(CODE_PREFIX_ID));
+        returnPayFeePo.setState(ReturnPayFeeDto.STATE_WAIT);
+        returnPayFeePo.setCycles((reqJson.getDouble("cycles") * -1) + "");
+        returnPayFeePo.setReceivableAmount((reqJson.getDouble("receivableAmount") * -1) + "");
+        returnPayFeePo.setReceivedAmount((reqJson.getDouble("receivedAmount") * -1) + "");
+        //todo 这里不知道为啥写死为 转账，物业交费是现金 退费为转账时 物业误解，所以暂时屏蔽,如果退款也需要 支付方式 建议退款页面补充
+        //returnPayFeePo.setPrimeRate("7"); //退费默认方式为转账
+        returnPayFeePo.setPrimeRate(feeDetailDtos.get(0).getPrimeRate());
+        returnPayFeePo.setApplyPersonId(userId);
+        returnPayFeePo.setApplyPersonName(userDtos.get(0).getName());
+        int flag = returnPayFeeV1InnerServiceSMOImpl.saveReturnPayFee(returnPayFeePo);
+
+        if (flag < 1) {
+            throw new CmdException("保存数据失败");
+        }
+        reqJson.put("state", "1000");
+
+
+
+        JSONObject businessReturnPayFee = new JSONObject();
+        businessReturnPayFee.putAll(BeanConvertUtil.beanCovertMap(feeDetailDtos.get(0)));
+        businessReturnPayFee.putAll(reqJson);
+        PayFeeDetailPo payFeeDetailPo = BeanConvertUtil.covertBean(businessReturnPayFee, PayFeeDetailPo.class);
+
+        flag = payFeeDetailNewV1InnerServiceSMOImpl.updatePayFeeDetailNew(payFeeDetailPo);
+        if (flag < 1) {
+            throw new CmdException("保存数据失败");
+        }
+
+        cmdDataFlowContext.setResponseEntity(ResultVo.success());
+    }
+}

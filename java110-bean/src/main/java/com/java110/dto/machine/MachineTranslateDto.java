@@ -39,12 +39,29 @@ public class MachineTranslateDto extends PageDto implements Serializable {
     public static final String CMD_ADD_PARKING_AREA = "601";
     public static final String CMD_UPDATE_PARKING_AREA = "602";
     public static final String CMD_DELETE_PARKING_AREA = "603";
+    public static final String CMD_ADD_PARKING_AREA_TEXT = "604";
     public static final String CMD_ADD_OWNER_CAR = "701";
     public static final String CMD_UPDATE_OWNER_CAR = "702";
     public static final String CMD_DELETE_OWNER_CAR = "703";
     public static final String CMD_ADD_CAR_BLACK_WHITE = "801";
+    public static final String CMD_UPDATE_CAR_BLACK_WHITE = "802";
     public static final String CMD_DELETE_CAR_BLACK_WHITE = "803";
+    public static final String CMD_ADD_TEAM_CAR_FEE_CONFIG = "901";
+    public static final String CMD_UPDATE_TEAM_CAR_FEE_CONFIG = "902";
+    public static final String CMD_DELETE_TEAM_CAR_FEE_CONFIG = "903";
+
+    public static final String CMD_ADD_ATTENDANCE_CLASSES = "911";
+    public static final String CMD_UPDATE_ATTENDANCE_CLASSES = "912";
+    public static final String CMD_DELETE_ATTENDANCE_CLASSES = "913";
+
+    public static final String CMD_ADD_PARKING_COUPON_CAR = "921";
+    public static final String CMD_UPDATE_PARKING_COUPON_CAR = "922";
+    public static final String CMD_DELETE_PARKING_COUPON_CAR = "923";
+
+    public static final String CMD_ADD_VISIT = "921";
+
     public static final String CMD_OPEN_DOOR = "5";
+    public static final String CMD_CLOSE_DOOR = "51";
 
     //小区信息
     public static final String TYPE_COMMUNITY = "9988";
@@ -52,9 +69,14 @@ public class MachineTranslateDto extends PageDto implements Serializable {
     public static final String TYPE_OWNER = "8899";
     public static final String TYPE_PARKING_AREA = "2233";
     public static final String TYPE_OWNER_CAR = "4455";
+    public static final String TYPE_TEAM_CAR_FEE_CONFIG = "1122";
+    public static final String TYPE_PARK_COUPON_CAR = "1133";
+    public static final String TYPE_ATTENDANCE = "1111";
+
 
     //同步状态
     public static final String STATE_SUCCESS = "20000";
+    public static final String STATE_DOING = "30000";
 
     //同步失败
     public static final String STATE_ERROR = "60000";
@@ -67,7 +89,10 @@ public class MachineTranslateDto extends PageDto implements Serializable {
     private String typeCdName;
     private String machineTranslateId;
     private String objId;
+
+    private String[] objIds;
     private String objName;
+
     private String state;
     private String stateName;
     private String communityId;
@@ -81,6 +106,8 @@ public class MachineTranslateDto extends PageDto implements Serializable {
     private String objBId;
 
     private String remark;
+
+    private String isNow;
 
 
     private Date createTime;
@@ -242,5 +269,21 @@ public class MachineTranslateDto extends PageDto implements Serializable {
 
     public void setMachineName(String machineName) {
         this.machineName = machineName;
+    }
+
+    public String getIsNow() {
+        return isNow;
+    }
+
+    public void setIsNow(String isNow) {
+        this.isNow = isNow;
+    }
+
+    public String[] getObjIds() {
+        return objIds;
+    }
+
+    public void setObjIds(String[] objIds) {
+        this.objIds = objIds;
     }
 }

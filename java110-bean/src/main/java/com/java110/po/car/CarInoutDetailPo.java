@@ -12,6 +12,8 @@ import java.io.Serializable;
  **/
 public class CarInoutDetailPo implements Serializable {
 
+
+
     private String detailId;
     private String inoutId;
     private String communityId;
@@ -19,6 +21,17 @@ public class CarInoutDetailPo implements Serializable {
     private String machineCode;
     private String carInout;
     private String carNum;
+    private String paId;
+    private String statusCd = "0";
+
+    private String remark;
+    private String state;
+
+    private String carType;
+
+    private String carTypeName;
+
+    private String photoJpg;
 
     public String getDetailId() {
         return detailId;
@@ -74,5 +87,61 @@ public class CarInoutDetailPo implements Serializable {
 
     public void setCarNum(String carNum) {
         this.carNum = carNum;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public String getPaId() {
+        return paId;
+    }
+
+    public void setPaId(String paId) {
+        this.paId = paId;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCarType() {
+        return carType;
+    }
+
+    public void setCarType(String carType) {
+        this.carType = carType;
+    }
+
+    public String getCarTypeName() {
+        return carTypeName;
+    }
+
+    public void setCarTypeName(String carTypeName) {
+        this.carTypeName = carTypeName;
+    }
+
+    public String getPhotoJpg() {
+        return photoJpg;
+    }
+
+    public void setPhotoJpg(String photoJpg) {
+        this.photoJpg = photoJpg;
     }
 }

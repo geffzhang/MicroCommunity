@@ -1,6 +1,5 @@
 package com.java110.store;
 
-import com.java110.entity.product.Product;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -27,9 +26,7 @@ public class BeanTest extends TestCase {
 
 
     public void testBean(){
-        Product product = new Product();
 
-        product.setStatus_cd("status_cd");
-        System.out.println(product.getStatus_cd());
+        System.out.println(Math.ceil(0.1));
     }
 }

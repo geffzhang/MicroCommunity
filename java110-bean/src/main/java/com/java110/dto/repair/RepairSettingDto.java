@@ -14,7 +14,6 @@ import java.util.Date;
  * add by wuxw 2019/4/24
  **/
 public class RepairSettingDto extends PageDto implements Serializable {
-
     private String repairTypeName;
     private String repairType;
     private String remark;
@@ -22,18 +21,16 @@ public class RepairSettingDto extends PageDto implements Serializable {
     private String repairWay;
     private String repairWayName;
     private String settingId;
-
     private String publicArea;
     private String payFeeFlag;
     private String priceScope;
     private String returnVisitFlag;
     private String returnVisitFlagName;
-
-
+    private String repairSettingType;
+    private String repairSettingTypeName;
     private Date createTime;
-
     private String statusCd = "0";
-
+    private String isShow;
 
     public String getRepairTypeName() {
         return repairTypeName;
@@ -82,7 +79,6 @@ public class RepairSettingDto extends PageDto implements Serializable {
     public void setSettingId(String settingId) {
         this.settingId = settingId;
     }
-
 
     public Date getCreateTime() {
         return createTime;
@@ -146,5 +142,29 @@ public class RepairSettingDto extends PageDto implements Serializable {
 
     public void setReturnVisitFlagName(String returnVisitFlagName) {
         this.returnVisitFlagName = returnVisitFlagName;
+    }
+
+    public String getRepairSettingType() {
+        return repairSettingType;
+    }
+
+    public void setRepairSettingType(String repairSettingType) {
+        this.repairSettingType = repairSettingType;
+    }
+
+    public String getRepairSettingTypeName() {
+        return repairSettingTypeName;
+    }
+
+    public void setRepairSettingTypeName(String repairSettingTypeName) {
+        this.repairSettingTypeName = repairSettingTypeName;
+    }
+
+    public String getIsShow() {
+        return isShow;
+    }
+
+    public void setIsShow(String isShow) {
+        this.isShow = isShow;
     }
 }

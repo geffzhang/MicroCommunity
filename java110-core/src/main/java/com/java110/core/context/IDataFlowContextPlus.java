@@ -1,7 +1,6 @@
 package com.java110.core.context;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.entity.order.Orders;
 
 import java.util.Map;
 
@@ -9,6 +8,8 @@ import java.util.Map;
  * 总数据流封装接口
  */
 public interface IDataFlowContextPlus {
+
+
 
 
     /**

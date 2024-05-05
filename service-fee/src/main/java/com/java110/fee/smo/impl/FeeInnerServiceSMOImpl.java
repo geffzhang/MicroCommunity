@@ -3,6 +3,7 @@ package com.java110.fee.smo.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.java110.core.annotation.Java110Transactional;
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.dto.PageDto;
 import com.java110.dto.fee.BillDto;
@@ -18,6 +19,7 @@ import com.java110.intf.user.IUserInnerServiceSMO;
 import com.java110.po.fee.PayFeePo;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.utils.util.DateUtil;
+import com.java110.utils.util.ListUtil;
 import com.java110.utils.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,13 +66,9 @@ public class FeeInnerServiceSMOImpl extends BaseServiceSMO implements IFeeInnerS
 
         List<FeeDto> fees = BeanConvertUtil.covertBeanList(feeServiceDaoImpl.getFeeInfo(BeanConvertUtil.beanCovertMap(feeDto)), FeeDto.class);
 
-        if (fees == null || fees.size() == 0) {
+        if (ListUtil.isNull(fees)) {
             return fees;
         }
-
-//        String[] userIds = getUserIds(fees);
-//        //根据 userId 查询用户信息
-//        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
 
         for (FeeDto fee : fees) {
             refreshFee(fee);
@@ -89,14 +87,20 @@ public class FeeInnerServiceSMOImpl extends BaseServiceSMO implements IFeeInnerS
 
         List<FeeAttrDto> feeAttrDtos = BeanConvertUtil.covertBeanList(attrMaps, FeeAttrDto.class);
         List<FeeAttrDto> tmpFeeAttrDtos = null;
+        String payerObjName = "";
         for (FeeDto tmpFeeDto : fees) {
+            payerObjName = "";
             tmpFeeAttrDtos = new ArrayList<>();
             for (FeeAttrDto feeAttrDto : feeAttrDtos) {
-
-                if (tmpFeeDto.getFeeId().equals(feeAttrDto.getFeeId())) {
-                    tmpFeeAttrDtos.add(feeAttrDto);
+                if (!tmpFeeDto.getFeeId().equals(feeAttrDto.getFeeId())) {
+                    continue;
+                }
+                tmpFeeAttrDtos.add(feeAttrDto);
+                if(FeeAttrDto.SPEC_CD_PAY_OBJECT_NAME.equals(feeAttrDto.getSpecCd())){
+                    payerObjName = feeAttrDto.getValue();
                 }
             }
+            tmpFeeDto.setPayerObjName(payerObjName);
             tmpFeeDto.setFeeAttrDtos(tmpFeeAttrDtos);
         }
         return fees;
@@ -113,6 +117,14 @@ public class FeeInnerServiceSMOImpl extends BaseServiceSMO implements IFeeInnerS
         }
 
         List<FeeDto> fees = BeanConvertUtil.covertBeanList(feeServiceDaoImpl.getFeeInfo(BeanConvertUtil.beanCovertMap(feeDto)), FeeDto.class);
+
+
+        for (FeeDto tmpFeeDto : fees) {
+            if (!StringUtil.isEmpty(tmpFeeDto.getImportFeeName())) {
+                //fee.setFeeName(fee.getImportFeeName() + "(" + fee.getFeeName() + ")");
+                tmpFeeDto.setFeeName(tmpFeeDto.getImportFeeName());
+            }
+        }
 
         return fees;
     }
@@ -310,6 +322,7 @@ public class FeeInnerServiceSMOImpl extends BaseServiceSMO implements IFeeInnerS
     }
 
     @Override
+    @Java110Transactional
     public int updateFee(@RequestBody PayFeePo payFeePo) {
         feeServiceDaoImpl.updateFeeInfoInstance(BeanConvertUtil.beanCovertMap(payFeePo));
         return 1;
@@ -325,6 +338,21 @@ public class FeeInnerServiceSMOImpl extends BaseServiceSMO implements IFeeInnerS
         Map info = new HashMap();
         info.put("payFeePos", fees);
         return feeServiceDaoImpl.insertFees(info);
+    }
+
+    @Override
+    @Java110Transactional
+    public int saveOneFee(@RequestBody PayFeePo payFeePo) {
+        List<Map> fees = new ArrayList<>();
+        fees.add(BeanConvertUtil.beanCovertMap(payFeePo));
+        Map info = new HashMap();
+        info.put("payFeePos", fees);
+        return feeServiceDaoImpl.insertFees(info);
+    }
+
+    @Override
+    public int deleteFeesByBatch(@RequestBody PayFeePo payFeePo) {
+        return feeServiceDaoImpl.deleteFeesByBatch(BeanConvertUtil.beanCovertMap(payFeePo));
     }
 
     @Override
@@ -348,6 +376,7 @@ public class FeeInnerServiceSMOImpl extends BaseServiceSMO implements IFeeInnerS
 
         return data;
     }
+
 
     private void dealFeeConfig(JSONArray data, FeeConfigDto tmpFeeConfigDto) {
         JSONObject config = new JSONObject();

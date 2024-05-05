@@ -9,7 +9,7 @@ import com.java110.core.factory.DataTransactionFactory;
 import com.java110.core.base.controller.BaseController;
 import com.java110.core.event.center.DataFlowEventPublishing;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,12 +82,11 @@ public class HttpApi extends BaseController {
             logger.error("请求订单异常",e);
             resData = DataTransactionFactory.createOrderResponseJson(ResponseConstant.NO_TRANSACTION_ID,
                     ResponseConstant.RESULT_CODE_ERROR,e.getMessage()+e).toJSONString();
-        }finally {
-            for(String key : headers.keySet()) {
-                response.addHeader(key,headers.get(key));
-            }
-            return resData;
         }
+        for(String key : headers.keySet()) {
+            response.addHeader(key,headers.get(key));
+        }
+        return resData;
     }
 
     /**

@@ -1,10 +1,10 @@
 package com.java110.utils.util;
 
 
-import org.apache.commons.beanutils.BeanUtils;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.cglib.beans.BeanMap;
@@ -12,12 +12,7 @@ import org.springframework.cglib.beans.BeanMap;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @ClassName BeanConvertUtil
@@ -35,9 +30,9 @@ public final class BeanConvertUtil {
     static {
         ConvertUtils.register(new Converter() { //注册一个日期转换器
 
-            public Object convert(Class type, Object value) {
+            public <T> T convert(Class<T> type, Object value) {
                 Date date1 = null;
-                if (value instanceof String) {
+                if (value instanceof String && type.getClass().equals(Date.class)) {
                     String date = (String) value;
                     SimpleDateFormat sdf = null;
                     if (date.contains(":")) {
@@ -50,10 +45,11 @@ public final class BeanConvertUtil {
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    return date1;
+                    return type.cast(date1);
                 }
-                return value;
+                return null;
             }
+
         }, Date.class);
 
 
@@ -73,6 +69,10 @@ public final class BeanConvertUtil {
      */
     public static <T1, T2> T2 covertBean(T1 orgBean, T2 dstBean) {
 
+        if(orgBean == null){
+            return dstBean;
+        }
+
         try {
             //BeanUtils.copyProperties(dstBean, orgBean);
             if (orgBean instanceof Map) {
@@ -90,19 +90,23 @@ public final class BeanConvertUtil {
         return dstBean;
     }
 
-    private static void objectFieldsPutMap(Object dstBean, BeanMap beanMap, Map orgMap) {
+    private static void objectFieldsPutMap(Object dstBean, BeanMap beanMap, Map<String, Object> orgMap) {
         //Field[] fields = dstBean.getClass().getDeclaredFields();
         Field[] fields = FieldUtils.getAllFields(dstBean.getClass());
         for (Field field : fields) {
             if (!orgMap.containsKey(field.getName())) {
                 continue;
             }
-            Class dstClass = field.getType();
+            Class<?> dstClass = field.getType();
             //System.out.println("字段类型" + dstClass);
 
             Object value = orgMap.get(field.getName());
+            if(value == null){
+                continue;
+            }
             //String 转date
             Object tmpValue = Java110Converter.getValue(value, dstClass);
+            //System.out.println("tmpValue"+value.toString());
             beanMap.put(field.getName(), tmpValue);
         }
     }
@@ -167,6 +171,28 @@ public final class BeanConvertUtil {
             throw new RuntimeException("bean转换Map失败", e);
         }
         return map;
+    }
+
+    /**
+     * bean转换为map对象
+     *
+     * @param orgBean 原始bean
+     * @return map对象
+     */
+    public static JSONObject beanCovertJson(Object orgBean) {
+
+        return JSONObject.parseObject(JSONObject.toJSONString(orgBean));
+    }
+
+    /**
+     * bean转换为map对象
+     *
+     * @param orgBean 原始bean
+     * @return map对象
+     */
+    public static JSONArray beanCovertJSONArray(Object orgBean) {
+
+        return JSONArray.parseArray(JSONArray.toJSONStringWithDateFormat(orgBean, "yyyy-MM-dd HH:mm:ss"));
     }
 
 

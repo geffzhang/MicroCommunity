@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reportOrderStatisticsServiceDaoImpl">
+
+    <!-- 查询投诉单 -->
+    <select id="getComplaintOrderCount" parameterType="Map" resultType="Map">
+        select count(1) complaintCount
+        from complaint t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <!-- 查询未完成投诉单 -->
+    <select id="getUndoComplaintOrderCount" parameterType="Map" resultType="Map">
+        select count(1) complaintCount
+        from complaint t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state = '10001'
+    </select>
+
+    <!-- 查询已完成投诉单 -->
+    <select id="getFinishComplaintOrderCount" parameterType="Map" resultType="Map">
+        select count(1) complaintCount
+        from complaint t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state = '10002'
+    </select>
+
+    <!-- 查询报修单 -->
+    <select id="getRepairOrderCount" parameterType="Map" resultType="Map">
+        select count(1) repairCount
+        from r_repair_pool t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <!-- 查询未完成报修单 -->
+    <select id="getUndoRepairOrderCount" parameterType="Map" resultType="Map">
+        select count(1) repairCount
+        from r_repair_pool t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state in ('1000','1100','1200','1300','2001')
+    </select>
+
+    <!-- 查询已完成报修单 -->
+    <select id="getFinishRepairOrderCount" parameterType="Map" resultType="Map">
+        select count(1) repairCount
+        from r_repair_pool t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state in ('1700','1800','1900','2000','1400','1500')
+    </select>
+
+    <!-- 查询巡检单 -->
+    <select id="getInspectionOrderCount" parameterType="Map" resultType="Map">
+        select count(1) inspectionCount
+        from inspection_task t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <!-- 查询未完成巡检单 -->
+    <select id="getUndoInspectionOrderCount" parameterType="Map" resultType="Map">
+        select count(1) inspectionCount
+        from inspection_task t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state in ('20200405','20200406')
+    </select>
+
+    <!-- 查询已完成巡检单 -->
+    <select id="getFinishInspectionOrderCount" parameterType="Map" resultType="Map">
+        select count(1) inspectionCount
+        from inspection_task t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state = '20200407'
+    </select>
+
+
+    <!-- 查询保养单 -->
+    <select id="getMaintainanceOrderCount" parameterType="Map" resultType="Map">
+        select count(1) maintainanceCount
+        from maintainance_task t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <!-- 查询未完成保养单 -->
+    <select id="getUndoMaintainanceOrderCount" parameterType="Map" resultType="Map">
+        select count(1) maintainanceCount
+        from maintainance_task t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state in ('20200405','20200406')
+    </select>
+
+    <!-- 查询已完成保养单 -->
+    <select id="getFinishMaintainanceOrderCount" parameterType="Map" resultType="Map">
+        select count(1) maintainanceCount
+        from maintainance_task t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+        and t.state = '20200407'
+    </select>
+
+    <!-- 查询保养单 -->
+    <select id="getNotepadOrderCount" parameterType="Map" resultType="Map">
+        select count(1) notepadCount
+        from notepad t
+        left join building_room br on t.room_id = br.room_id and br.status_cd = '0'
+        where 1=1
+        and br.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <!-- 查询未完成保养单 -->
+    <select id="getChargeMachineOrderCount" parameterType="Map" resultType="Map">
+        select count(1) chargeMachineCount
+        from charge_machine_order t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <!-- 查询已完成保养单 -->
+    <select id="getChargeMonthOrderCount" parameterType="Map" resultType="Map">
+        select ifnull(sum(t.received_amount),0.0) chargeMonthMoney
+        from charge_month_order t
+        where 1=1
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        and t.status_cd = '0'
+    </select>
+
+    <select id="getOwnerReserveGoodsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from (
+            select t.owner_id,t.name, t.link,rg.goods_name goodName,count(1) frequency
+            from building_owner t
+            left join building_owner bom on t.owner_id = bom.owner_id and bom.status_cd = '0'
+            left join reserve_goods_order rgo on (bom.link = rgo.person_tel or t.link = rgo.person_tel) and rgo.status_cd = '0'
+            left join reserve_goods rg on rgo.goods_id = rg.goods_id and rg.status_cd = '0'
+            where t.owner_type_cd = '1001'
+            and t.community_id = #{communityId}
+            and t.create_time &gt; #{startDate}
+            and t.create_time &lt; #{endDate}
+            <if test="name !=null and name != ''">
+                and t.name like concat('%',#{name},'%')
+            </if>
+            <if test="link !=null and link != ''">
+                and t.link= #{link}
+            </if>
+            and t.status_cd = '0'
+            group by t.owner_id,t.name,t.link,rg.goods_name
+            HAVING count(1) > 0
+        ) a
+    </select>
+    <select id="getOwnerReserveGoods" parameterType="Map" resultType="Map">
+        select t.owner_id,t.name, t.link,rg.goods_name goodName,count(1) frequency
+        from building_owner t
+        left join building_owner bom on t.owner_id = bom.owner_id and bom.status_cd = '0'
+        left join reserve_goods_order rgo on (bom.link = rgo.person_tel or t.link = rgo.person_tel) and rgo.status_cd = '0'
+        left join reserve_goods rg on rgo.goods_id = rg.goods_id and rg.status_cd = '0'
+        where t.owner_type_cd = '1001'
+        and t.community_id = #{communityId}
+        and t.create_time &gt; #{startDate}
+        and t.create_time &lt; #{endDate}
+        <if test="name !=null and name != ''">
+            and t.name like concat('%',#{name},'%')
+        </if>
+        <if test="link !=null and link != ''">
+            and t.link= #{link}
+        </if>
+        and t.status_cd = '0'
+        group by t.owner_id,t.name,t.link,rg.goods_name
+        HAVING count(1) > 0
+        order by t.owner_id
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <select id="getOwnerDiningCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from reserve_goods_confirm_order t
+        left join reserve_goods_order rgo on t.order_id = rgo.order_id and t.goods_id = rgo.goods_id and rgo.status_cd = '0'
+        left join reserve_goods_order_time rgco on t.time_id = rgco.time_id and rgco.order_id = rgo.order_id and rgco.status_cd = '0'
+        left join reserve_goods rg on t.goods_id = rg.goods_id and rg.status_cd = '0'
+        left join building_owner bo on rgo.person_tel = bo.link and bo.status_cd = '0'
+        left join building_owner bo1 on bo.owner_id = bo1.owner_id and bo1.owner_type_cd = '1001' and bo1.status_cd = '0'
+        where 1 =1
+        and t.community_id = #{communityId}
+        <if test="startDate !=null and startDate != ''">
+            and t.create_time &gt; #{startDate}
+            and t.create_time &lt; #{endDate}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and bol.name like concat('%',#{ownerName},'%')
+        </if>
+        <if test="personName !=null and personName != ''">
+            and rgo.person_name like concat('%',#{personName},'%')
+        </if>
+    </select>
+    <select id="getOwnerDinings" parameterType="Map" resultType="Map">
+        select t.time_id,t.time_id timeId,t.order_id,t.order_id orderId,t.goods_id,t.goods_id goodsId,t.co_id,t.co_id
+        coId,t.remark,t.status_cd,t.status_cd statusCd,t.type,t.community_id,t.community_id communityId,
+        rgo.person_name personName,rgo.person_tel personTel,rgo.appointment_time appointmentTime,rgco.hours,rgco.quantity,
+        rg.goods_name goodsName,rg.img_url imgUrl,t.create_time createTime,bo1.name ownerName
+        from reserve_goods_confirm_order t
+        left join reserve_goods_order rgo on t.order_id = rgo.order_id and t.goods_id = rgo.goods_id and rgo.status_cd = '0'
+        left join reserve_goods_order_time rgco on t.time_id = rgco.time_id and rgco.order_id = rgo.order_id and rgco.status_cd = '0'
+        left join reserve_goods rg on t.goods_id = rg.goods_id and rg.status_cd = '0'
+        left join building_owner bo on rgo.person_tel = bo.link and bo.status_cd = '0'
+        left join building_owner bo1 on bo.owner_id = bo1.owner_id and bo1.owner_type_cd = '1001' and bo1.status_cd = '0'
+        where 1 =1
+        and t.community_id = #{communityId}
+        <if test="startDate !=null and startDate != ''">
+            and t.create_time &gt; #{startDate}
+            and t.create_time &lt; #{endDate}
+        </if>
+        <if test="ownerName !=null and ownerName != ''">
+            and bol.name like concat('%',#{ownerName},'%')
+        </if>
+        <if test="personName !=null and personName != ''">
+            and rgo.person_name like concat('%',#{personName},'%')
+        </if>
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+</mapper>

@@ -13,6 +13,12 @@
             inspection_plan_period,
             remark,
             end_time,
+            start_date,
+            end_date,
+            inspection_month,
+            inspection_day,
+            inspection_workday,
+            can_reexamine,
             operate,
             sign_type,
             start_time,
@@ -23,7 +29,8 @@
             create_user_id,
             create_user_name)
         values (#{inspectionPlanName},#{inspectionRouteId},#{inspectionPlanPeriod},#{remark},
-                #{endTime},#{operate},#{signType},#{startTime},
+                #{endTime},#{startDate},#{endDate},#{inspectionMonth},#{inspectionDay},#{inspectionWorkday},#{canReexamine},
+                #{operate},#{signType},#{startTime},
                 #{inspectionPlanId},#{state},#{communityId},#{bId},#{createUserId},
                 #{createUserName})
        </insert>
@@ -32,14 +39,14 @@
     <!-- 查询巡检计划信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessInspectionPlanInfo" parameterType="Map" resultType="Map">
         select
-            t.inspection_plan_name inspectionPlanName,
-            t.inspection_route_id inspectionRouteId,
-            t.inspection_plan_period inspectionPlanPeriod,
-            t.remark,t.end_time endTime,
-            t.operate,t.sign_type signType,
-            t.start_time startTime,t.create_user_id createUserId,
-            t.inspection_plan_id inspectionPlanId,t.state,
-            t.community_id communityId,t.b_id bId
+        t.inspection_plan_name inspectionPlanName,
+        t.inspection_route_id inspectionRouteId,
+        t.inspection_plan_period inspectionPlanPeriod,
+        t.remark,t.end_time endTime,
+        t.operate,t.sign_type signType,
+        t.start_time startTime,t.create_user_id createUserId,
+        t.inspection_plan_id inspectionPlanId,t.state,
+        t.community_id communityId,t.b_id bId
         from business_inspection_plan t
         where 1 =1
         <if test="inspectionPlanName !=null and inspectionPlanName != ''">
@@ -91,10 +98,10 @@
     <insert id="saveInspectionPlanInfoInstance" parameterType="Map">
         insert into
         inspection_plan(
-            inspection_plan_name,inspection_route_id,
-            inspection_plan_period,remark,status_cd,end_time,
-            sign_type,start_time,create_user_id,create_user_name,
-            inspection_plan_id,state,community_id,b_id
+        inspection_plan_name,inspection_route_id,
+        inspection_plan_period,remark,status_cd,end_time,
+        sign_type,start_time,create_user_id,create_user_name,
+        inspection_plan_id,state,community_id,b_id
         ) select
         t.inspection_plan_name,t.inspection_route_id,t.inspection_plan_period,t.remark,'0',
         t.end_time,t.sign_type,t.start_time,t.create_user_id,t.create_user_name,
@@ -146,32 +153,41 @@
     <!-- 查询巡检计划信息 add by wuxw 2018-07-03 -->
     <select id="getInspectionPlanInfo" parameterType="Map" resultType="Map">
         select
-            t.inspection_plan_name inspectionPlanName,
-            t.inspection_route_id inspectionRouteId,
-            t.inspection_plan_period inspectionPlanPeriod,
-            t.remark,
-            t.status_cd statusCd,
-            t.end_time endTime,
-            t.sign_type signType,
-            t.start_time startTime,
-            t.create_user_id createUserId,
-            t.create_user_name createUserName,
-            t.inspection_plan_id inspectionPlanId,
-            t.state,
-            t.community_id communityId,
-            t.b_id bId,
-            t.create_time createTime,
-            d.name stateName,
-            c.name inspectionPlanPeriodName,
-            i.name signTypeName
+        t.inspection_plan_name inspectionPlanName,
+        t.inspection_route_id inspectionRouteId,
+        t.inspection_plan_period inspectionPlanPeriod,
+        t.remark,
+        t.status_cd statusCd,
+        t.end_time endTime,
+        t.sign_type signType,
+        t.start_time startTime,
+        t.end_date endDate,
+        t.start_date startDate,
+        t.create_user_id createUserId,
+        t.create_user_name createUserName,
+        t.inspection_plan_id inspectionPlanId,
+        t.state,
+        t.community_id communityId,
+        t.can_reexamine canReexamine,
+        t.b_id bId,
+        t.create_time createTime,
+        t.inspection_workday inspectionWorkday,
+        t.inspection_month inspectionMonth,
+        t.inspection_day inspectionDay,
+        t.before_time beforeTime,
+        d.name stateName,
+        c.name inspectionPlanPeriodName,
+        i.name signTypeName
         from
-            inspection_plan t
+        inspection_plan t
         inner join t_dict d on t.state = d.status_cd and d.table_name = 'inspection_plan' and d.table_columns = 'state'
-        inner join t_dict c on t.inspection_plan_period = c.status_cd and c.table_name = 'inspection_plan' and c.table_columns = 'inspection_plan_period'
-        inner join t_dict i on t.sign_type = i.status_cd and i.table_name = 'inspection_plan' and i.table_columns = 'sign_type'
+        inner join t_dict c on t.inspection_plan_period = c.status_cd and c.table_name = 'inspection_plan' and
+        c.table_columns = 'inspection_plan_period'
+        inner join t_dict i on t.sign_type = i.status_cd and i.table_name = 'inspection_plan' and i.table_columns =
+        'sign_type'
         where 1 =1
         <if test="inspectionPlanName !=null and inspectionPlanName != ''">
-            and t.inspection_plan_name= #{inspectionPlanName}
+            and t.inspection_plan_name like '%${inspectionPlanName}%'
         </if>
         <if test="inspectionRouteId !=null and inspectionRouteId != ''">
             and t.inspection_route_id= #{inspectionRouteId}
@@ -185,17 +201,24 @@
         <if test="endTime !=null ">
             and t.end_time= #{endTime}
         </if>
-
+        <if test="endDate !=null ">
+            and t.end_date= #{endDate}
+        </if>
         <if test="signType !=null and signType != ''">
             and t.sign_type= #{signType}
+        </if>
+        <if test="canReexamine !=null and canReexamine != ''">
+            and t.can_reexamine= #{canReexamine}
         </if>
         <if test="startTime !=null ">
             and t.start_time= #{startTime}
         </if>
-
+        <if test="startDate !=null ">
+            and t.start_date= #{startDate}
+        </if>
         <if test="curTime !=null ">
-            and t.start_time &lt; #{curTime}
-            and t.end_time &gt; #{curTime}
+            and t.start_date &lt; #{curTime}
+            and t.end_date &gt; #{curTime}
         </if>
         <if test="createUserId !=null and createUserId != ''">
             and t.create_user_id= #{createUserId}
@@ -216,7 +239,6 @@
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
     </select>
 
 
@@ -245,6 +267,9 @@
         <if test="signType !=null and signType != ''">
             , t.sign_type= #{signType}
         </if>
+        <if test="canReexamine !=null and canReexamine != ''">
+            , t.can_reexamine= #{canReexamine}
+        </if>
         <if test="startTime !=null">
             , t.start_time= #{startTime}
         </if>
@@ -254,7 +279,6 @@
         <if test="communityId !=null and communityId != ''">
             , t.community_id= #{communityId}
         </if>
-
         where 1=1
         <if test="inspectionPlanId !=null and inspectionPlanId != ''">
             and t.inspection_plan_id= #{inspectionPlanId}
@@ -271,7 +295,7 @@
         from inspection_plan t
         where 1 =1
         <if test="inspectionPlanName !=null and inspectionPlanName != ''">
-            and t.inspection_plan_name= #{inspectionPlanName}
+            and t.inspection_plan_name like '%${inspectionPlanName}%'
         </if>
         <if test="inspectionRouteId !=null and inspectionRouteId != ''">
             and t.inspection_route_id= #{inspectionRouteId}
@@ -288,9 +312,11 @@
         <if test="endTime !=null and endTime != ''">
             and t.end_time= #{endTime}
         </if>
-
         <if test="signType !=null and signType != ''">
             and t.sign_type= #{signType}
+        </if>
+        <if test="canReexamine !=null and canReexamine != ''">
+            and t.can_reexamine= #{canReexamine}
         </if>
         <if test="startTime !=null and startTime != ''">
             and t.start_time= #{startTime}
@@ -307,9 +333,6 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-
-
-
     </select>
 
 </mapper>

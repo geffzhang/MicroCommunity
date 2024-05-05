@@ -7,7 +7,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.community.dao.IRoomAttrServiceDao;
 import com.java110.core.base.dao.BaseServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -102,7 +102,7 @@ public class RoomAttrServiceDaoImpl extends BaseServiceDao implements IRoomAttrS
      * @throws DAOException
      */
     @Override
-    public void updateRoomAttrInfoInstance(Map info) throws DAOException {
+    public int updateRoomAttrInfoInstance(Map info) throws DAOException {
         logger.debug("修改小区房屋属性信息Instance 入参 info : {}", info);
 
         int saveFlag = sqlSessionTemplate.update("roomAttrServiceDaoImpl.updateRoomAttrInfoInstance", info);
@@ -110,6 +110,7 @@ public class RoomAttrServiceDaoImpl extends BaseServiceDao implements IRoomAttrS
         if (saveFlag < 1) {
             throw new DAOException(ResponseConstant.RESULT_PARAM_ERROR, "修改小区房屋属性信息Instance数据失败：" + JSONObject.toJSONString(info));
         }
+        return saveFlag;
     }
 
     /**
@@ -130,5 +131,20 @@ public class RoomAttrServiceDaoImpl extends BaseServiceDao implements IRoomAttrS
         return Integer.parseInt(businessRoomAttrInfos.get(0).get("count").toString());
     }
 
+
+    /**
+     * 保存小区房屋属性信息 到 instance
+     *
+     * @param info bId 信息
+     * @throws DAOException
+     */
+    @Override
+    public int saveRoomAttr(Map info) throws DAOException {
+        logger.debug("保存小区房屋属性saveRoomAttr入参 info : {}", info);
+
+        int saveFlag = sqlSessionTemplate.insert("roomAttrServiceDaoImpl.saveRoomAttr", info);
+
+        return saveFlag;
+    }
 
 }

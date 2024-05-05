@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.java110.core.context.DataFlowContext;
 import com.java110.core.factory.DataFlowFactory;
-import com.java110.entity.center.AppService;
 import com.java110.core.event.service.api.ServiceDataFlowEvent;
+import com.java110.dto.system.AppService;
 import com.java110.utils.constant.CommonConstant;
 import com.java110.utils.constant.ServiceCodeConstant;
 import com.java110.utils.util.BeanConvertUtil;
@@ -260,6 +260,18 @@ public class ApiBaseBMO implements IApiBaseBMO{
 
     /**
      * 新增数据方法
+     *
+     * {
+     *     HTTP_BUSINESS_TYPE_CD:''.
+     *    HTTP_SEQ:1,
+     *    HTTP_INVOKE_MODEL:'s',
+     *    data:[{
+     *        ps:Id
+     *        xxxxx
+     *        xxxx
+     *
+     *    }]
+     * }
      *
      * @param context 上下文对象
      * @param param   po对象

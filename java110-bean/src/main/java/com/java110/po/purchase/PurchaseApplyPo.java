@@ -24,6 +24,13 @@ public class PurchaseApplyPo implements Serializable {
     private String state;
     private String endUserName;
     private String endUserTel;
+    private String createTime;
+    private String warehousingWay;
+    private String createUserId;
+    private String createUserName;
+    private String communityId;
+
+    private String statusCd = "0";
 
     private ResourceStorePo[] resourceStores;
 
@@ -115,5 +122,53 @@ public class PurchaseApplyPo implements Serializable {
 
     public void setPurchaseApplyDetailPos(List<PurchaseApplyDetailPo> purchaseApplyDetailPos) {
         this.purchaseApplyDetailPos = purchaseApplyDetailPos;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getWarehousingWay() {
+        return warehousingWay;
+    }
+
+    public void setWarehousingWay(String warehousingWay) {
+        this.warehousingWay = warehousingWay;
+    }
+
+    public String getCreateUserId() {
+        return createUserId;
+    }
+
+    public void setCreateUserId(String createUserId) {
+        this.createUserId = createUserId;
+    }
+
+    public String getCreateUserName() {
+        return createUserName;
+    }
+
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
+    }
+
+    public String getStatusCd() {
+        return statusCd;
+    }
+
+    public void setStatusCd(String statusCd) {
+        this.statusCd = statusCd;
+    }
+
+    public String getCommunityId() {
+        return communityId;
+    }
+
+    public void setCommunityId(String communityId) {
+        this.communityId = communityId;
     }
 }

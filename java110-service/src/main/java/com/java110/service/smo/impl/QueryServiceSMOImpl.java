@@ -4,26 +4,33 @@ import bsh.Interpreter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import com.alibaba.fastjson.parser.Feature;
 import com.java110.core.factory.DataTransactionFactory;
+import com.java110.core.factory.GenerateCodeFactory;
 import com.java110.db.dao.IQueryServiceDAO;
-import com.java110.entity.service.ServiceSql;
+import com.java110.dto.log.LogSystemErrorDto;
+import com.java110.dto.system.ServiceSql;
+import com.java110.po.log.LogSystemErrorPo;
 import com.java110.service.context.DataQuery;
 import com.java110.service.smo.IQueryServiceSMO;
+import com.java110.service.smo.ISaveSystemErrorSMO;
 import com.java110.utils.cache.ServiceSqlCache;
 import com.java110.utils.constant.CommonConstant;
 import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.BusinessException;
 import com.java110.utils.log.LoggerEngine;
 import com.java110.utils.util.Assert;
+import com.java110.utils.util.ExceptionUtil;
 import com.java110.utils.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.ognl.Ognl;
+import org.apache.ibatis.ognl.OgnlContext;
 import org.apache.ibatis.ognl.OgnlException;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +55,9 @@ public class QueryServiceSMOImpl extends LoggerEngine implements IQueryServiceSM
 
     @Autowired
     private IQueryServiceDAO queryServiceDAOImpl;
+
+    @Autowired(required = false)
+    private ISaveSystemErrorSMO saveSystemErrorSMOImpl;
 
     @Override
     public void commonQueryService(DataQuery dataQuery) throws BusinessException {
@@ -123,18 +133,28 @@ public class QueryServiceSMOImpl extends LoggerEngine implements IQueryServiceSM
     public ResponseEntity<String> fallBack(String fallBackInfo) throws BusinessException {
 
         JSONArray params = JSONArray.parseArray(fallBackInfo);
+        String sql = "";
         for (int paramIndex = 0; paramIndex < params.size(); paramIndex++) {
-            JSONObject param = params.getJSONObject(paramIndex);
-            String sql = param.getString("fallBackSql");
-            if (StringUtil.isEmpty(sql)) {
-                return new ResponseEntity<String>("未包含sql信息", HttpStatus.BAD_REQUEST);
+            try {
+                JSONObject param = params.getJSONObject(paramIndex);
+                sql =  param.getString("fallBackSql");
+                if (StringUtil.isEmpty(sql)) {
+                    return new ResponseEntity<String>("未包含sql信息", HttpStatus.BAD_REQUEST);
+                }
+                int flag = queryServiceDAOImpl.updateSql(sql, null);
+            }catch (Exception e){
+                LogSystemErrorPo logSystemErrorPo = new LogSystemErrorPo();
+                logSystemErrorPo.setErrId(GenerateCodeFactory.getGeneratorId(GenerateCodeFactory.CODE_PREFIX_errId));
+                logSystemErrorPo.setErrType(LogSystemErrorDto.ERR_TYPE_JOB);
+                logSystemErrorPo.setMsg(sql+ExceptionUtil.getStackTrace(e));
+                saveSystemErrorSMOImpl.saveLog(logSystemErrorPo);
             }
-            int flag = queryServiceDAOImpl.updateSql(sql, null);
 
         }
         return new ResponseEntity<String>("回退成功", HttpStatus.OK);
 
     }
+
 
     /**
      * {"PARAM:"{
@@ -341,6 +361,100 @@ public class QueryServiceSMOImpl extends LoggerEngine implements IQueryServiceSM
     }
 
     /**
+     * 执行java脚本
+     *
+     * @param javaCode
+     * @throws BusinessException
+     */
+    public JSONObject execJava(JSONObject params, String javaCode) throws BusinessException {
+        try {
+            //JSONObject params = dataQuery.getRequestParams();
+            List<String> columns = new ArrayList<>();
+            Interpreter interpreter = new Interpreter();
+            interpreter.eval(javaCode);
+            interpreter.set("params", params);
+            interpreter.set("queryServiceDAOImpl",queryServiceDAOImpl);
+            JSONObject results = JSONObject.parseObject(interpreter.eval("execute(params,queryServiceDAOImpl)").toString(), Feature.OrderedField);
+
+            JSONArray data = null;
+            if (results == null || results.size() < 1) {
+                data = new JSONArray();
+            } else {
+                data = results.getJSONArray("data");
+            }
+
+            JSONArray th = new JSONArray();
+            if(data.size()>0) {
+                for (String key : data.getJSONObject(0).keySet()) {
+                    th.add(key);
+                }
+            }
+            JSONObject paramOut = new JSONObject();
+            paramOut.put("th", th);
+            paramOut.put("td", data);
+            paramOut.put("total",results.getString("total"));
+
+            return paramOut;
+        } catch (Exception e) {
+            logger.error("数据交互异常：", e);
+            throw new BusinessException(ResponseConstant.RESULT_CODE_INNER_ERROR, "数据交互异常," + e.getMessage());
+        }
+    }
+
+    @Override
+    public JSONObject execQuerySql(JSONObject params, String currentSql) throws BusinessException {
+        List<Map<String, Object>> results = null;
+        List<String> columns = new ArrayList<>();
+        try {
+            List<Object> currentParams = new ArrayList<Object>();
+            //处理 if 判断
+            logger.debug("dealSqlIf开始处理sql中的<if>节点 " + currentSql + " 入参:" + params.toJSONString());
+            currentSql = dealSqlIf(currentSql, params);
+            logger.debug("dealSqlIf处理完成sql中的<if>节点 " + currentSql + " 入参:" + params.toJSONString());
+            String[] sqls = currentSql.split("#");
+            String currentSqlNew = "";
+            for (int sqlIndex = 0; sqlIndex < sqls.length; sqlIndex++) {
+                if (sqlIndex % 2 == 0) {
+                    currentSqlNew += sqls[sqlIndex];
+                    continue;
+                }
+                currentSqlNew += "?";
+                Object param = params.getString(sqls[sqlIndex]);
+                if (params.get(sqls[sqlIndex]) instanceof Integer) {
+                    param = params.getInteger(sqls[sqlIndex]);
+                }
+                //这里对 page 和 rows 特殊处理 ，目前没有想到其他的办法
+                if (StringUtils.isNumeric(param.toString()) && "page,rows,row".contains(sqls[sqlIndex])) {
+                    param = Integer.parseInt(param.toString());
+                }
+                currentParams.add(param);
+            }
+            results = queryServiceDAOImpl.executeSql(currentSqlNew, currentParams.toArray(), columns);
+        } catch (Exception e) {
+            logger.error("解析sql 异常"+currentSql, e);
+            throw new BusinessException("1999", e.getLocalizedMessage());
+        }
+        JSONArray data = null;
+        if (results == null || results.size() < 1) {
+            data = new JSONArray();
+        } else {
+            data = JSONArray.parseArray(JSONArray.toJSONString(results));
+        }
+        JSONArray th = null;
+        if (columns.size() < 1) {
+            th = new JSONArray();
+        } else {
+            th = JSONArray.parseArray(JSONArray.toJSONString(columns));
+        }
+
+
+        JSONObject paramOut = new JSONObject();
+        paramOut.put("th", th);
+        paramOut.put("td", data);
+        return paramOut;
+    }
+
+    /**
      * 处理SQL语句
      *
      * @param oldSql select * from s_a a
@@ -357,7 +471,6 @@ public class QueryServiceSMOImpl extends LoggerEngine implements IQueryServiceSM
         if (!oldSql.contains("<if")) {
             return oldSql;
         }
-
         String[] oSqls = oldSql.split("</if>");
         for (String oSql : oSqls) {
             logger.debug("处理if 节点，当前处理的oSql=" + oSql + "总的oSqls = " + oSqls);
@@ -377,7 +490,9 @@ public class QueryServiceSMOImpl extends LoggerEngine implements IQueryServiceSM
 
             Object condObj = Ognl.parseExpression(condition);
 
-            Object value = Ognl.getValue(condObj, requestParams);
+            OgnlContext context = new OgnlContext(null,null,new DefaultMemberAccess(true));
+
+            Object value = Ognl.getValue(condObj,context, requestParams);
 
             if (value instanceof Boolean) {
                 conditionResult = (Boolean) value;

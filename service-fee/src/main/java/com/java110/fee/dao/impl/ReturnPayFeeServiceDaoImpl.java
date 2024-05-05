@@ -7,7 +7,7 @@ import com.java110.utils.constant.ResponseConstant;
 import com.java110.utils.exception.DAOException;
 import com.java110.utils.util.DateUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,6 +90,38 @@ public class ReturnPayFeeServiceDaoImpl extends BaseServiceDao implements IRetur
         logger.debug("查询退费表信息 入参 info : {}", info);
 
         List<Map> businessReturnPayFeeInfos = sqlSessionTemplate.selectList("returnPayFeeServiceDaoImpl.getReturnPayFeeInfo", info);
+
+        return businessReturnPayFeeInfos;
+    }
+
+    /**
+     * 查询退费表信息（instance）
+     *
+     * @param info bId 信息
+     * @return List<Map>
+     * @throws DAOException DAO异常
+     */
+    @Override
+    public List<Map> getRoomReturnPayFeeInfo(Map info) throws DAOException {
+        logger.debug("查询退费表信息 入参 info : {}", info);
+
+        List<Map> businessReturnPayFeeInfos = sqlSessionTemplate.selectList("returnPayFeeServiceDaoImpl.getRoomReturnPayFeeInfo", info);
+
+        return businessReturnPayFeeInfos;
+    }
+
+    /**
+     * 查询退费表信息（instance）
+     *
+     * @param info bId 信息
+     * @return List<Map>
+     * @throws DAOException DAO异常
+     */
+    @Override
+    public List<Map> getCarReturnPayFeeInfo(Map info) throws DAOException {
+        logger.debug("查询退费表信息 入参 info : {}", info);
+
+        List<Map> businessReturnPayFeeInfos = sqlSessionTemplate.selectList("returnPayFeeServiceDaoImpl.getCarReturnPayFeeInfo", info);
 
         return businessReturnPayFeeInfos;
     }

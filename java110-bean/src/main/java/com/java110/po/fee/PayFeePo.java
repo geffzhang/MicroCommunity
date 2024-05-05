@@ -19,15 +19,22 @@ public class PayFeePo implements Serializable {
     private String incomeObjId;
     private String startTime;
     private String endTime;
+
+    private String maxTime;
     private String amount;
     private String userId;
+    private String bId;
 
     private String feeFlag;
     private String state;
     private String configId;
     private String payerObjType;
-    private String statusCd;
+    private String statusCd = "0";
     private String createTime;
+    private String batchId;
+    private String deductFrom;
+
+    private String ruleId;
 
     public String getFeeId() {
         return feeId;
@@ -147,5 +154,41 @@ public class PayFeePo implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
+    }
+
+    public String getbId() {
+        return bId;
+    }
+
+    public void setbId(String bId) {
+        this.bId = bId;
+    }
+
+    public String getDeductFrom() { return deductFrom; }
+
+    public void setDeductFrom(String deductFrom) { this.deductFrom = deductFrom; }
+
+    public String getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(String maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    public String getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(String ruleId) {
+        this.ruleId = ruleId;
     }
 }

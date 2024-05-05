@@ -21,6 +21,7 @@ public class CustomMVCConfiguration extends WebMvcConfigurerAdapter {
     public HttpMessageConverter<String> responseBodyConverter() {
         StringHttpMessageConverter converter = new StringHttpMessageConverter(
                 Charset.forName("UTF-8"));
+        converter.setWriteAcceptCharset(false);
         return converter;
     }
 
@@ -35,5 +36,15 @@ public class CustomMVCConfiguration extends WebMvcConfigurerAdapter {
     public void configureContentNegotiation(
             ContentNegotiationConfigurer configurer) {
         configurer.favorPathExtension(false);
+    }
+
+    /**
+     * +对于header中的中文字进行解码
+     *
+     * @return 转换结果
+     */
+    @Bean
+    public StringDecoderForHeaderConverter stringHeaderConverter() {
+        return new StringDecoderForHeaderConverter(Charset.forName("UTF-8"));
     }
 }

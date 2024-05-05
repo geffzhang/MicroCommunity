@@ -91,11 +91,14 @@
         v.value_name valueName,
         s.list_show listShow
         from machine_attrs t
-        left join attr_spec s on t.spec_cd = s.spec_cd and s.status_cd = '0' and s.table_name = 'machine_attr'
-        left join attr_value v on t.`value` = v.`value` and t.spec_cd = v.spec_cd and v.status_cd = '0'
+        left join attr_spec s on t.spec_cd = s.spec_cd and s.status_cd = '0' and t.spec_cd = s.spec_cd and s.table_name = 'machine_attr'
+        left join attr_value v on t.`value` = v.`value` and s.spec_id = v.spec_id and v.status_cd = '0'
         where 1 =1
         <if test="machineId !=null and machineId != ''">
             and t.machine_id= #{machineId}
+        </if>
+        <if test="domain !=null and domain != ''">
+            and s.domain= #{domain}
         </if>
         <if test="machineIds !=null ">
             and t.machine_id in
@@ -134,15 +137,6 @@
         <if test="newBId != null and newBId != ''">
             ,t.b_id = #{newBId}
         </if>
-        <if test="machineId !=null and machineId != ''">
-            , t.machine_id= #{machineId}
-        </if>
-        <if test="specCd !=null and specCd != ''">
-            , t.spec_cd= #{specCd}
-        </if>
-        <if test="communityId !=null and communityId != ''">
-            , t.community_id= #{communityId}
-        </if>
         <if test="value !=null and value != ''">
             , t.value= #{value}
         </if>
@@ -152,6 +146,15 @@
         </if>
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="specCd !=null and specCd != ''">
+            and t.spec_cd= #{specCd}
+        </if>
+        <if test="machineId !=null and machineId != ''">
+            and t.machine_id= #{machineId}
         </if>
 
     </update>

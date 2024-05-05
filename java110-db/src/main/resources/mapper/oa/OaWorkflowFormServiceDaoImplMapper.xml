@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oaWorkflowFormServiceDaoImpl">
+
+
+    <!-- 保存OA表单信息 add by wuxw 2018-07-03 -->
+    <insert id="saveOaWorkflowFormInfo" parameterType="Map">
+        insert into oa_workflow_form(
+        form_id,form_json,store_id,flow_id,version,table_name
+        ) values (
+        #{formId},#{formJson},#{storeId},#{flowId},#{version},#{tableName}
+        )
+    </insert>
+
+
+    <!-- 查询OA表单信息 add by wuxw 2018-07-03 -->
+    <select id="getOaWorkflowFormInfo" parameterType="Map" resultType="Map">
+        select t.form_id,t.form_id formId,t.status_cd,t.status_cd statusCd,t.form_json,t.form_json
+        formJson,t.store_id,t.store_id storeId,t.flow_id,t.flow_id flowId,t.version,t.table_name,t.table_name tableName
+        from oa_workflow_form t
+        where 1 =1
+        <if test="formId !=null and formId != ''">
+            and t.form_id= #{formId}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="formJson !=null and formJson != ''">
+            and t.form_json= #{formJson}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="flowId !=null and flowId != ''">
+            and t.flow_id= #{flowId}
+        </if>
+        <if test="version !=null and version != ''">
+            and t.version= #{version}
+        </if>
+        <if test="tableName !=null and tableName != ''">
+            and t.table_name= #{tableName}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+
+    </select>
+
+
+    <!-- 修改OA表单信息 add by wuxw 2018-07-03 -->
+    <update id="updateOaWorkflowFormInfo" parameterType="Map">
+        update oa_workflow_form t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+
+        <if test="formJson !=null and formJson != ''">
+            , t.form_json= #{formJson}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            , t.store_id= #{storeId}
+        </if>
+        <if test="flowId !=null and flowId != ''">
+            , t.flow_id= #{flowId}
+        </if>
+        <if test="version !=null and version != ''">
+            , t.version= #{version}
+        </if>
+        <if test="tableName !=null and tableName != ''">
+            , t.table_name= #{tableName}
+        </if>
+        where 1=1
+        and t.form_id= #{formId}
+
+    </update>
+
+    <!-- 查询OA表单数量 add by wuxw 2018-07-03 -->
+    <select id="queryOaWorkflowFormsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from oa_workflow_form t
+        where 1 =1
+        <if test="formId !=null and formId != ''">
+            and t.form_id= #{formId}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="formJson !=null and formJson != ''">
+            and t.form_json= #{formJson}
+        </if>
+        <if test="storeId !=null and storeId != ''">
+            and t.store_id= #{storeId}
+        </if>
+        <if test="flowId !=null and flowId != ''">
+            and t.flow_id= #{flowId}
+        </if>
+        <if test="version !=null and version != ''">
+            and t.version= #{version}
+        </if>
+        <if test="tableName !=null and tableName != ''">
+            and t.table_name= #{tableName}
+        </if>
+
+
+    </select>
+
+    <!-- 查询OA表单数量 add by wuxw 2018-07-03 -->
+    <select id="hasTable" parameterType="Map" resultType="Map">
+        select * from information_schema.tables where table_name = #{tableName}
+    </select>
+
+    <update id="createTable" parameterType="Map">
+        ${sql}
+    </update>
+
+
+    <!-- 查询OA表单数量 add by wuxw 2018-07-03 -->
+    <select id="queryOaWorkflowFormDataCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from ${tableName} t
+        where 1 =1
+        and t.store_id = #{storeId}
+        and t.status_cd= '0'
+        <if test="startTime !=null and startTime != ''">
+            and t.create_time &gt; #{startTime}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            and t.create_time &lt; #{endTime}
+        </if>
+        <if test="id !=null and id != ''">
+            and t.id = #{id}
+        </if>
+        <if test="createUserName !=null and createUserName != ''">
+            and t.create_user_name = #{createUserName}
+        </if>
+    </select>
+
+    <!-- 查询OA表单数量 add by wuxw 2018-07-03 -->
+    <select id="queryOaWorkflowFormDatas" parameterType="Map" resultType="Map">
+        select t.*
+        from ${tableName} t
+        where 1 =1
+        and t.store_id = #{storeId}
+        and t.status_cd= '0'
+        <if test="startTime !=null and startTime != ''">
+            and t.create_time &gt; #{startTime}
+        </if>
+        <if test="endTime !=null and endTime != ''">
+            and t.create_time &lt; #{endTime}
+        </if>
+        <if test="id !=null and id != ''">
+            and t.id = #{id}
+        </if>
+        <if test="ids != null">
+            and t.id in
+            <foreach collection="ids" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="createUserName !=null and createUserName != ''">
+            and t.create_user_name = #{createUserName}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 保存表单数据 -->
+    <insert id="saveOaWorkflowFormDataInfo" parameterType="Map">
+        insert into ${tableName} (
+        <foreach collection="columns" item="item" separator=",">
+            ${item}
+        </foreach>
+        ,id,create_user_id,create_user_name,state,store_id
+        )values(
+        <foreach collection="values" item="valueItem" separator=",">
+            #{valueItem}
+        </foreach>
+        ,#{id},#{createUserId},#{createUserName},#{state},#{storeId}
+        )
+    </insert>
+
+    <!-- 修改信息 -->
+    <update id="updateOaWorkflowFormData" parameterType="Map">
+        update ${tableName} t set t.state = #{state}
+        where t.id = #{id}
+    </update>
+
+    <!-- 修改信息 -->
+    <update id="updateOaWorkflowFormDataAll" parameterType="Map">
+        update ${tableName} set
+            <foreach collection="columns" item="item" separator=",">
+                ${item}
+            </foreach>
+        where id = #{id}
+    </update>
+
+
+</mapper>

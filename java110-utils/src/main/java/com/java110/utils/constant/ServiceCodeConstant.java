@@ -67,7 +67,7 @@ public class ServiceCodeConstant {
     /**
      * 保存用户
      */
-    public static final String SERVICE_CODE_SAVE_USER_INFO = "save.user.info";
+    public static final String SERVICE_CODE_SAVE_USER_INFO = "user.saveUser";
 
     /**
      * 修改用户信息
@@ -171,7 +171,7 @@ public class ServiceCodeConstant {
     /**
      * 根据用户查询商户信息
      */
-    public static final String SERVICE_CODE_QUERY_STORE_BYUSER = "query.store.byuser";
+    public static final String SERVICE_CODE_QUERY_STORE_BYUSER = "ruleId.byuser";
 
     /**
      * 根据商户用户信息
@@ -245,6 +245,11 @@ public class ServiceCodeConstant {
     public static final String SERVICE_CODE_SYSTEM_TRANSFER = "system.transfer";
 
     /**
+     * cmd服务
+     */
+    public static final String SERVICE_CODE_SYSTEM_CMD = "system.cmd";
+
+    /**
      * 订单类服务处理
      */
     public static final String SERVICE_CODE_DO_SERVICE_ORDER = "do.service.order";
@@ -258,6 +263,10 @@ public class ServiceCodeConstant {
      * 用户登录服务处理
      */
     public static final String SERVICE_CODE_USER_SERVICE_LOGIN = "user.service.login";
+    /**
+     * 用户登录服务处理
+     */
+    public static final String SERVICE_CODE_PC_USER_LOGIN = "login.pcUserLogin";
 
     /**
      * 管理员免密登录
@@ -299,6 +308,8 @@ public class ServiceCodeConstant {
      * 添加员工 服务
      */
     public static final String SERVICE_CODE_USER_STAFF_ADD = "user.staff.add";
+
+
 
     /**
      * 添加员工 服务
@@ -482,6 +493,9 @@ public class ServiceCodeConstant {
     //添加业主车辆
     public static final String SERVICE_CODE_SAVE_OWNER_CAR = "owner.saveOwnerCar";
 
+    //添加业主车辆
+    public static final String SERVICE_CODE_SAVE_OWNER_CAR_MEMBER = "owner.saveOwnerCarMember";
+
     //编辑业主车辆
     public static final String SERVICE_CODE_EDIT_OWNER_CAR = "owner.editOwnerCar";
 
@@ -575,6 +589,7 @@ public class ServiceCodeConstant {
 
     //设置费用
     public static final String SERVICE_CODE_SAVE_ROOM_CREATE_FEE = "fee.saveRoomCreateFee";
+    public static final String SERVICE_CODE_SAVE_CONTRACT_CREATE_FEE = "fee.saveContractCreateFee";
     //设置费用
     public static final String SERVICE_CODE_SAVE_PARKING_SPEC_CREATE_FEE = "fee.saveParkingSpaceCreateFee";
 
@@ -583,6 +598,9 @@ public class ServiceCodeConstant {
 
     //修改房屋费用
     public static final String SERVICE_CODE_UPDATE_FEE = "fee.updateFee";
+
+    //修改房屋费用
+    public static final String SERVICE_CODE_FINISH_FEE = "fee.finishFee";
 
     //预交费
     public static final String SERVICE_CODE_PAY_FEE_PRE = "fee.payFeePre";

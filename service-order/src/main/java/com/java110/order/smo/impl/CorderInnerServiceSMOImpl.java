@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -42,15 +43,12 @@ public class CorderInnerServiceSMOImpl extends BaseServiceSMO implements ICorder
         if (corders == null || corders.size() == 0) {
             return corders;
         }
-
-        String[] userIds = getUserIds(corders);
-        //根据 userId 查询用户信息
-        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
-
-        for (CorderDto order : corders) {
-            refreshDemo(order, users);
-        }
         return corders;
+    }
+
+    @Override
+    public Map queryUnitemLog(@RequestBody Map info) {
+        return corderServiceDaoImpl.queryUnitemLog(info);
     }
 
     /**

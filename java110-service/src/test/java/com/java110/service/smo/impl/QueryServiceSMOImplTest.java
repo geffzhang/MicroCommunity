@@ -23,14 +23,14 @@ public class QueryServiceSMOImplTest extends TestCase {
                 String    javaCode3 ="public static void testJava3() {     ServiceSql serviceSql = new ServiceSql();  System.out.println(\"723213\");\n}";
         ClassPool classPool = ClassPool.getDefault();
         classPool.importPackage("com.java110.entity.service.DataQuery");
-        classPool.importPackage("com.java110.entity.service.ServiceSql");
+        classPool.importPackage("com.java110.dto.system.ServiceSql");
         CtClass ctClass = classPool.makeClass("com.java110.service.smo.WuxwTest3");
         CtMethod helloM = CtNewMethod.make(javaCode, ctClass);
         ctClass.addMethod(helloM);
 
         CtMethod helloM1 = CtNewMethod.make(javaCode2, ctClass);
         ctClass.addMethod(helloM1);
-        Class pc=ctClass.toClass();
+        Class<?> pc=ctClass.toClass();
         //ctClass.writeFile("./1111");
         Method move= pc.getMethod("testJava1",new Class[]{});
 

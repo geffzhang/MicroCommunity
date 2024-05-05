@@ -1,7 +1,7 @@
 package com.java110.dto.owner;
 
 import com.java110.dto.PageDto;
-import com.java110.dto.RoomDto;
+import com.java110.dto.room.RoomDto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,15 +21,33 @@ public class OwnerDto extends PageDto implements Serializable {
     public static final String OWNER_TYPE_CD_OWNER = "1001"; //业主
     public static final String OWNER_TYPE_CD_MEMBER = "1002"; //家庭成员
     public static final String OWNER_TYPE_CD_RENTING = "1003"; //租客
+    public static final String OWNER_TYPE_CD_TEMP = "1004"; //临时人员
+    public static final String OWNER_TYPE_CD_OTHER = "1005"; //其他
+
+
+    public static final String OWNER_FLAG_TRUE = "T";//业主标识 T是真实业主 F 是虚拟业主
+    public static final String OWNER_FLAG_FALSE = "F";//业主标识 T是真实业主 F 是虚拟业主
+
+    // 1000 表示待审核，2000 审核完成  3000 拒绝审核
+    public static final String STATE_FINISH = "2000";
+
+    public static final String IS_BIND_Y="Y";
+    public static final String IS_BIND_N="N";
 
 
     private String communityId;
+    private String communityName;
+    private String sCommunityTel;
+
+    private String communityQrCode;
 
     private String roomId;
     private String[] roomIds;
     private String sex;
     private String name;
+    private String nameLike;
     private String link;
+    private String address;
     private String remark;
     private String ownerId;
     private String[] ownerIds;
@@ -45,23 +63,56 @@ public class OwnerDto extends PageDto implements Serializable {
     private String num;
     private String idCard;
     private String floorId;
+    private String floorNum;
     private String unitId;
+    private String unitNum;
     private String state;
     private String startTime;
     private String endTime;
+    private String appUserName;
+
 
     private String bId;
 
     private String userName;
+    private String ownerFlag;
+    private String operate;
+
+    private String startDate;
+    private String endDate;
 
     private List<OwnerAttrDto> ownerAttrDtos;
 
     private List<RoomDto> rooms;
 
-
     private Date createTime;
 
     private String statusCd = "0";
+
+    private String isBind;
+
+    private String msg;
+
+    private List<String> urls;
+
+    private String url;
+
+    private String roomCount;
+    private String memberCount;
+    private String carCount;
+    private String complaintCount;
+    private String repairCount;
+
+    private String oweFee;
+    private String contractCount;
+    private String staffNameLike;
+    private String logStartTime;
+    private String logEndTime;
+
+    private String ownerNameLike;
+
+    private String memberName;
+    private String memberLike;
 
 
     public String getSex() {
@@ -312,5 +363,238 @@ public class OwnerDto extends PageDto implements Serializable {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public String getOwnerFlag() {
+        return ownerFlag;
+    }
+
+    public void setOwnerFlag(String ownerFlag) {
+        this.ownerFlag = ownerFlag;
+    }
+
+    public String getCommunityName() {
+        return communityName;
+    }
+
+    public void setCommunityName(String communityName) {
+        this.communityName = communityName;
+    }
+
+    public String getAppUserName() {
+        return appUserName;
+    }
+
+    public void setAppUserName(String appUserName) {
+        this.appUserName = appUserName;
+    }
+
+    public String getFloorNum() {
+        return floorNum;
+    }
+
+    public void setFloorNum(String floorNum) {
+        this.floorNum = floorNum;
+    }
+
+    public String getUnitNum() {
+        return unitNum;
+    }
+
+    public void setUnitNum(String unitNum) {
+        this.unitNum = unitNum;
+    }
+
+    public String getsCommunityTel() {
+        return sCommunityTel;
+    }
+
+    public void setsCommunityTel(String sCommunityTel) {
+        this.sCommunityTel = sCommunityTel;
+    }
+
+    public String getIsBind() {
+        return isBind;
+    }
+
+    public void setIsBind(String isBind) {
+        this.isBind = isBind;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public List<String> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<String> urls) {
+        this.urls = urls;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getCommunityQrCode() {
+        return communityQrCode;
+    }
+
+    public void setCommunityQrCode(String communityQrCode) {
+        this.communityQrCode = communityQrCode;
+    }
+
+
+    public String getRoomCount() {
+        return roomCount;
+    }
+
+    public void setRoomCount(String roomCount) {
+        this.roomCount = roomCount;
+    }
+
+    public String getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(String memberCount) {
+        this.memberCount = memberCount;
+    }
+
+    public String getCarCount() {
+        return carCount;
+    }
+
+    public void setCarCount(String carCount) {
+        this.carCount = carCount;
+    }
+
+    public String getComplaintCount() {
+        return complaintCount;
+    }
+
+    public void setComplaintCount(String complaintCount) {
+        this.complaintCount = complaintCount;
+    }
+
+    public String getRepairCount() {
+        return repairCount;
+    }
+
+    public void setRepairCount(String repairCount) {
+        this.repairCount = repairCount;
+    }
+
+    public String getOweFee() {
+        return oweFee;
+    }
+
+    public void setOweFee(String oweFee) {
+        this.oweFee = oweFee;
+    }
+
+    public String getContractCount() {
+        return contractCount;
+    }
+
+    public void setContractCount(String contractCount) {
+        this.contractCount = contractCount;
+    }
+
+    public String getOperate() {
+        return operate;
+    }
+
+    public void setOperate(String operate) {
+        this.operate = operate;
+    }
+
+    public String getNameLike() {
+        return nameLike;
+    }
+
+    public void setNameLike(String nameLike) {
+        this.nameLike = nameLike;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getStaffNameLike() {
+        return staffNameLike;
+    }
+
+    public void setStaffNameLike(String staffNameLike) {
+        this.staffNameLike = staffNameLike;
+    }
+
+    public String getLogStartTime() {
+        return logStartTime;
+    }
+
+    public void setLogStartTime(String logStartTime) {
+        this.logStartTime = logStartTime;
+    }
+
+    public String getLogEndTime() {
+        return logEndTime;
+    }
+
+    public void setLogEndTime(String logEndTime) {
+        this.logEndTime = logEndTime;
+    }
+
+    public String getOwnerNameLike() {
+        return ownerNameLike;
+    }
+
+    public void setOwnerNameLike(String ownerNameLike) {
+        this.ownerNameLike = ownerNameLike;
+    }
+
+    public String getMemberName() {
+        return memberName;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public String getMemberLike() {
+        return memberLike;
+    }
+
+    public void setMemberLike(String memberLike) {
+        this.memberLike = memberLike;
     }
 }

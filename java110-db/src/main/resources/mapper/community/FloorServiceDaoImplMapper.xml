@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="floorServiceDaoImpl">
 
     <!-- 保存小区楼信息 add by wuxw 2018-07-03 -->
     <insert id="saveBusinessFloorInfo" parameterType="Map">
-        insert into business_floor(
-        floor_id,operate,name,remark,b_id,user_id,floor_num,community_id,floor_area
-        ) values (
-        #{floorId},#{operate},#{name},#{remark},#{bId},#{userId},#{floorNum},#{communityId},#{floorArea}
-        )
+        insert into business_floor(floor_id, operate, name, remark, b_id, user_id, floor_num, community_id, floor_area)
+        values (#{floorId}, #{operate}, #{name}, #{remark}, #{bId}, #{userId}, #{floorNum}, #{communityId},
+                #{floorArea})
     </insert>
-
 
     <!-- 查询小区楼信息（Business） add by wuxw 2018-07-03 -->
     <select id="getBusinessFloorInfo" parameterType="Map" resultType="Map">
@@ -43,9 +39,7 @@
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
         </if>
-
     </select>
-
 
     <!-- 保存小区楼信息至 instance表中 add by wuxw 2018-07-03 -->
     <insert id="saveFloorInfoInstance" parameterType="Map">
@@ -75,16 +69,14 @@
         <if test="communityId !=null and communityId != ''">
             and t.community_id= #{communityId}
         </if>
-
-
     </insert>
-
 
     <!-- 查询小区楼信息 add by wuxw 2018-07-03 -->
     <select id="getFloorInfo" parameterType="Map" resultType="Map">
         select t.floor_id,t.floor_id floorId,t.name,t.status_cd, t.status_cd statusCd,t.remark,t.b_id,
-        t.b_id bId,t.user_id, t.user_id userId,t.floor_num ,t.floor_num floorNum,t.community_id communityId,t.community_id,
-        t.floor_area,t.floor_area floorArea
+        t.b_id bId,t.user_id, t.user_id userId,t.floor_num ,t.floor_num floorNum,t.community_id
+        communityId,t.community_id,
+        t.floor_area,t.floor_area floorArea,t.seq
         from f_floor t
         where 1 =1
         <if test="floorId !=null and floorId != ''">
@@ -115,9 +107,7 @@
         <if test="page != -1 and page != null ">
             limit #{page}, #{row}
         </if>
-
     </select>
-
 
     <!-- 修改小区楼信息 add by wuxw 2018-07-03 -->
     <update id="updateFloorInfoInstance" parameterType="Map">
@@ -150,7 +140,6 @@
         <if test="bId !=null and bId != ''">
             and t.b_id= #{bId}
         </if>
-
     </update>
 
     <select id="queryFloorsCount" parameterType="Map" resultType="Map">
@@ -158,7 +147,10 @@
         COUNT(1) count
         FROM
         f_floor f
-        where f.`community_id` = #{communityId}
+        where 1=1
+        <if test="communityId !=null and communityId != ''">
+            and f.`community_id` = #{communityId}
+        </if>
         <if test="floorId !=null and floorId != ''">
             and f.floor_id= #{floorId}
         </if>
@@ -183,15 +175,14 @@
         <if test="bId !=null and bId != ''">
             and f.b_id= #{bId}
         </if>
-
         <if test="floorNum !=null and floorNum != ''">
             and f.floor_num= #{floorNum}
         </if>
         AND f.`status_cd` = '0'
     </select>
+
     <!-- 查询小区 内的楼 -->
     <select id="queryFloors" parameterType="Map" resultType="Map">
-
         SELECT
         f.`floor_id` floorId,
         f.`floor_num` floorNum,
@@ -199,10 +190,14 @@
         f.`remark`,
         f.`user_id` userId,
         f.`community_id` communityId,
-        f.floor_area floorArea
+        f.floor_area floorArea,
+        f.seq
         FROM
         f_floor f
-        where f.`community_id` = #{communityId}
+        where 1=1
+        <if test="communityId !=null and communityId != ''">
+            and f.`community_id` = #{communityId}
+        </if>
         <if test="floorId !=null and floorId != ''">
             and f.floor_id= #{floorId}
         </if>
@@ -227,18 +222,53 @@
         <if test="bId !=null and bId != ''">
             and f.b_id= #{bId}
         </if>
-        <if test="userId !=null and userId != ''">
-            and f.user_id= #{userId}
-        </if>
         <if test="floorNum !=null and floorNum != ''">
             and f.floor_num= #{floorNum}
         </if>
         AND f.`status_cd` = '0'
-        order by f.create_time desc
+        order by f.seq asc,f.create_time desc
         <if test="page != -1 and page != null ">
             LIMIT #{page}, #{row}
         </if>
     </select>
 
-
+    <!-- 查询小区单元信息 add by wuxw 2018-07-03 -->
+    <select id="queryFloorAndUnits" parameterType="Map" resultType="Map">
+        select t.floor_id,t.floor_id floorId,t.`name` floorName,bu.layer_count,bu.layer_count
+        layerCount,bu.unit_id,bu.unit_id
+        unitId,bu.unit_num,bu.unit_num unitNum,bu.lift,bu.remark,bu.unit_area,bu.unit_area unitArea,t.floor_num
+        floorNum,t.seq
+        from f_floor t
+        left join building_unit bu on t.`floor_id` = bu.`floor_id` and bu.status_cd = '0'
+        where 1 =1
+        and t.status_cd = '0'
+        <if test="communityId!=null and communityId != ''">
+            AND t.community_id = #{communityId}
+        </if>
+        <if test="floorId !=null and floorId != ''">
+            and t.floor_id= #{floorId}
+        </if>
+        <if test="layerCount !=null and layerCount != ''">
+            and bu.layer_count= #{layerCount}
+        </if>
+        <if test="unitId !=null and unitId != ''">
+            and bu.unit_id= #{unitId}
+        </if>
+        <if test="unitIds !=null ">
+            and bu.unit_id in
+            <foreach collection="unitIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="unitNum !=null and unitNum != ''">
+            and bu.unit_num= #{unitNum}
+        </if>
+        <if test="lift !=null and lift != ''">
+            and bu.lift= #{lift}
+        </if>
+        order by t.seq,t.floor_num,bu.unit_num asc
+        <!-- <if test="page != -1 and page != null ">
+             limit #{page}, #{row}
+         </if>limit 10;-->
+    </select>
 </mapper>

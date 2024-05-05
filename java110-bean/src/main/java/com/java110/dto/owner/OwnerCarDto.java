@@ -4,6 +4,7 @@ import com.java110.dto.PageDto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName FloorDto
@@ -19,15 +20,35 @@ public class OwnerCarDto extends PageDto implements Serializable {
     public static final String STATE_OWE = "2002";
     public static final String STATE_FINISH = "3003";
 
+    public static final String CAR_TYPE_PRIMARY = "1001"; //主车辆
+    public static final String CAR_TYPE_MEMBER = "1002"; //车辆成员
+    public static final String CAR_TYPE_TEMP = "1003"; //临时车
+
+    public static final String CAR_TYPE_CD_TEMP = "1003";
+
+    public static final String LEASE_TYPE_MONTH = "H"; // 月租车
+    public static final String LEASE_TYPE_SALE = "S"; // 出售车
+    public static final String LEASE_TYPE_INNER = "I"; //内部车
+    public static final String LEASE_TYPE_NO_MONEY = "NM"; //免费车
+    public static final String LEASE_TYPE_RESERVE = "R"; //预约车
+
+    public static final String LEASE_TYPE_TEMP = "T";//临时车
+
+    public static final String CAR_TYPE_CREDIT = "9906"; //信用期车牌
+
     private String carColor;
     private String carBrand;
     private String carType;
     private String carTypeName;
     private String carNum;
+    private String carNumLike;
+    private String memberCarNum;
+    private String memberCarNumLike;
     private String[] carNums;
     private String communityId;
     private String psId;
     private String[] psIds;
+    private String[] paIds;
     private String remark;
     private String ownerId;
     private String userId;
@@ -37,6 +58,10 @@ public class OwnerCarDto extends PageDto implements Serializable {
     private String ownerName;
     private String idCard;
     private String link;
+    private String parkingType;
+    //停车场类型
+    private String typeCd;
+    private String spaceSate;
 
     private String roomName;
 
@@ -44,11 +69,12 @@ public class OwnerCarDto extends PageDto implements Serializable {
     private Date endTime;
     private String state;
     private String stateName;
+    private String iotStateName;
+    private String iotRemark;
 
     private String areaNum;
 
     private String num;
-
 
     private Date createTime;
 
@@ -57,7 +83,35 @@ public class OwnerCarDto extends PageDto implements Serializable {
     private String valid;
 
     private String bId;
+    private String carTypeCd;
+    private String carTypeCdName;
+    private String[] carTypeCds;
+    private String memberId;
+    private String unitId;
+    private String floorNum;
+    private String unitNum;
+    private String roomNum;
+    private String oweAmount;
 
+    private String leaseType;
+    private String[] leaseTypes;
+
+    private String leaseTypeName;
+
+    private String memberCarCount;
+
+    private String userName;
+
+    private String operate;
+
+    private String staffNameLike;
+
+    private String logStartTime;
+    private String logEndTime;
+
+    private String paId;
+
+    private List<OwnerCarAttrDto> ownerCarAttrDto;
 
     public String getCarColor() {
         return carColor;
@@ -130,7 +184,6 @@ public class OwnerCarDto extends PageDto implements Serializable {
     public void setCarId(String carId) {
         this.carId = carId;
     }
-
 
     public Date getCreateTime() {
         return createTime;
@@ -290,5 +343,237 @@ public class OwnerCarDto extends PageDto implements Serializable {
 
     public void setRoomName(String roomName) {
         this.roomName = roomName;
+    }
+
+    public String getCarTypeCd() {
+        return carTypeCd;
+    }
+
+    public void setCarTypeCd(String carTypeCd) {
+        this.carTypeCd = carTypeCd;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getParkingType() {
+        return parkingType;
+    }
+
+    public void setParkingType(String parkingType) {
+        this.parkingType = parkingType;
+    }
+
+    public String getCarNumLike() {
+        return carNumLike;
+    }
+
+    public void setCarNumLike(String carNumLike) {
+        this.carNumLike = carNumLike;
+    }
+
+    public String[] getCarTypeCds() {
+        return carTypeCds;
+    }
+
+    public void setCarTypeCds(String[] carTypeCds) {
+        this.carTypeCds = carTypeCds;
+    }
+
+    public String getTypeCd() {
+        return typeCd;
+    }
+
+    public void setTypeCd(String typeCd) {
+        this.typeCd = typeCd;
+    }
+
+    public String getSpaceSate() {
+        return spaceSate;
+    }
+
+    public void setSpaceSate(String spaceSate) {
+        this.spaceSate = spaceSate;
+    }
+
+    public String getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
+    }
+
+    public String getFloorNum() {
+        return floorNum;
+    }
+
+    public void setFloorNum(String floorNum) {
+        this.floorNum = floorNum;
+    }
+
+    public String getUnitNum() {
+        return unitNum;
+    }
+
+    public void setUnitNum(String unitNum) {
+        this.unitNum = unitNum;
+    }
+
+    public String getRoomNum() {
+        return roomNum;
+    }
+
+    public void setRoomNum(String roomNum) {
+        this.roomNum = roomNum;
+    }
+
+    public String getOweAmount() {
+        return oweAmount;
+    }
+
+    public void setOweAmount(String oweAmount) {
+        this.oweAmount = oweAmount;
+    }
+
+    public List<OwnerCarAttrDto> getOwnerCarAttrDto() {
+        return ownerCarAttrDto;
+    }
+
+    public void setOwnerCarAttrDto(List<OwnerCarAttrDto> ownerCarAttrDto) {
+        this.ownerCarAttrDto = ownerCarAttrDto;
+    }
+
+    public String getLeaseType() {
+        return leaseType;
+    }
+
+    public void setLeaseType(String leaseType) {
+        this.leaseType = leaseType;
+    }
+
+    public String getLeaseTypeName() {
+        return leaseTypeName;
+    }
+
+    public void setLeaseTypeName(String leaseTypeName) {
+        this.leaseTypeName = leaseTypeName;
+    }
+
+    public String[] getPaIds() {
+        return paIds;
+    }
+
+    public void setPaIds(String[] paIds) {
+        this.paIds = paIds;
+    }
+
+    public String getCarTypeCdName() {
+        return carTypeCdName;
+    }
+
+    public void setCarTypeCdName(String carTypeCdName) {
+        this.carTypeCdName = carTypeCdName;
+    }
+
+    public String[] getLeaseTypes() {
+        return leaseTypes;
+    }
+
+    public void setLeaseTypes(String[] leaseTypes) {
+        this.leaseTypes = leaseTypes;
+    }
+
+    public String getMemberCarCount() {
+        return memberCarCount;
+    }
+
+    public void setMemberCarCount(String memberCarCount) {
+        this.memberCarCount = memberCarCount;
+    }
+
+    public String getMemberCarNum() {
+        return memberCarNum;
+    }
+
+    public void setMemberCarNum(String memberCarNum) {
+        this.memberCarNum = memberCarNum;
+    }
+
+    public String getMemberCarNumLike() {
+        return memberCarNumLike;
+    }
+
+    public void setMemberCarNumLike(String memberCarNumLike) {
+        this.memberCarNumLike = memberCarNumLike;
+    }
+
+    public String getIotStateName() {
+        return iotStateName;
+    }
+
+    public void setIotStateName(String iotStateName) {
+        this.iotStateName = iotStateName;
+    }
+
+    public String getIotRemark() {
+        return iotRemark;
+    }
+
+    public void setIotRemark(String iotRemark) {
+        this.iotRemark = iotRemark;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getOperate() {
+        return operate;
+    }
+
+    public void setOperate(String operate) {
+        this.operate = operate;
+    }
+
+    public String getStaffNameLike() {
+        return staffNameLike;
+    }
+
+    public void setStaffNameLike(String staffNameLike) {
+        this.staffNameLike = staffNameLike;
+    }
+
+    public String getLogStartTime() {
+        return logStartTime;
+    }
+
+    public void setLogStartTime(String logStartTime) {
+        this.logStartTime = logStartTime;
+    }
+
+    public String getLogEndTime() {
+        return logEndTime;
+    }
+
+    public void setLogEndTime(String logEndTime) {
+        this.logEndTime = logEndTime;
+    }
+
+    public String getPaId() {
+        return paId;
+    }
+
+    public void setPaId(String paId) {
+        this.paId = paId;
     }
 }

@@ -17,7 +17,7 @@ package com.java110.job.adapt.hcIot.community;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.java110.entity.order.Business;
+import com.java110.dto.system.Business;
 import com.java110.job.adapt.DatabusAdaptImpl;
 import com.java110.job.adapt.hcIot.asyn.IIotSendAsyn;
 import com.java110.po.community.CommunityPo;
@@ -57,21 +57,24 @@ public class EditCommunityToIotAdapt extends DatabusAdaptImpl {
     @Override
     public void execute(Business business, List<Business> businesses) {
         JSONObject data = business.getData();
+        JSONArray  businessCommunitys = new JSONArray();
         if (data.containsKey(CommunityPo.class.getSimpleName())) {
             Object bObj = data.get(CommunityPo.class.getSimpleName());
-            JSONArray businessCommunitys = null;
             if (bObj instanceof JSONObject) {
-                businessCommunitys = new JSONArray();
                 businessCommunitys.add(bObj);
             } else if (bObj instanceof List) {
                 businessCommunitys = JSONArray.parseArray(JSONObject.toJSONString(bObj));
             } else {
                 businessCommunitys = (JSONArray) bObj;
             }
-            for (int bMachineIndex = 0; bMachineIndex < businessCommunitys.size(); bMachineIndex++) {
-                JSONObject businessCommunity = businessCommunitys.getJSONObject(bMachineIndex);
-                doEditCommunity(business, businessCommunity);
+        }else {
+            if (data instanceof JSONObject) {
+                businessCommunitys.add(data);
             }
+        }
+        for (int bMachineIndex = 0; bMachineIndex < businessCommunitys.size(); bMachineIndex++) {
+            JSONObject businessCommunity = businessCommunitys.getJSONObject(bMachineIndex);
+            doEditCommunity(business, businessCommunity);
         }
     }
 

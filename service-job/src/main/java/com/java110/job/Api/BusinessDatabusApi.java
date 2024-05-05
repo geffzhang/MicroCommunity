@@ -1,12 +1,12 @@
 package com.java110.job.Api;
 
 import com.alibaba.fastjson.JSONObject;
-import com.java110.dto.businessDatabus.BusinessDatabusDto;
+import com.java110.dto.system.BusinessDatabusDto;
 import com.java110.job.bmo.businessDatabus.IDeleteBusinessDatabusBMO;
 import com.java110.job.bmo.businessDatabus.IGetBusinessDatabusBMO;
 import com.java110.job.bmo.businessDatabus.ISaveBusinessDatabusBMO;
 import com.java110.job.bmo.businessDatabus.IUpdateBusinessDatabusBMO;
-import com.java110.po.businessDatabus.BusinessDatabusPo;
+import com.java110.po.business.BusinessDatabusPo;
 import com.java110.utils.util.Assert;
 import com.java110.utils.util.BeanConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +77,6 @@ public class BusinessDatabusApi {
      */
     @RequestMapping(value = "/deleteBusinessDatabus", method = RequestMethod.POST)
     public ResponseEntity<String> deleteBusinessDatabus(@RequestBody JSONObject reqJson) {
-        Assert.hasKeyAndValue(reqJson, "communityId", "小区ID不能为空");
-
         Assert.hasKeyAndValue(reqJson, "databusId", "databusId不能为空");
 
 
@@ -96,12 +94,16 @@ public class BusinessDatabusApi {
      */
     @RequestMapping(value = "/queryBusinessDatabus", method = RequestMethod.GET)
     public ResponseEntity<String> queryBusinessDatabus(@RequestParam(value = "businessTypeCd", required = false) String businessTypeCd,
+                                                       @RequestParam(value = "beanName", required = false) String beanName,
+                                                       @RequestParam(value = "databusId", required = false) String databusId,
                                                        @RequestParam(value = "page") int page,
                                                        @RequestParam(value = "row") int row) {
         BusinessDatabusDto businessDatabusDto = new BusinessDatabusDto();
         businessDatabusDto.setPage(page);
         businessDatabusDto.setRow(row);
         businessDatabusDto.setBusinessTypeCd(businessTypeCd);
+        businessDatabusDto.setBeanName(beanName);
+        businessDatabusDto.setDatabusId(databusId);
         return getBusinessDatabusBMOImpl.get(businessDatabusDto);
     }
 }

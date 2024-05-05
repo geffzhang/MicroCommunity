@@ -28,6 +28,14 @@ public class ApiInspectionPlanDataVo implements Serializable {
     private String inspectionPlanPeriodName;
     private String signTypeName;
 
+    private String inspectionMonth;
+    private String inspectionDay;
+    private String inspectionWorkday;
+    private String startDate;
+    private String endDate;
+    private String beforeTime;
+    private String canReexamine;;
+
     public String getInspectionPlanId() {
         return inspectionPlanId;
     }
@@ -203,5 +211,61 @@ public class ApiInspectionPlanDataVo implements Serializable {
 
     public void setSignTypeName(String signTypeName) {
         this.signTypeName = signTypeName;
+    }
+
+    public String getInspectionMonth() {
+        return inspectionMonth;
+    }
+
+    public void setInspectionMonth(String inspectionMonth) {
+        this.inspectionMonth = inspectionMonth;
+    }
+
+    public String getInspectionDay() {
+        return inspectionDay;
+    }
+
+    public void setInspectionDay(String inspectionDay) {
+        this.inspectionDay = inspectionDay;
+    }
+
+    public String getInspectionWorkday() {
+        return inspectionWorkday;
+    }
+
+    public void setInspectionWorkday(String inspectionWorkday) {
+        this.inspectionWorkday = inspectionWorkday;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getBeforeTime() {
+        return beforeTime;
+    }
+
+    public void setBeforeTime(String beforeTime) {
+        this.beforeTime = beforeTime;
+    }
+
+    public String getCanReexamine() {
+        return canReexamine;
+    }
+
+    public void setCanReexamine(String canReexamine) {
+        this.canReexamine = canReexamine;
     }
 }

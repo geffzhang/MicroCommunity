@@ -1,7 +1,9 @@
 package com.java110.vo.api.parkingArea;
 
+import com.java110.dto.parking.ParkingAreaAttrDto;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
 public class ApiParkingAreaDataVo implements Serializable {
 
@@ -9,6 +11,7 @@ public class ApiParkingAreaDataVo implements Serializable {
     private String num;
     private String typeCd;
     private String remark;
+    private List<ParkingAreaAttrDto> attrs;
 
     private String createTime;
 
@@ -50,5 +53,13 @@ public class ApiParkingAreaDataVo implements Serializable {
 
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public List<ParkingAreaAttrDto> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(List<ParkingAreaAttrDto> attrs) {
+        this.attrs = attrs;
     }
 }

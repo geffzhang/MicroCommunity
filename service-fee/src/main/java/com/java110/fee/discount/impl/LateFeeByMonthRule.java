@@ -17,9 +17,9 @@ package com.java110.fee.discount.impl;
 
 import com.java110.core.smo.IComputeFeeSMO;
 import com.java110.dto.fee.FeeDto;
-import com.java110.dto.feeDiscount.ComputeDiscountDto;
-import com.java110.dto.feeDiscount.FeeDiscountDto;
-import com.java110.dto.feeDiscountSpec.FeeDiscountSpecDto;
+import com.java110.dto.fee.ComputeDiscountDto;
+import com.java110.dto.fee.FeeDiscountDto;
+import com.java110.dto.fee.FeeDiscountSpecDto;
 import com.java110.fee.discount.IComputeDiscount;
 import com.java110.intf.fee.IFeeInnerServiceSMO;
 import com.java110.utils.util.DateUtil;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @desc add by 吴学文 12:43
@@ -82,11 +83,11 @@ public class LateFeeByMonthRule implements IComputeDiscount {
             return computeDiscountDto;
         }
         //查询费用
-        Double month = computeFeeSMOImpl.dayCompare(endTime, curTime);
+        Double month = DateUtil.dayCompare(endTime, curTime);
 
-        double price = computeFeeSMOImpl.getFeePrice(feeDtos.get(0));
+        Map feePriceAll = computeFeeSMOImpl.getFeePrice(feeDtos.get(0));
 
-        BigDecimal priceDec = new BigDecimal(price);
+        BigDecimal priceDec = new BigDecimal(feePriceAll.get("feePrice").toString());
 
         BigDecimal monthDec = new BigDecimal(month);
 

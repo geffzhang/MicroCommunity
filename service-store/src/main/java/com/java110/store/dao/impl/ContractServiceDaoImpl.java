@@ -7,7 +7,7 @@ import com.java110.utils.util.DateUtil;
 import com.java110.core.base.dao.BaseServiceDao;
 import com.java110.store.dao.IContractServiceDao;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +92,14 @@ public class ContractServiceDaoImpl extends BaseServiceDao implements IContractS
         }
 
         return Integer.parseInt(businessContractInfos.get(0).get("count").toString());
+    }
+
+    @Override
+    public List<Map> queryContractsByOwnerIds(Map info) {
+        logger.debug("查询合同管理数据 入参 info : {}",info);
+
+        List<Map> result = sqlSessionTemplate.selectList("contractServiceDaoImpl.queryContractsByOwnerIds", info);
+        return result;
     }
 
 

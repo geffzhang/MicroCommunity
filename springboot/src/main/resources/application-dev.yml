@@ -1,0 +1,84 @@
+server:
+  port: 8008
+  tomcat:
+    uri-encoding: UTF-8
+
+
+
+spring:
+  profiles:
+    active: share
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  application:
+    name: boot-service
+  redis:
+    database: 0
+    host: dev.redis.java110.com
+    port: 6379
+    password: hc
+    pool:
+      max-active: 300
+      max-wait: 3000
+      max-idle: 50
+      min-idle: 20
+      timeout: 0
+# 集群模式
+#  redis:
+#    timeout: 5000
+#    database: 0
+#    password: hc
+#    cluster:
+#      nodes: 148.70.139.121:7000,148.70.139.121:7001,148.70.139.121:7002,148.70.139.121:7003,148.70.139.121:7004,148.70.139.121:7005
+#      max-redirects: 3
+#    jedis:
+#      pool:
+#        max-active: 8
+#        max-wait: -1
+#        max-idle: 8
+#        min-idle: 0
+
+  activiti:
+    database-schema-update: false
+
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 20000
+
+#============== kafka ===================
+kafka:
+  consumer:
+    zookeeper:
+      connect: dev.zk.java110.com:2181
+    servers: dev.kafka.java110.com:9092
+    enable:
+      auto:
+        commit: true
+    session:
+      timeout: 6000
+    auto:
+      commit:
+        interval: 100
+      offset:
+        reset: latest
+    topic: test
+    group:
+      id: communityBusinessStatus
+    concurrency: 10
+
+  producer:
+    zookeeper:
+      connect: dev.zk.java110.com:2181
+    servers: dev.kafka.java110.com:9092
+    retries: 0
+    batch:
+      size: 4096
+    linger: 1
+    buffer:
+      memory: 40960

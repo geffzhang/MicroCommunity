@@ -17,9 +17,9 @@ package com.java110.fee.discount.impl;
 
 import com.java110.core.smo.IComputeFeeSMO;
 import com.java110.dto.fee.FeeDto;
-import com.java110.dto.feeDiscount.ComputeDiscountDto;
-import com.java110.dto.feeDiscount.FeeDiscountDto;
-import com.java110.dto.feeDiscountSpec.FeeDiscountSpecDto;
+import com.java110.dto.fee.ComputeDiscountDto;
+import com.java110.dto.fee.FeeDiscountDto;
+import com.java110.dto.fee.FeeDiscountSpecDto;
 import com.java110.fee.discount.IComputeDiscount;
 import com.java110.intf.fee.IFeeInnerServiceSMO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 优惠打折 规则
@@ -90,9 +91,9 @@ public class DiscountFeeRule implements IComputeDiscount {
         feeDto.setFeeId(feeDiscountDto.getFeeId());
         List<FeeDto> feeDtos = feeInnerServiceSMOImpl.queryFees(feeDto);
 
-        double price = computeFeeSMOImpl.getFeePrice(feeDtos.get(0));
+        Map feePriceAll=computeFeeSMOImpl.getFeePrice(feeDtos.get(0));
 
-        BigDecimal priceDec = new BigDecimal(price);
+        BigDecimal priceDec = new BigDecimal(feePriceAll.get("feePrice").toString());
 
         BigDecimal cycleDec = new BigDecimal(feeDiscountDto.getCycles());
 

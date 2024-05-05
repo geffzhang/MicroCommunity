@@ -3,7 +3,7 @@ package com.java110.store.smo.impl;
 
 import com.java110.store.dao.ISmallWechatAttrServiceDao;
 import com.java110.intf.store.ISmallWechatAttrInnerServiceSMO;
-import com.java110.dto.smallWechatAttr.SmallWechatAttrDto;
+import com.java110.dto.wechat.SmallWechatAttrDto;
 import com.java110.utils.util.BeanConvertUtil;
 import com.java110.core.base.smo.BaseServiceSMO;
 import com.java110.dto.user.UserDto;
@@ -50,13 +50,13 @@ public class SmallWechatAttrInnerServiceSMOImpl extends BaseServiceSMO implement
             return smallWechatAttrs;
         }
 
-        String[] userIds = getUserIds(smallWechatAttrs);
-        //根据 userId 查询用户信息
-        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
-
-        for (SmallWechatAttrDto smallWechatAttr : smallWechatAttrs) {
-            refreshSmallWechatAttr(smallWechatAttr, users);
-        }
+//        String[] userIds = getUserIds(smallWechatAttrs);
+//        //根据 userId 查询用户信息
+//        List<UserDto> users = userInnerServiceSMOImpl.getUserInfo(userIds);
+//
+//        for (SmallWechatAttrDto smallWechatAttr : smallWechatAttrs) {
+//            refreshSmallWechatAttr(smallWechatAttr, users);
+//        }
         return smallWechatAttrs;
     }
 

@@ -8,7 +8,7 @@ import com.java110.vo.ResultVo;
 import com.java110.utils.constant.CommonConstant;
 import com.java110.utils.util.BeanConvertUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.java110.core.log.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -39,7 +40,7 @@ public abstract class AbstractServiceApiPlusListener extends AbstractServiceApiD
      *
      * @param event
      */
-    public final void soService(ServiceDataFlowEvent event) {
+    public final void soService(ServiceDataFlowEvent event) throws ParseException {
 
         DataFlowContext dataFlowContext = event.getDataFlowContext();
         //获取请求数据
@@ -230,7 +231,7 @@ public abstract class AbstractServiceApiPlusListener extends AbstractServiceApiD
      * @param event   事件对象
      * @param reqJson 请求报文数据
      */
-    protected abstract void validate(ServiceDataFlowEvent event, JSONObject reqJson);
+    protected abstract void validate(ServiceDataFlowEvent event, JSONObject reqJson) throws ParseException;
 
 
     /**
@@ -240,7 +241,7 @@ public abstract class AbstractServiceApiPlusListener extends AbstractServiceApiD
      * @param context 数据上文对象
      * @param reqJson 请求报文
      */
-    protected abstract void doSoService(ServiceDataFlowEvent event, DataFlowContext context, JSONObject reqJson);
+    protected abstract void doSoService(ServiceDataFlowEvent event, DataFlowContext context, JSONObject reqJson) throws ParseException;
 
 
     @Override
